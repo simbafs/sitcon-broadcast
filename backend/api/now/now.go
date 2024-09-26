@@ -2,8 +2,9 @@ package now
 
 import (
 	"backend/models/now"
-	"bytes"
+	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,14 +21,20 @@ func Route(r gin.IRouter) {
 	})
 
 	route.POST("/", func(c *gin.Context) {
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(c.Request.Body)
-		t := buf.String()
+		b, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+			return
+		}
+		s := string(b)
 
-		if err := now.SetNow(t); err != nil {
+		t, err := strconv.Atoi(s)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid time"})
 			return
 		}
+
+		now.SetNow(t)
 
 		c.JSON(http.StatusOK, gin.H{"time": t})
 	})

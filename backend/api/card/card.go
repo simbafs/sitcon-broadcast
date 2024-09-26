@@ -3,108 +3,142 @@ package card
 import (
 	"backend/models/now"
 	"backend/models/session"
+	"bytes"
 	_ "embed"
-	"fmt"
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
-
-func Include(list []string, item string) bool {
-	for _, i := range list {
-		if i == item {
-			return true
-		}
-	}
-
-	return false
-}
-
-type Time struct {
-	Start string `json:"start"`
-	End   string `json:"end"`
-}
 
 //go:embed sessions.json
 var file []byte
 
 func Route(r gin.IRouter) {
-	sessions, err := session.ParseSessions(file)
+	data, err := session.GetSessions(bytes.NewReader(file))
+	if err != nil {
+		panic(err)
+	}
+
+	r.GET("/session", func(c *gin.Context) {
+		c.JSON(http.StatusOK, data.Sessions)
+	})
+
+	r.GET("/idMap", func(c *gin.Context) {
+		c.JSON(http.StatusOK, data.IDMap)
+	})
 
 	route := r.Group("/card")
 
-	route.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, sessions)
-	})
+	// get session
+	route.GET("/:room/:idx", func(c *gin.Context) {
+		room := c.Param("room")
+		idxStr := c.Param("idx")
 
-	route.GET("/:id", func(c *gin.Context) {
-		id := c.Param("id")
-
-		session := sessions[id]
-
-		c.JSON(http.StatusOK, session)
-	})
-
-	route.GET("/room/:roomid", func(c *gin.Context) {
-		roomid := c.Param("roomid")
-
-		roomSession := session.Session{}
-		// no session is after this time
-		roomSession.StartTime, _ = time.Parse("2006/01/02 15:04:05", "2024/03/09 23:59:59")
-
-		for _, s := range sessions {
-			if s.Room != roomid && !Include(s.Broadcast, roomid) {
-				continue
-			}
-
-			// 2024/03/09 09:00:00
-			// nowTime, _ := time.Parse("2006/01/02 15:04:05", "2024/03/09 09:09:00")
-			nowTime := now.GetNow()
-
-			if nowTime.Before(s.EndTime) && s.StartTime.Before(roomSession.StartTime) {
-				roomSession = s
-			}
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid index"})
+			return
 		}
 
-		if roomSession.Id == "" {
+		if s, ok := data.Sessions.Get(room, idx); !ok {
+			c.JSON(http.StatusNotFound, gin.H{"error": "session not found"})
+			return
+		} else {
+			c.JSON(http.StatusOK, s)
+		}
+	})
+
+	route.GET("/:room", func(c *gin.Context) {
+		room := c.Param("room")
+
+		if _, ok := data.Sessions[room]; !ok {
+			c.JSON(http.StatusNotFound, gin.H{"error": "room not found"})
+			return
+		}
+
+		nowTime := now.GetNow()
+		nowSession := data.Sessions[room][0]
+
+		for _, s := range data.Sessions[room] {
+			if s.Start > nowTime {
+				break
+			}
+
+			nowSession = s
+		}
+
+		if nowSession.ID == "" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "session not found"})
 			return
 		}
 
-		c.JSON(http.StatusOK, roomSession)
+		c.JSON(http.StatusOK, nowSession)
 	})
 
-	route.POST("/:id", func(c *gin.Context) {
-		id := c.Param("id")
+	// update session, the session must exist
+	route.POST("/:room/:idx", func(c *gin.Context) {
+		room := c.Param("room")
+		idxStr := c.Param("idx")
 
-		t := Time{}
-		c.BindJSON(&t)
-
-		s, ok := sessions[id]
-		if !ok {
-			c.JSON(http.StatusNotFound, gin.H{"error": "session not found"})
-			return
-		}
-
-		s.Start = t.Start
-		s.End = t.End
-
-		s.StartTime, err = session.ParseTime(t.Start)
+		idx, err := strconv.Atoi(idxStr)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid start time"})
-			return
-		}
-		s.EndTime, err = session.ParseTime(t.End)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid end time"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid index"})
 			return
 		}
 
-		sessions[id] = s
+		var s session.SessionItem
+		if err := c.BindJSON(&s); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+			return
+		}
 
-		fmt.Println(s)
+		if _, ok := data.Sessions.Get(room, idx); !ok {
+			c.JSON(http.StatusNotFound, gin.H{"error": "room not found"})
+			return
+		}
+
+		if data.Sessions[room].IsOverlap(s.Start, s.End) {
+			c.JSON(http.StatusConflict, gin.H{"error": "room is not free at this time"})
+			return
+		}
+
+		data.Sessions[room][idx] = s
 
 		c.JSON(http.StatusOK, s)
+	})
+
+	// create a session, the time must not overlap with others
+	route.PUT("/:room", func(c *gin.Context) {
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "not implemented"})
+		// room := c.Param("room")
+		//
+		// r, ok := data.Sessions[room]
+		// if !ok {
+		// 	c.JSON(http.StatusNotFound, gin.H{"error": "room not found"})
+		// 	return
+		// }
+		//
+		// var s session.SessionItem
+		// if err := c.BindJSON(&s); err != nil {
+		// 	c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+		// 	return
+		// }
+		//
+		// if r.IsOverlap(s.Start, s.End) {
+		// 	c.JSON(http.StatusConflict, gin.H{"error": "room is not free at this time"})
+		// 	return
+		// }
+		//
+		// s.ID = data.GetNextID()
+		//
+		// data.Sessions[room] = append(data.Sessions[room], s)
+		//
+		// slices.SortFunc(data.Sessions[room], func(a, b session.SessionItem) int {
+		// 	return int(a.Start - b.Start)
+		// })
+		//
+		// c.JSON(http.StatusOK, s)
+		// TODO: rebuild idMap
 	})
 }

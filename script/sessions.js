@@ -1,18 +1,26 @@
 const URL = 'https://sitcon.org/2024/sessions.json'
 
+let nextID = 0
+
+function uniqueID() {
+	return `id-${nextID++}`
+}
+
 function convertTime(t) {
 	const time = new Date(t)
 	return time.getHours() * 60 + time.getMinutes()
 }
 
 /**
- * @param {Array<{title: string, type: string, speakers: string[], room: string, broadcast: string[], start: number, end: number}>} sessions
+ * @param {Array<{id: string, title: string, type: string, speakers: string[], room: string, broadcast: string[], start: number, end: number}>} sessions
  */
 function fillGaps(sessions) {
 	sessions.sort((a, b) => a.start - b.start)
-	for (let i = 1; i < sessions.length; i++) {
+	const n = sessions.length
+	for (let i = 1; i < n; i++) {
 		if (sessions[i].start > sessions[i - 1].end) {
 			sessions.push({
+				id: uniqueID(),
 				title: '休息',
 				type: 'Event',
 				speakers: [],
@@ -28,7 +36,7 @@ function fillGaps(sessions) {
 	return sessions
 }
 
-;(async () => {
+; (async () => {
 	const data = await fetch(URL).then(res => res.json())
 
 	const rooms = data.rooms.map(item => item.zh.name)
@@ -36,6 +44,7 @@ function fillGaps(sessions) {
 	const sessionTypes = Object.fromEntries(data.session_types.map(item => [item.id, item.zh.name]))
 
 	const sessions = data.sessions.map(s => ({
+		id: s.id,
 		title: s.zh.title,
 		type: sessionTypes[s.type],
 		speakers: s.speakers.map(id => speakers[id]),
@@ -47,12 +56,28 @@ function fillGaps(sessions) {
 
 	// fill all gaps with 「休息時間」
 
-	const filledSessions = []
+	const filledSessions = {}
 
 	for (let room of rooms) {
-		filledSessions.concat(fillGaps(sessions.filter(s => s.room === room)))
+		filledSessions[room] = fillGaps(sessions.filter(s => s.room === room || s.broadcast.includes(room)))
 	}
 
-	console.log(filledSessions)
-	// console.log(sessionTypes)
+	const idMap = {}
+
+	for (let room of rooms) {
+		for (let [index, s] of filledSessions[room].entries()) {
+			idMap[s.id] = {
+				room,
+				index,
+			}
+		}
+	}
+
+	console.log(
+		JSON.stringify({
+			sessions: filledSessions,
+			idMap,
+			nextID,
+		}),
+	)
 })()

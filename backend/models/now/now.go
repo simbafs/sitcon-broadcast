@@ -1,29 +1,38 @@
 package now
 
 import (
-	"backend/models/session"
 	"time"
 )
 
-var now = time.Time{}
+type Time int
 
-func GetNow() time.Time {
-	if now.IsZero() {
-		return time.Now()
+func (t Time) Hour() int {
+	return int(t) / 60
+}
+
+func (t Time) Minute() int {
+	return int(t) % 60
+}
+
+func (t Time) Time() time.Time {
+	return time.Date(2024, 3, 9, t.Hour(), t.Minute(), 0, 0, time.Local)
+}
+
+var now = Time(0)
+
+func GetNow() Time {
+	n := time.Now()
+	if now == 0 {
+		return Time(n.Hour()*60 + n.Minute())
 	} else {
 		return now
 	}
 }
 
-func SetNow(t string) error {
-	tt, err := session.ParseTime(t)
-	if err != nil {
-		return nil
-	}
-	now = tt
-	return nil
+func SetNow(t int) {
+	now = Time(t)
 }
 
 func ClearNow() {
-	now = time.Time{}
+	now = 0
 }

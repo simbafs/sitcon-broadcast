@@ -79,4 +79,7 @@ clean:
 	rm -rf ./frontend/out/ ./frontend/node_modules/ ./frontend/.next/
 	mkdir ./backend/static/
 
-.PHONY: devBackend devFrontend build buildBackend buildFrontend clean dep depFrontend depBackend
+session:
+	node script/sessions.js > backend/api/card/sessions.json
+
+.PHONY: devBackend devFrontend build buildBackend buildFrontend clean dep depFrontend depBackend session

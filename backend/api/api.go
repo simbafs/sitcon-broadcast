@@ -61,6 +61,7 @@ func Route(r *gin.Engine, io websocket.IO) {
 	now.Route(api)
 	aRoom.Route(api)
 
+	// TODO: redirect to verify page if not verified
 	api.POST("/verify", func(c *gin.Context) {
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(c.Request.Body)
@@ -82,19 +83,4 @@ func Route(r *gin.Engine, io websocket.IO) {
 
 	quit := make(chan struct{})
 	go timer(quit, io)
-
-	// api.GET("/hello", func(c *gin.Context) {
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"status":  "ok",
-	// 		"message": "Hello, world!",
-	// 	})
-	// })
-	//
-	// api.GET("/broadcast", func(c *gin.Context) {
-	// 	io.Broadcast([]byte("Hello, world!"))
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"status":  "ok",
-	// 		"message": "Broadcasted!",
-	// 	})
-	// })
 }

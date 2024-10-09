@@ -4,7 +4,7 @@ import (
 	"backend/api"
 	"backend/internal/fileserver"
 	"backend/internal/staticfs"
-	"backend/pkg/websocket"
+	"backend/middleware"
 	"embed"
 	"fmt"
 	"log"
@@ -34,8 +34,12 @@ func run(addr string) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
 
-	io := websocket.Route(r)
-	api.Route(r, io)
+	t := middleware.NewTokenVerifyer("token", "localhost")
+
+	r.Use(t.ProtectRoute([]string{"/newCard/admin"}))
+	r.GET("/verify", t.VerifyToken)
+
+	api.Route(r)
 	fileserver.Route(r, static, Mode)
 
 	logger.Printf("Server is running at %s\n", addr)

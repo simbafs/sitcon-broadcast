@@ -9,7 +9,7 @@ export function Admin({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		verify(token)
-	}, [])
+	}, [token])
 
 	const verify = (token: string) => {
 		fetch('/api/verify', {

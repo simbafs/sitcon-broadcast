@@ -4,18 +4,7 @@ import { type setEditor, useEditTime } from '@/components/useEditTime'
 import { Admin } from '@/components/admin'
 import to2 from '@/utils/to2'
 import Link from 'next/link'
-
-type TSession = {
-	id: string
-	type: string
-	room: string
-	start: string
-	end: string
-	zh: {
-		title: string
-	}
-	speakers: string[]
-}
+import type { Session } from '@/types/card'
 
 function GridCell({ children, edit }: { children: React.ReactNode; edit?: () => void }) {
 	if (typeof children === 'string') {
@@ -33,7 +22,7 @@ function GridCell({ children, edit }: { children: React.ReactNode; edit?: () => 
 	}
 }
 
-function Session({ session, setEditor }: { session: TSession; setEditor: setEditor }) {
+function Session({ session, setEditor }: { session: Session; setEditor: setEditor }) {
 	const edit = (field: 'start' | 'end', value: string) => {
 		console.log({ id: session.id, field, value })
 		setEditor(value)
@@ -62,9 +51,13 @@ function Session({ session, setEditor }: { session: TSession; setEditor: setEdit
 
 	return (
 		<>
-			<GridCell><Link href={`/card?id=${session.id}`}>{session.id}</Link></GridCell>
+			<GridCell>
+				<Link href={`/card?id=${session.id}`}>{session.id}</Link>
+			</GridCell>
 			<GridCell>{session.type}</GridCell>
-			<GridCell><Link href={`/card?room=${session.room}`}>{session.room}</Link></GridCell>
+			<GridCell>
+				<Link href={`/card?room=${session.room}`}>{session.room}</Link>
+			</GridCell>
 			<GridCell edit={() => edit('start', session.start)}>{session.start}</GridCell>
 			<GridCell edit={() => edit('end', session.end)}>{session.end}</GridCell>
 			<GridCell>{session.zh.title}</GridCell>

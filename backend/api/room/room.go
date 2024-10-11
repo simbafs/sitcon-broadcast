@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,7 @@ func Route(r gin.IRouter) {
 
 	route.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"room.Rooms": room.Rooms,
+			"rooms": room.Rooms,
 		})
 	})
 
@@ -76,4 +77,29 @@ func Route(r gin.IRouter) {
 			"message": "success update room",
 		})
 	})
+}
+
+func Ticker(quit chan struct{}) {
+	tricker := time.NewTicker(1 * time.Second)
+	for {
+		select {
+		case <-tricker.C:
+			for i, r := range room.Rooms {
+				if r.State == room.PAUSE {
+					continue
+				}
+
+				r.Time -= 1
+				if r.Time <= 0 {
+					r.State = room.PAUSE
+					r.Time = 0
+				}
+
+				room.Rooms[i] = r
+			}
+		case <-quit:
+			tricker.Stop()
+			return
+		}
+	}
 }

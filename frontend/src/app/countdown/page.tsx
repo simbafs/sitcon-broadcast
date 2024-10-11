@@ -1,37 +1,24 @@
 'use client'
 import useQuery from '@/hooks/useQuery'
-import { type RoomData } from '@/hooks/useRoom'
-import useWsHost from '@/hooks/useWsHost'
-import toTime from '@/utils/toTime'
-import useWebSocket from 'react-use-websocket'
-import { InvalidURL } from './InvalidURL'
+import { formatTime } from '@/utils/formatTime'
+import { useState } from 'react'
+import { useInterval } from 'usehooks-ts'
 
 export default function Home() {
-	const roomid = useQuery('id')
-	const { lastMessage } = useWebSocket(useWsHost(), {
-		shouldReconnect: () => true,
-	})
+	const roomid = useQuery('id', '0')
+	const [time, setTime] = useState(0)
 
-	function getTime(msg: MessageEvent, roomid: number) {
-		const data = JSON.parse(msg.data) as { rooms: RoomData[]; serverTime: number }
-		return toTime(data.rooms[roomid]?.time)
-	}
-
-	if (!roomid || isNaN(+roomid)) {
-		return <InvalidURL />
-	}
-
-	if (!lastMessage) {
-		return (
-			<>
-				<h1>Loading...</h1>
-			</>
-		)
-	}
+	useInterval(() => {
+		fetch(`/api/now/${roomid}/`)
+			.then(res => res.json())
+			.then((data: { now: number }) => {
+				setTime(data.now)
+			})
+	}, 200)
 
 	return (
 		<div className="w-screen h-screen grid place-items-center">
-			<h1 className="text-[35vw] leading-[0.8]">{getTime(lastMessage, +roomid)}</h1>
+			<h1 className="text-[35vw] leading-[0.8]">{formatTime(time)}</h1>
 		</div>
 	)
 }

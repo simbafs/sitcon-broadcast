@@ -1,4 +1,5 @@
 import { useEffect, useReducer } from 'react'
+import { useInterval } from 'usehooks-ts'
 
 export const PAUSE = 0
 export const COUNTING = 1

@@ -1,3 +1,4 @@
+import { SSEProvider } from '@/hooks/useSSE'
 import '@/styles/globals.css'
 
 type Props = {
@@ -7,7 +8,9 @@ type Props = {
 export default function RootLayout({ children }: Props) {
 	return (
 		<html>
-			<body>{children}</body>
+			<body>
+				<SSEProvider url="/api/sse">{children}</SSEProvider>
+			</body>
 		</html>
 	)
 }

@@ -3,55 +3,39 @@ package api
 import (
 	"backend/api/card"
 	"backend/api/now"
-	aRoom "backend/api/room"
+	"backend/api/room"
+	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
-
-// func timer(quit chan struct{}, io websocket.IO) {
-// 	tricker := time.NewTicker(1 * time.Second)
-// 	for {
-// 		select {
-// 		case <-tricker.C:
-// 			for i, r := range room.Rooms {
-// 				if r.State == room.PAUSE {
-// 					continue
-// 				}
-//
-// 				r.Time -= 1
-// 				if r.Time <= 0 {
-// 					r.State = room.PAUSE
-// 					r.Time = 0
-// 				}
-//
-// 				room.Rooms[i] = r
-// 			}
-// 			// log.Printf("%#v\n", rooms )
-// 			// data, err := json.Marshal(rooms)
-// 			data, err := json.Marshal(gin.H{
-// 				"rooms":      room.Rooms,
-// 				"serverTime": time.Now(),
-// 			})
-// 			if err != nil {
-// 				log.Println(err)
-// 				continue
-// 			}
-//
-// 			io.Broadcast(data)
-// 		case <-quit:
-// 			tricker.Stop()
-// 			return
-// 		}
-// 	}
-// }
 
 func Route(r *gin.Engine) {
 	api := r.Group("/api")
 
 	card.Route(api)
 	now.Route(api)
-	aRoom.Route(api)
+	room.Route(api)
 
-	// TODO:
-	// go timer(quit, io)
+	api.GET("/sse", func(c *gin.Context) {
+		c.Header("Content-Type", "text/event-stream")
+		c.Header("Cache-Control", "no-cache")
+		c.Header("Connection", "keep-alive")
+
+		for i := 0; i < 5; i++ {
+			data := fmt.Sprintf("data: {\"name\": \"test\", \"data\": %d}\n\n", i)
+			_, err := c.Writer.WriteString(data)
+			if err != nil {
+				c.Error(err)
+				return
+			}
+
+			c.Writer.Flush()
+
+			time.Sleep(1 * time.Second)
+		}
+	})
+
+	quit := make(chan struct{})
+	go room.Ticker(quit)
 }

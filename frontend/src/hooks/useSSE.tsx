@@ -1,32 +1,39 @@
 'use client'
-import { createContext, useContext, useEffect, ReactNode, useReducer } from 'react'
+import { createContext, useContext, useEffect, ReactNode, useReducer, useState } from 'react'
 
-type Events = Record<string, string[]>
+type Events = Record<string, any[]>
 
 const SSEContext = createContext<Events>({})
 
-export const SSEProvider = ({ children, url }: { children: ReactNode; url: string }) => {
-	const [events, updateEvents] = useReducer((state: Events, action: { name: string; data: string }) => {
+export const SSEProvider = ({
+	children,
+	url,
+	maxLength = 100,
+}: {
+	children: ReactNode
+	url: string
+	maxLength?: number
+}) => {
+	const [events, updateEvents] = useReducer((state: Events, action: { name: string; data: any }) => {
 		if (action.name in state) {
 			return {
 				...state,
-				[action.name]: [...state[action.name], action.data],
+				[action.name]: [...state[action.name], action.data].slice(-maxLength),
 			}
 		} else {
 			return {
 				...state,
-				[action.name]: [action.data],
+				[action.name]: [action.data].slice(-maxLength),
 			}
 		}
 	}, {})
 
 	useEffect(() => {
-		console.log({ url })
 		const eventSource = new EventSource(url)
 
 		eventSource.onmessage = event => {
 			try {
-				const parsedData: { name: string; data: string } = JSON.parse(event.data)
+				const parsedData: { name: string; data: any } = JSON.parse(event.data)
 				updateEvents(parsedData)
 			} catch (err) {
 				console.error('Error parsing SSE data:', err)
@@ -46,7 +53,12 @@ export const SSEProvider = ({ children, url }: { children: ReactNode; url: strin
 	return <SSEContext.Provider value={events}> {children} </SSEContext.Provider>
 }
 
-export const useSSE = (name: string) => {
+export function useSSE<T>(name: string): T[] {
 	const events = useContext(SSEContext)
-	return events[name] || null
+
+	return events[name] || []
+}
+
+export function useAllSSE() {
+	return useContext(SSEContext)
 }

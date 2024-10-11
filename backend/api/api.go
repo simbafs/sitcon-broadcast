@@ -3,19 +3,33 @@ package api
 import (
 	"backend/api/card"
 	"backend/api/now"
-	"backend/api/room"
+	"backend/api/countdown"
+	"backend/middleware"
+	"backend/models/session"
+	"backend/ticker"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Route(r *gin.Engine) {
 	api := r.Group("/api")
-	// sse := middleware.NewSSE()
+	sse := middleware.NewSSE()
 
-	card.Route(api)
-	now.Route(api)
-	room.Route(api)
+	r.GET("/session", func(c *gin.Context) {
+		c.JSON(http.StatusOK, session.Data.Rooms)
+	})
+
+	r.GET("/idMap", func(c *gin.Context) {
+		c.JSON(http.StatusOK, session.Data.IDMap)
+	})
+
+	card.Route(api, sse.Message)
+	now.Route(api, sse.Message)
+	room.Route(api, sse.Message)
+
+	api.GET("/sse", sse.GinHandler())
 
 	quit := make(chan struct{})
-	go room.Ticker(quit)
+	go ticker.Listen(sse.Message, quit)
 }

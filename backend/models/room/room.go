@@ -14,16 +14,16 @@ type Room struct {
 	Name     string `json:"name"`
 }
 
-var Rooms = make([]Room, 5)
+var Rooms = make(map[string]Room)
 
 func init() {
-	name := []string{"R0", "R1", "R2", "R3", "S"}
-	for i := 0; i < N; i++ {
-		Rooms[i] = Room{
+	names := []string{"R0", "R1", "R2", "R3", "S"}
+	for _, name := range names {
+		Rooms[name] = Room{
 			Inittime: 60,
 			Time:     0,
 			State:    PAUSE,
-			Name:     name[i],
+			Name:     name,
 		}
 	}
 }

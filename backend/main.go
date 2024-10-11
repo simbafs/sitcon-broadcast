@@ -36,7 +36,7 @@ func run(addr string) error {
 
 	t := middleware.NewTokenVerifyer("token", "localhost")
 
-	r.Use(t.ProtectRoute([]string{"/newCard/admin"}))
+	r.Use(t.ProtectRoute([]string{"/newCard/admin", "/countdown/admin", "/card/admin"}))
 	r.GET("/verify", t.VerifyToken)
 
 	api.Route(r)

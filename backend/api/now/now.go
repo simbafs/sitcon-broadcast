@@ -1,8 +1,8 @@
 package now
 
 import (
+	"backend/middleware"
 	"backend/models/now"
-	"backend/models/room"
 	"io"
 	"net/http"
 	"strconv"
@@ -10,13 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Route(r gin.IRouter) {
+func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
 	route := r.Group("/now")
 
 	route.GET("/", func(c *gin.Context) {
-		t := now.GetNow()
 		c.JSON(http.StatusOK, gin.H{
-			"now": t,
+			"now": now.GetNow(),
 		})
 	})
 
@@ -35,34 +34,19 @@ func Route(r gin.IRouter) {
 		}
 
 		now.SetNow(t)
-
 		c.JSON(http.StatusOK, gin.H{"time": t})
+		broadcast <- middleware.SSEMsg{
+			Name: "now",
+			Data: now.GetNow(),
+		}
 	})
 
 	route.DELETE("/", func(c *gin.Context) {
 		now.ClearNow()
 		c.JSON(http.StatusOK, gin.H{"message": "cleared"})
-	})
-
-	route.GET("/:id", func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "failed to parse room id",
-			})
-			return
+		broadcast <- middleware.SSEMsg{
+			Name: "now",
+			Data: now.GetNow(),
 		}
-
-		if id >= len(room.Rooms) || id < 0 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "id is out of range",
-			})
-
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"now": room.Rooms[id].Time,
-		})
 	})
 }

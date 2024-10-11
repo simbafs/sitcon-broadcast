@@ -9,7 +9,7 @@ export default function RootLayout({ children }: Props) {
 	return (
 		<html>
 			<body>
-				<SSEProvider url="/api/sse">{children}</SSEProvider>
+				<SSEProvider url="/api/sse" maxLength={3}>{children}</SSEProvider>
 			</body>
 		</html>
 	)

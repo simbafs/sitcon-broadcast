@@ -2,17 +2,12 @@
 import { type Countdown, COUNTING, PAUSE, useCountdown } from '@/hooks/useCountdown'
 import { btn } from '@/varients/btn'
 import Link from 'next/link'
-import { setEditor, useEditTime } from '@/components/useEditTime'
 import { formatTime } from '@/utils/formatTime'
+import { Editor, EditorProvider, useEditor } from '@/components/useEditTime'
 
-function Row({ countdown, setTimeEditor }: { countdown: Countdown; setTimeEditor: setEditor }) {
-	const setTime = () => {
-		setTimeEditor(formatTime(countdown.inittime)).then(time => {
-			const [m, s] = time.split(':').map(Number)
-			const t = m * 60 + s
-			countdown.setTime(t)
-		})
-	}
+function Row({ countdown }: { countdown: Countdown }) {
+	const editor = useEditor()
+
 	return (
 		<div className="grid gap-4 grid-cols-1 lg:grid-cols-[2fr_4fr]">
 			<div className="grid grid-cols-2 gap-6">
@@ -41,7 +36,10 @@ function Row({ countdown, setTimeEditor }: { countdown: Countdown; setTimeEditor
 				<button className={btn({ color: 'yellow' })} onClick={countdown.reset}>
 					重設
 				</button>
-				<button className={btn({ color: 'yellow' })} onClick={setTime}>
+				<button
+					className={btn({ color: 'yellow' })}
+					onClick={() => editor(countdown.inittime).then(countdown.setTime)}
+				>
 					設定時間
 				</button>
 				<Link className={btn()} href={`/countdown?room=${countdown.name}`} target="_blank">
@@ -52,7 +50,7 @@ function Row({ countdown, setTimeEditor }: { countdown: Countdown; setTimeEditor
 	)
 }
 
-function Rooms({ setTimeEditor }: { setTimeEditor: setEditor }) {
+function Rooms() {
 	const countdowns = [
 		useCountdown('R0'),
 		useCountdown('R1'),
@@ -64,21 +62,18 @@ function Rooms({ setTimeEditor }: { setTimeEditor: setEditor }) {
 	return (
 		<div className="w-full grid gap-[50px]">
 			{countdowns.map((c, i) => (
-				<Row key={i} countdown={c} setTimeEditor={setTimeEditor} />
+				<Row key={i} countdown={c} />
 			))}
 		</div>
 	)
 }
 
 export default function Page() {
-	const [TimeEditor, setTimeEditor] = useEditTime()
-
 	return (
-		<>
-			<TimeEditor />
+		<EditorProvider Editor={Editor}>
 			<div className="min-h-screen w-screen py-[100px] px-[50px] lg:px-[100px] flex flex-col justify-center items-center">
-				<Rooms setTimeEditor={setTimeEditor} />
+				<Rooms />
 			</div>
-		</>
+		</EditorProvider>
 	)
 }

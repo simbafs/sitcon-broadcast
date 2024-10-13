@@ -82,4 +82,7 @@ clean:
 session:
 	node script/sessions.js > backend/api/card/sessions.json
 
-.PHONY: devBackend devFrontend build buildBackend buildFrontend clean dep depFrontend depBackend session
+checkFrontend:
+	knip --directory frontend
+
+.PHONY: devBackend devFrontend build buildBackend buildFrontend clean dep depFrontend depBackend session checkFrontend

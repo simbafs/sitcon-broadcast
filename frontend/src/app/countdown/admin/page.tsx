@@ -3,11 +3,9 @@ import { type Countdown, COUNTING, PAUSE, useCountdown } from '@/hooks/useCountd
 import { btn } from '@/varients/btn'
 import Link from 'next/link'
 import { formatTime } from '@/utils/formatTime'
-import { Editor, EditorProvider, useEditor } from '@/components/useEditTime'
+import { edit, MyEditor, useEditor } from '@/components/useEditTime'
 
-function Row({ countdown }: { countdown: Countdown }) {
-	const editor = useEditor()
-
+function Row({ countdown, edit }: { countdown: Countdown; edit: edit<number> }) {
 	return (
 		<div className="grid gap-4 grid-cols-1 lg:grid-cols-[2fr_4fr]">
 			<div className="grid grid-cols-2 gap-6">
@@ -38,7 +36,7 @@ function Row({ countdown }: { countdown: Countdown }) {
 				</button>
 				<button
 					className={btn({ color: 'yellow' })}
-					onClick={() => editor(countdown.inittime).then(countdown.setTime)}
+					onClick={() => edit(countdown.inittime).then(countdown.setTime)}
 				>
 					設定時間
 				</button>
@@ -50,7 +48,7 @@ function Row({ countdown }: { countdown: Countdown }) {
 	)
 }
 
-function Rooms() {
+function Rooms({ edit }: { edit: edit<number> }) {
 	const countdowns = [
 		useCountdown('R0'),
 		useCountdown('R1'),
@@ -62,18 +60,18 @@ function Rooms() {
 	return (
 		<div className="w-full grid gap-[50px]">
 			{countdowns.map((c, i) => (
-				<Row key={i} countdown={c} />
+				<Row key={i} countdown={c} edit={edit} />
 			))}
 		</div>
 	)
 }
 
 export default function Page() {
+	const [Editor, edit] = useEditor<number>(MyEditor, 0)
 	return (
-		<EditorProvider Editor={Editor}>
-			<div className="min-h-screen w-screen py-[100px] px-[50px] lg:px-[100px] flex flex-col justify-center items-center">
-				<Rooms />
-			</div>
-		</EditorProvider>
+		<div className="min-h-screen w-screen py-[100px] px-[50px] lg:px-[100px] flex flex-col justify-center items-center">
+			<Rooms edit={edit} />
+			<Editor />
+		</div>
 	)
 }

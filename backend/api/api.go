@@ -2,8 +2,8 @@ package api
 
 import (
 	"backend/api/card"
-	"backend/api/now"
 	"backend/api/countdown"
+	"backend/api/now"
 	"backend/middleware"
 	"backend/models/session"
 	"backend/ticker"
@@ -26,7 +26,7 @@ func Route(r *gin.Engine) {
 
 	card.Route(api, sse.Message)
 	now.Route(api, sse.Message)
-	room.Route(api, sse.Message)
+	countdown.Route(api, sse.Message)
 
 	api.GET("/sse", sse.GinHandler())
 

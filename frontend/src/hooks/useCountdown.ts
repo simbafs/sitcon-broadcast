@@ -39,7 +39,7 @@ export function useCountdown(name: string) {
 		setCountdown(latest)
 	}, [latest, stopUpdate])
 
-	useEffect(() => console.log(countdown), [countdown])
+	// useEffect(() => console.log(countdown), [countdown])
 
 	// operations
 	const start = () => {

@@ -1,32 +1,17 @@
-import { createContext, useContext, useState } from 'react'
+import { FC, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-function NumberInput({ initValue, setInitValue }: { initValue: string; setInitValue: (n: string) => void }) {
-	return (
-		<input
-			className="w-full border-gray-500 border-2 rounded-lg p-1 outline-none focus:border-blue-500"
-			type="txt"
-			inputMode="decimal"
-			value={initValue}
-			onChange={e => setInitValue(e.target.value)}
-			onFocus={e => e.target.select()}
-		/>
-	)
-}
-
-export function Editor({
+export function MyEditor({
 	isOpen,
-	init,
-	res,
-	rej,
+	initValue,
+	callback,
 }: {
 	isOpen: boolean
-	init: number
-	res: (value: number) => void
-	rej: () => void
+	initValue: number
+	callback: (value: number, ok: boolean) => void
 }) {
-	const [hour, setHour] = useState(Math.floor(init / 60).toString())
-	const [minute, setMinute] = useState((init % 60).toString())
+	const hour = useRef<HTMLInputElement>(null)
+	const minute = useRef<HTMLInputElement>(null)
 
 	return (
 		<div
@@ -34,26 +19,40 @@ export function Editor({
 				isOpen ? 'grid' : 'hidden',
 				'fixed top-0 left-0 h-screen w-screen bg-black/50 place-items-center',
 			)}
-			onClick={rej}
+			onClick={() => callback(0, false)}
 		>
 			<form
 				className="rounded-lg bg-white flex flex-col gap-4 w-80 items-center py-16 px-8"
 				onClick={e => e.stopPropagation()}
 				onSubmit={e => {
 					e.preventDefault()
-					res(Number(hour) * 60 + Number(minute))
+					callback(Number(hour.current?.value || 0) * 60 + Number(minute.current?.value || 0), true)
 				}}
 			>
 				<h1>Set Time</h1>
 				<div className="flex gap-4 w-fulla">
-					<NumberInput initValue={hour} setInitValue={setHour} />
+					<input
+						ref={hour}
+						className="w-full border-gray-500 border-2 rounded-lg p-1 outline-none focus:border-blue-500"
+						type="txt"
+						defaultValue={Math.floor(initValue / 60)}
+						inputMode="decimal"
+						onFocus={e => e.target.select()}
+					/>
 					:
-					<NumberInput initValue={minute} setInitValue={setMinute} />
+					<input
+						ref={minute}
+						className="w-full border-gray-500 border-2 rounded-lg p-1 outline-none focus:border-blue-500"
+						type="txt"
+						defaultValue={initValue % 60}
+						inputMode="decimal"
+						onFocus={e => e.target.select()}
+					/>
 				</div>
 				<div className="flex gap-4 w-full">
 					<button
 						className="rounded-md bg-gray-500 text-white p-2 font-bold w-full"
-						onClick={rej}
+						onClick={() => callback(0, false)}
 						type="button"
 					>
 						Cancel
@@ -67,48 +66,31 @@ export function Editor({
 	)
 }
 
-const EditorContext = createContext<(init: number, res: (value: number) => void, rej: () => void) => void>(() => {})
+export type ModalComponent<T> = FC<{ isOpen: boolean; initValue: T; callback: (value: T, ok: boolean) => void }>
+export type edit<T> = (value: T) => Promise<number>
 
-export function EditorProvider({
-	children,
-	Editor,
-}: {
-	children: React.ReactNode
-	Editor: React.FC<{ isOpen: boolean; init: number; res: (value: number) => void; rej: () => void }>
-}) {
-	const [initValue, setInitValue] = useState(0)
-	const [res, setRes] = useState<(value: number) => void>(() => {})
-	const [rej, setRej] = useState<() => void>(() => {})
-	const [isOpen, setIsOpen] = useState(false)
+export function useEditor<T>(Editor: ModalComponent<T>, zeroValue: T) {
+	const [initValue, setInitValue] = useState<T | undefined>(undefined)
+	const [callback, setCallback] = useState<(value: T, ok: boolean) => void>(() => {})
+	const isOpen = initValue !== undefined
+	const [key, setKey] = useState(0)
 
-	const setContext = (init: number, res: (value: number) => void, rej: () => void) => {
-		// console.log('setContext')
-		setIsOpen(true)
-		setInitValue(init)
-		setRes(() => (value: number) => {
-			res(value)
-			setIsOpen(false)
-		})
-		setRej(() => () => {
-			rej()
-			setIsOpen(false)
+	const edit = (initValue: T) => {
+		// console.log(`edit with ${initValue}`)
+		return new Promise<T>((res, rej) => {
+			setKey(key + 1)
+			setInitValue(initValue) // open
+			setCallback(() => (value: T, ok: boolean) => {
+				if (ok) res(value)
+				else rej()
+
+				setInitValue(undefined) // close
+			})
 		})
 	}
 
-	return (
-		<EditorContext.Provider value={setContext}>
-			{children}
-			<Editor isOpen={isOpen} init={initValue} res={res} rej={rej} key={initValue} />
-		</EditorContext.Provider>
-	)
-}
-
-export function useEditor() {
-	const setInitValue = useContext(EditorContext)
-
-	return (initValue: number) =>
-		new Promise<number>((res, rej) => {
-			// console.log('in promise')
-			setInitValue(initValue, res, rej)
-		})
+	return [
+		() => <Editor isOpen={isOpen} initValue={initValue || zeroValue} callback={callback} key={key} />,
+		edit,
+	] as const
 }

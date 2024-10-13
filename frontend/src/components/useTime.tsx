@@ -1,30 +1,33 @@
-import { formatTime } from '@/utils/formatTime'
-import { useEffect, useState } from 'react'
+import { getNow } from '@/utils/getNow'
+import { btn } from '@/varients/btn'
+import { twMerge } from 'tailwind-merge'
 
-function getNow() {
-	const now = new Date()
-	return now.getHours() * 60 + now.getMinutes()
-}
-
-export function useTime(title: string, init: number, onChange: (value: number) => void) {
-	const [time, setTime] = useState(init)
-
-	useEffect(() => onChange(time), [onChange, time])
-
+export function useTime(title: string, time: number, setTime: (value: number) => void) {
 	const component = (
-		<div>
-			<p>
-				{title}: {formatTime(time)}
-			</p>
-			<div>
-				<button onClick={() => setTime(time - 5)}>-5</button>
-				<button onClick={() => setTime(time - 1)}>-1</button>
-				<button onClick={() => setTime(getNow())}>Now</button>
-				<button onClick={() => setTime(time + 1)}>+1</button>
-				<button onClick={() => setTime(time + 5)}>+5</button>
+		<div
+			onClick={e => e.stopPropagation()}
+			className="m-2 flex flex-col items-center rounded-md border border-black p-2"
+		>
+			<p>{title}</p>
+			<div className="grid w-full grid-cols-5 gap-2">
+				<button className={twMerge(btn({ size: 'md' }))} onClick={() => setTime(time - 5)}>
+					-5
+				</button>
+				<button className={twMerge(btn({ size: 'md' }))} onClick={() => setTime(time - 1)}>
+					-1
+				</button>
+				<button className={twMerge(btn({ size: 'md' }))} onClick={() => setTime(getNow())}>
+					Now
+				</button>
+				<button className={twMerge(btn({ size: 'md' }))} onClick={() => setTime(time + 1)}>
+					+1
+				</button>
+				<button className={twMerge(btn({ size: 'md' }))} onClick={() => setTime(time + 5)}>
+					+5
+				</button>
 			</div>
 		</div>
 	)
 
-	return [component, time] as const
+	return component
 }

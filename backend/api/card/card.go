@@ -68,7 +68,7 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
 			return
 		}
 
-		if session.Data.Rooms[room].IsOverlap(s.Start, s.End) {
+		if session.Data.Rooms[room].IsOverlap(idx, s.Start, s.End) {
 			c.JSON(http.StatusConflict, gin.H{"error": "room is not free at this time"})
 			return
 		}

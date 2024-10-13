@@ -24,8 +24,11 @@ func init() {
 
 type Room []SessionItem
 
-func (r Room) IsOverlap(start now.Time, end now.Time) bool {
-	for _, s := range r {
+func (r Room) IsOverlap(idx int, start now.Time, end now.Time) bool {
+	for i, s := range r {
+		if i == idx {
+			continue
+		}
 		if (start >= s.Start && start < s.End) || (end > s.Start && end <= s.End) {
 			return true
 		}

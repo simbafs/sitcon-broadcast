@@ -1,6 +1,6 @@
 import { Session } from '@/types/card'
 
-export function getNow(sessions: Session[]) {
+export function getCurrent(sessions: Session[]) {
 	const now = new Date()
 	const nowTime = now.getHours() * 60 + now.getMinutes()
 

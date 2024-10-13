@@ -37,7 +37,7 @@ const pages: Page[] = [
 
 function LinkTree({ pages }: { pages: Page[] }) {
 	return (
-		<ul className="list-disc ml-4">
+		<ul className="ml-4 list-disc">
 			{pages.map(page => {
 				if ('link' in page) {
 					return (
@@ -60,7 +60,7 @@ function LinkTree({ pages }: { pages: Page[] }) {
 
 export default function Page() {
 	return (
-		<div className="flex flex-col mt-10 mx-20">
+		<div className="mx-20 mt-10 flex flex-col">
 			<LinkTree pages={pages} />
 		</div>
 	)

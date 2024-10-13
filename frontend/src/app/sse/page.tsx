@@ -9,9 +9,9 @@ export default function Page() {
 	return (
 		<>
 			<h1 className="text-3xl">Server Sent Events</h1>
-			<div className="flex gap-4 m-4">
+			<div className="m-4 flex gap-4">
 				{Object.entries(msg).map(([name, msgs]) => (
-					<div key={name} className="border border-black rounded p-4">
+					<div key={name} className="rounded border border-black p-4">
 						<h2>{name}</h2>
 						<ul>
 							{msgs.map((msg, i) => (

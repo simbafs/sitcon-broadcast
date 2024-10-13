@@ -62,9 +62,9 @@ function Session({ session, setEditor }: { session: Session; setEditor: setEdito
 			<GridCell edit={() => edit('end', session.end)}>{session.end}</GridCell>
 			<GridCell>{session.zh.title}</GridCell>
 			<GridCell>
-				<ul className="list-disc pl-6 w-full">
+				<ul className="w-full list-disc pl-6">
 					{session.speakers.map(speaker => (
-						<li key={speaker} className="text-left w-full">
+						<li key={speaker} className="w-full text-left">
 							{speaker}
 						</li>
 					))}
@@ -153,25 +153,25 @@ export default function Page() {
 		<Admin>
 			<Editor />
 			<div className="m-4 border-2 border-gray-800 bg-gray-800">
-				<div className="border-white border-[1px] flex">
+				<div className="flex border-[1px] border-white">
 					<button
-						className="bg-gray-800 text-white p-2 hover:bg-gray-700 transition-colors duration-300 ease-in-out border-white border-r-[1px]"
+						className="border-r-[1px] border-white bg-gray-800 p-2 text-white transition-colors duration-300 ease-in-out hover:bg-gray-700"
 						onClick={setServerTime}
 					>
 						Set Server Time
 					</button>
 					<button
-						className="bg-gray-800 text-white p-2 hover:bg-gray-700 transition-colors duration-300 ease-in-out border-white border-r-[1px]"
+						className="border-r-[1px] border-white bg-gray-800 p-2 text-white transition-colors duration-300 ease-in-out hover:bg-gray-700"
 						onClick={clearServerTime}
 					>
 						Clear Server Time
 					</button>
-					<div className="bg-gray-800 text-white p-2 w-fit hover:bg-gray-700 transition-colors duration-300 ease-in-out border-white border-r-[1px]">
+					<div className="w-fit border-r-[1px] border-white bg-gray-800 p-2 text-white transition-colors duration-300 ease-in-out hover:bg-gray-700">
 						<p>Server Time: {now}</p>
 					</div>
 				</div>
 			</div>
-			<div className="grid grid-cols-7 bg-black gap-[1px] m-4 border border-black">
+			<div className="m-4 grid grid-cols-7 gap-[1px] border border-black bg-black">
 				<GridCell>ID</GridCell>
 				<GridCell>Type</GridCell>
 				<GridCell>Room</GridCell>

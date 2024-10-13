@@ -23,12 +23,12 @@ function MyEditor({
 		<div
 			className={twMerge(
 				isOpen ? 'grid' : 'hidden',
-				'fixed top-0 left-0 h-screen w-screen bg-black/50 place-items-center',
+				'fixed left-0 top-0 h-screen w-screen place-items-center bg-black/50',
 			)}
 			onClick={() => callback(0, false)}
 		>
 			<form
-				className="rounded-lg bg-white flex flex-col gap-4 w-80 items-center py-16 px-8"
+				className="flex w-80 flex-col items-center gap-4 rounded-lg bg-white px-8 py-16"
 				onClick={e => e.stopPropagation()}
 				onSubmit={e => {
 					e.preventDefault()
@@ -36,9 +36,9 @@ function MyEditor({
 				}}
 			>
 				<h1>Set Time</h1>
-				<div className="flex gap-4 w-fulla">
+				<div className="w-fulla flex gap-4">
 					<input
-						className="w-full border-gray-500 border-2 rounded-lg p-1 outline-none focus:border-blue-500"
+						className="w-full rounded-lg border-2 border-gray-500 p-1 outline-none focus:border-blue-500"
 						type="txt"
 						value={hour}
 						onChange={e => setHour(e.target.value)}
@@ -49,7 +49,7 @@ function MyEditor({
 					/>
 					:
 					<input
-						className="w-full border-gray-500 border-2 rounded-lg p-1 outline-none focus:border-blue-500"
+						className="w-full rounded-lg border-2 border-gray-500 p-1 outline-none focus:border-blue-500"
 						type="txt"
 						value={minute}
 						onChange={e => setMinute(e.target.value)}
@@ -58,16 +58,16 @@ function MyEditor({
 						tabIndex={2}
 					/>
 				</div>
-				<div className="flex gap-4 w-full">
+				<div className="flex w-full gap-4">
 					<button
-						className="rounded-md bg-blue-500 text-white p-2 font-bold w-full"
+						className="w-full rounded-md bg-blue-500 p-2 font-bold text-white"
 						type="submit"
 						tabIndex={3}
 					>
 						Save
 					</button>
 					<button
-						className="rounded-md bg-gray-500 text-white p-2 font-bold w-full"
+						className="w-full rounded-md bg-gray-500 p-2 font-bold text-white"
 						onClick={() => callback(0, false)}
 						type="button"
 						tabIndex={4}
@@ -82,12 +82,12 @@ function MyEditor({
 
 function Row({ countdown, edit }: { countdown: Countdown; edit: edit<number> }) {
 	return (
-		<div className="grid gap-4 grid-cols-1 lg:grid-cols-[2fr_4fr]">
+		<div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_4fr]">
 			<div className="grid grid-cols-2 gap-6">
-				<div className="flex justify-center items-center">
+				<div className="flex items-center justify-center">
 					<h2 className="text-3xl">{countdown.name}</h2>
 				</div>
-				<div className="flex justify-center items-center">
+				<div className="flex items-center justify-center">
 					<p className="text-3xl">{formatTime(countdown.time)}</p>
 				</div>
 			</div>
@@ -133,7 +133,7 @@ function Rooms({ edit }: { edit: edit<number> }) {
 	]
 
 	return (
-		<div className="w-full grid gap-[50px]">
+		<div className="grid w-full gap-[50px]">
 			{countdowns.map((c, i) => (
 				<Row key={i} countdown={c} edit={edit} />
 			))}
@@ -144,7 +144,7 @@ function Rooms({ edit }: { edit: edit<number> }) {
 export default function Page() {
 	const [Editor, edit] = useEditor<number>(MyEditor, 0)
 	return (
-		<div className="min-h-screen w-screen py-[100px] px-[50px] lg:px-[100px] flex flex-col justify-center items-center">
+		<div className="flex min-h-screen w-screen flex-col items-center justify-center px-[50px] py-[100px] lg:px-[100px]">
 			<Rooms edit={edit} />
 			<Editor />
 		</div>

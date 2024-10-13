@@ -34,15 +34,15 @@ export default function Page() {
 	const speaker = data.speakers.join('、')
 
 	return (
-		<div className="w-screen h-screen bg-transparent overflow-hidden">
-			<div className="aspect-[1.8/1] w-[70vw] bg-[#f7f6f6] flex flex-col shadow-[18px_18px_50px_0px_rgba(0,0,0,0.1)]">
-				<div className="bg-[#406096] h-[6vw] flex justify-end items-center">
-					<Image src={x} width={18} height={18} alt="Close" className="h-[4vw] w-[4vw] mr-[2vw]" />
+		<div className="h-screen w-screen overflow-hidden bg-transparent">
+			<div className="flex aspect-[1.8/1] w-[70vw] flex-col bg-[#f7f6f6] shadow-[18px_18px_50px_0px_rgba(0,0,0,0.1)]">
+				<div className="flex h-[6vw] items-center justify-end bg-[#406096]">
+					<Image src={x} width={18} height={18} alt="Close" className="mr-[2vw] h-[4vw] w-[4vw]" />
 				</div>
-				<div className="px-[6vw] py-[2vw] grow flex flex-col">
-					<h1 className="text-[#9f3b24] text-[5vw]">{data.zh.title}</h1>
-					<div className="flex flex-wrap grow items-center">
-						<h2 className="text-[#383839] text-[4vw]">
+				<div className="flex grow flex-col px-[6vw] py-[2vw]">
+					<h1 className="text-[5vw] text-[#9f3b24]">{data.zh.title}</h1>
+					<div className="flex grow flex-wrap items-center">
+						<h2 className="text-[4vw] text-[#383839]">
 							{data.start}-{data.end}
 						</h2>
 						<span className="grow" />

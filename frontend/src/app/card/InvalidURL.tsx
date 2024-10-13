@@ -21,7 +21,7 @@ export function InvalidURL() {
 			<p>
 				請在網址後面加上 <code>?id=議程id</code> 或是 <code>?room=議程廳</code>
 			</p>
-			<form className="flex flex-col gap-4 w-60" onSubmit={go}>
+			<form className="flex w-60 flex-col gap-4" onSubmit={go}>
 				<input
 					type="text"
 					placeholder="議程 id"

@@ -26,7 +26,7 @@ export default function Home() {
 	}, [latest])
 
 	return (
-		<div className="w-screen h-screen grid place-items-center">
+		<div className="grid h-screen w-screen place-items-center">
 			<h1 className="text-[35vw] leading-[0.8]">{formatTime(time || 0)}</h1>
 		</div>
 	)

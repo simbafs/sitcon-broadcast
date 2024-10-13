@@ -1,8 +1,16 @@
 'use client'
-import useSWR from 'swr'
+import { Sessions } from '@/types/card'
+import { btn } from '@/varients/btn'
+import { useState } from 'react'
+import useSWRImmutable from 'swr/immutable'
+import { twMerge } from 'tailwind-merge'
+import { Room } from './room'
 
 export default function Page() {
-	const { data, error } = useSWR('/api/session', (url: string) => fetch(url).then(res => res.json()))
+	const [room, setRoom] = useState('R0')
+	const { data, error } = useSWRImmutable<Sessions>('/api/session', (url: string) =>
+		fetch(url).then(res => res.json()),
+	)
 
 	if (error)
 		return (
@@ -13,5 +21,21 @@ export default function Page() {
 		)
 	if (!data) return <h1>Loading...</h1>
 
-	return <pre>{JSON.stringify(data, null, 2)}</pre>
+	return (
+		<div className="flex min-h-screen w-screen flex-col items-center px-8 py-4">
+			<select
+				value={room}
+				onChange={e => setRoom(e.target.value)}
+				className={twMerge(btn(), 'px-8 py-4 text-start text-5xl')}
+			>
+				{Object.keys(data).map(r => (
+					<option key={r} value={r}>
+						{r}
+					</option>
+				))}
+			</select>
+
+			<Room sessions={data[room]} key={room} />
+		</div>
+	)
 }

@@ -1,4 +1,4 @@
-export type Card = {
+export type Session = {
 	id: string
 	title: string
 	type: string
@@ -9,7 +9,7 @@ export type Card = {
 	end: number
 }
 
-export const ZeroCard: Card = {
+export const ZeroSession: Session = {
 	id: '',
 	title: '',
 	type: '',
@@ -19,3 +19,5 @@ export const ZeroCard: Card = {
 	start: 0,
 	end: 0,
 }
+
+export type Sessions = Record<string, Session[]>

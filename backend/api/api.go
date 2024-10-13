@@ -16,12 +16,8 @@ func Route(r *gin.Engine) {
 	api := r.Group("/api")
 	sse := middleware.NewSSE()
 
-	r.GET("/session", func(c *gin.Context) {
+	api.GET("/session", func(c *gin.Context) {
 		c.JSON(http.StatusOK, session.Data.Rooms)
-	})
-
-	r.GET("/idMap", func(c *gin.Context) {
-		c.JSON(http.StatusOK, session.Data.IDMap)
 	})
 
 	card.Route(api, sse.Message)

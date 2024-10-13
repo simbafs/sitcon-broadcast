@@ -54,20 +54,8 @@ func (r Rooms) Get(room string, index int) (SessionItem, bool) {
 	return SessionItem{}, false
 }
 
-// session id -> room name, index
-type IDMap map[string]IDMapItem
-
-func (m IDMap) Get(id string) (string, int, bool) {
-	if item, ok := m[id]; ok {
-		return item.Room, item.Index, true
-	}
-
-	return "", -1, false
-}
-
 type DataType struct {
 	Rooms  Rooms `json:"sessions"`
-	IDMap  IDMap `json:"idMap"`
 	NextID int   `json:"nextID"`
 }
 
@@ -85,11 +73,6 @@ type SessionItem struct {
 	Broadcast []string `json:"broadcast"`
 	Start     now.Time `json:"start"`
 	End       now.Time `json:"end"`
-}
-
-type IDMapItem struct {
-	Room  string `json:"room"`
-	Index int    `json:"index"`
 }
 
 func GetSessions(file io.Reader) (*DataType, error) {

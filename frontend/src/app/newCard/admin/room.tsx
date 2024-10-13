@@ -3,16 +3,16 @@ import { formatTime } from '@/utils/formatTime'
 import { getCurrent } from './getCurrent'
 import { useState } from 'react'
 import { btn } from '@/varients/btn'
-import { twMerge } from 'tailwind-merge'
 import { useTime } from '@/components/useTime'
 import { mutate } from 'swr'
+import { useMediaQuery } from 'usehooks-ts'
 
 export function Room({ sessions }: { sessions: Session[] }) {
 	const now = getCurrent(sessions)
 	const [current, setCurrent] = useState(() => getCurrent(sessions))
 	return (
-		<>
-			<div className="m-4 flex w-full justify-around">
+		<div className="mt-4 grid w-full gap-4 md:grid-cols-[100px_1fr]">
+			<div className="grid w-full grid-cols-3 gap-2 md:grid-cols-1">
 				<button className={btn({ size: 'xl' })} onClick={() => current - 1 >= 0 && setCurrent(current - 1)}>
 					↑
 				</button>
@@ -27,22 +27,23 @@ export function Room({ sessions }: { sessions: Session[] }) {
 				</button>
 			</div>
 
-			<ul className="m-2 flex w-full flex-col justify-stretch gap-4">
+			<ul className="flex w-full flex-col justify-stretch gap-4">
 				{/* previous */}
 				<EditSession idx={current - 1} sessions={sessions} isCurrent={now == current - 1} key={current - 1} />
 				{/* current */}
 				<EditSession idx={current} sessions={sessions} isCurrent={now == current} key={current} />
+				{/* <button className={twMerge(btn())}>新增議程(Unimplemented)</button> */}
 				{/* next */}
-				<button className={twMerge(btn())}>新增議程(Unimplemented)</button>
 				<EditSession idx={current + 1} sessions={sessions} isCurrent={now == current + 1} key={current + 1} />
 			</ul>
-		</>
+		</div>
 	)
 }
 
 function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: number; isCurrent: boolean }) {
 	const session: Session | undefined = sessions[idx]
 	const [detail, setDetail] = useState(false)
+	const isMd = useMediaQuery('(min-width: 768px)')
 
 	// TODO: case of the session with broadcasts
 	const setStart = async (start: number) => {
@@ -64,19 +65,21 @@ function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: n
 		// 		`${idx - 1}(${sessions[idx - 1].end} -> ${pre.end}), ${idx}(${session.start} -> ${current.start})`,
 		// 	)
 
-		return fetch(`/api/card/${session.room}/${isShorten ? idx : idx - 1}`, {
-			method: 'POST',
-			body: JSON.stringify(isShorten ? current : pre),
-		})
-			.then(() =>
-				fetch(`/api/card/${session.room}/${isShorten ? idx - 1 : idx}`, {
-					method: 'POST',
-					body: JSON.stringify(isShorten ? pre : current),
-				}),
-			)
-			// .then(() => console.log('done'))
-			.then(() => mutate(`/api/session`))
-			.catch(console.error)
+		return (
+			fetch(`/api/card/${session.room}/${isShorten ? idx : idx - 1}`, {
+				method: 'POST',
+				body: JSON.stringify(isShorten ? current : pre),
+			})
+				.then(() =>
+					fetch(`/api/card/${session.room}/${isShorten ? idx - 1 : idx}`, {
+						method: 'POST',
+						body: JSON.stringify(isShorten ? pre : current),
+					}),
+				)
+				// .then(() => console.log('done'))
+				.then(() => mutate(`/api/session`))
+				.catch(console.error)
+		)
 	}
 
 	const setEnd = (end: number) => {
@@ -98,19 +101,21 @@ function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: n
 		// 		`${idx + 1}(${sessions[idx + 1].start} -> ${next.start}), ${idx}(${session.end} -> ${current.end})`,
 		// 	)
 
-		return fetch(`/api/card/${session.room}/${isShorten ? idx : idx + 1}`, {
-			method: 'POST',
-			body: JSON.stringify(isShorten ? current : next),
-		})
-			.then(() =>
-				fetch(`/api/card/${session.room}/${isShorten ? idx + 1 : idx}`, {
-					method: 'POST',
-					body: JSON.stringify(isShorten ? next : current),
-				}),
-			)
-			// .then(() => console.log('done'))
-			.then(() => mutate(`/api/session`))
-			.catch(console.error)
+		return (
+			fetch(`/api/card/${session.room}/${isShorten ? idx : idx + 1}`, {
+				method: 'POST',
+				body: JSON.stringify(isShorten ? current : next),
+			})
+				.then(() =>
+					fetch(`/api/card/${session.room}/${isShorten ? idx + 1 : idx}`, {
+						method: 'POST',
+						body: JSON.stringify(isShorten ? next : current),
+					}),
+				)
+				// .then(() => console.log('done'))
+				.then(() => mutate(`/api/session`))
+				.catch(console.error)
+		)
 	}
 
 	const Start = useTime(`Start: ${formatTime(session?.start || 0)}`, session?.start || 0, setStart)
@@ -120,10 +125,10 @@ function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: n
 		<>
 			<h1 className="text-2xl">{session.title}</h1>
 			<p>{session.speakers.join('、')}</p>
-			<p data-detail={detail} className="data-[detail=true]:hidden">
+			<p data-show={!detail && !isMd} className="data-[show=false]:hidden">
 				{formatTime(session.start)} - {formatTime(session.end)}
 			</p>
-			<div data-detail={detail} className="data-[detail=false]:hidden">
+			<div data-show={detail || isMd} className="grid data-[show=false]:hidden md:grid-cols-2">
 				{Start}
 				{End}
 			</div>
@@ -134,7 +139,7 @@ function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: n
 	return (
 		<div
 			data-current={isCurrent}
-			className="rounded-lg bg-gray-100 p-2 shadow-lg data-[current=true]:bg-gray-200 "
+			className="min-h-[100px] rounded-lg bg-gray-100 p-2 shadow-lg data-[current=true]:bg-gray-200 md:min-h-[200px]"
 			onClick={() => setDetail(!detail)}
 		>
 			{content}

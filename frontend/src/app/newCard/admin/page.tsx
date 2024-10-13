@@ -4,6 +4,7 @@ import { btn } from '@/varients/btn'
 import { useState } from 'react'
 import { Room } from './room'
 import useSWR from 'swr'
+import { twMerge } from 'tailwind-merge'
 
 export default function Page() {
 	const [room, setRoom] = useState('R0')
@@ -21,7 +22,11 @@ export default function Page() {
 
 	return (
 		<div className="flex min-h-screen w-screen flex-col items-center px-8 py-4">
-			<select value={room} onChange={e => setRoom(e.target.value)} className={btn({ size: '4xl' })}>
+			<select
+				value={room}
+				onChange={e => setRoom(e.target.value)}
+				className={twMerge(btn({ size: '4xl' }), 'w-full')}
+			>
 				{Object.keys(data).map(r => (
 					<option key={r} value={r}>
 						{r}

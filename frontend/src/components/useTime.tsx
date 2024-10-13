@@ -6,7 +6,7 @@ export function useTime(title: string, time: number, setTime: (value: number) =>
 	const component = (
 		<div
 			onClick={e => e.stopPropagation()}
-			className="m-2 flex flex-col items-center rounded-md border border-black p-2"
+			className="m-2 flex flex-col items-center rounded-md border-2 border-gray-400 p-2"
 		>
 			<p>{title}</p>
 			<div className="grid w-full grid-cols-5 gap-2">

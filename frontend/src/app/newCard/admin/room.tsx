@@ -125,6 +125,7 @@ function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: n
 		<>
 			<h1 className="text-2xl">{session.title}</h1>
 			<p>{session.speakers.join('、')}</p>
+			{session.broadcast.length > 0 && <p>轉播：{session.broadcast.join('、')}</p>}
 			<p data-show={!detail && !isMd} className="data-[show=false]:hidden">
 				{formatTime(session.start)} - {formatTime(session.end)}
 			</p>

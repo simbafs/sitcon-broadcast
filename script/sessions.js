@@ -1,3 +1,5 @@
+// TODO: merge adjacent sessions with the same title
+// remove broadcast from 休息
 const URL = 'https://sitcon.org/2024/sessions.json'
 
 let nextID = 0
@@ -36,7 +38,7 @@ function fillGaps(sessions) {
 	return sessions
 }
 
-; (async () => {
+;(async () => {
 	const data = await fetch(URL).then(res => res.json())
 
 	const rooms = data.rooms.map(item => item.zh.name)

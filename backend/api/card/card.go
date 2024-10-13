@@ -113,6 +113,5 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
 		// })
 		//
 		// c.JSON(http.StatusOK, s)
-		// TODO: rebuild idMap
 	})
 }

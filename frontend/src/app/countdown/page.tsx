@@ -3,9 +3,16 @@ import { RoomData } from '@/hooks/useCountdown'
 import useQuery from '@/hooks/useQuery'
 import { useSSE } from '@/hooks/useSSE'
 import { formatTime } from '@/utils/formatTime'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
-export default function Home() {
+export default function Page() {
+	return (
+		<Suspense>
+			<Countdown />
+		</Suspense>
+	)
+}
+function Countdown() {
 	const room = useQuery('room', 'R0')
 	const [time, setTime] = useState(0)
 

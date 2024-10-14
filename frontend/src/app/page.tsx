@@ -33,6 +33,10 @@ const pages: Page[] = [
 			{ name: 'S', link: '/card?room=S' },
 		],
 	},
+	{
+		name: 'SSE',
+		link: '/sse',
+	},
 ]
 
 function LinkTree({ pages }: { pages: Page[] }) {

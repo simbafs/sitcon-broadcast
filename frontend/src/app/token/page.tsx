@@ -1,9 +1,17 @@
 'use client'
 import useQuery from '@/hooks/useQuery'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 
 export default function Page() {
+	return (
+		<Suspense>
+			<Token />
+		</Suspense>
+	)
+}
+
+function Token() {
 	const callback = useQuery('redirect', '/')
 	const router = useRouter()
 	const [token, setToken] = useState('')

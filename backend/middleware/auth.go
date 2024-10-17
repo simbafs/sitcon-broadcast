@@ -44,7 +44,7 @@ func (t *TokenVerifyer) ProtectRoute(routes []string) gin.HandlerFunc {
 		for _, route := range routes {
 			if c.Request.URL.Path == route {
 				if !t.Allow(c) {
-					c.Redirect(http.StatusFound, "/token")
+					c.Redirect(http.StatusFound, "/token?redirect="+c.Request.URL.Path)
 					c.Abort()
 					return
 				}

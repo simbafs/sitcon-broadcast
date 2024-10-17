@@ -1,8 +1,10 @@
 'use client'
+import useQuery from '@/hooks/useQuery'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function Page() {
+	const callback = useQuery('redirect', '/')
 	const router = useRouter()
 	const [token, setToken] = useState('')
 	const [valid, setValid] = useState<null | boolean>(null)
@@ -18,7 +20,7 @@ export default function Page() {
 							if (data.error) {
 								setValid(false)
 							} else {
-								router.push('/')
+								router.push(callback)
 							}
 						})
 				}}

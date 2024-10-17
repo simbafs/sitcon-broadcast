@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 type Page =
 	| {
 			name: string
@@ -46,7 +44,7 @@ function LinkTree({ pages }: { pages: Page[] }) {
 				if ('link' in page) {
 					return (
 						<li key={page.link}>
-							<Link href={page.link}>{page.name}</Link>
+							<a href={page.link}>{page.name}</a>
 						</li>
 					)
 				} else {

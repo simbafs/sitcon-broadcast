@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
+func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenVerifyer) {
 	route := r.Group("/card")
 
 	// get session
@@ -47,7 +47,7 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
 	})
 
 	// update session, the session must exist
-	route.POST("/:room/:idx", func(c *gin.Context) {
+	route.POST("/:room/:idx", t.VerifyToken, func(c *gin.Context) {
 		room := c.Param("room")
 		idxStr := c.Param("idx")
 

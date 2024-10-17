@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
+func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenVerifyer) {
 	route := r.Group("/now")
 
 	route.GET("/", func(c *gin.Context) {
@@ -19,7 +19,7 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
 		})
 	})
 
-	route.POST("/", func(c *gin.Context) {
+	route.POST("/", t.VerifyToken, func(c *gin.Context) {
 		b, err := io.ReadAll(c.Request.Body)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
@@ -41,7 +41,7 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg) {
 		}
 	})
 
-	route.DELETE("/", func(c *gin.Context) {
+	route.DELETE("/", t.VerifyToken, func(c *gin.Context) {
 		now.ClearNow()
 		c.JSON(http.StatusOK, gin.H{"message": "cleared"})
 		broadcast <- middleware.SSEMsg{

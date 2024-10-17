@@ -39,7 +39,7 @@ func run(addr string) error {
 	r.Use(t.ProtectRoute([]string{"/newCard/admin", "/countdown/admin", "/card/admin"}))
 	r.GET("/verify", t.VerifyToken)
 
-	api.Route(r)
+	api.Route(r, t)
 	fileserver.Route(r, static, Mode)
 
 	logger.Printf("Server is running at %s\n", addr)

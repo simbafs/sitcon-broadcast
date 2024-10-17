@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Route(r *gin.Engine) {
+func Route(r *gin.Engine, t *middleware.TokenVerifyer) {
 	api := r.Group("/api")
 	sse := middleware.NewSSE()
 
@@ -20,9 +20,9 @@ func Route(r *gin.Engine) {
 		c.JSON(http.StatusOK, session.Data.Rooms)
 	})
 
-	card.Route(api, sse.Message)
-	now.Route(api, sse.Message)
-	countdown.Route(api, sse.Message)
+	card.Route(api, sse.Message, t)
+	now.Route(api, sse.Message, t)
+	countdown.Route(api, sse.Message, t)
 
 	api.GET("/sse", sse.GinHandler())
 

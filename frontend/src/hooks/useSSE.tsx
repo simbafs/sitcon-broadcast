@@ -62,3 +62,14 @@ export function useSSE<T>(name: string): T[] {
 export function useAllSSE() {
 	return useContext(SSEContext)
 }
+
+export function useSSEFetch<T>(name: string, init: () => Promise<T>, deps: any[] = []) {
+	const [data, setData] = useState<T | undefined>(undefined)
+	const latest = useSSE<T>(name).at(-1)
+
+	useEffect(() => {
+		init().then(setData)
+	}, [...deps])
+
+	return latest || data
+}

@@ -5,9 +5,12 @@ import { useState } from 'react'
 import { Room } from './room'
 import useSWR from 'swr'
 import { twMerge } from 'tailwind-merge'
+import { useSSEFetch } from '@/hooks/useSSE'
+import { formatTime } from '@/utils/formatTime'
 
 export default function Page() {
 	const [room, setRoom] = useState('R0')
+	const now = useSSEFetch('now', () => fetch('/api/now').then(res => res.json()))
 
 	const { data, error } = useSWR<Sessions>('/api/session', (url: string) => fetch(url).then(res => res.json()))
 
@@ -33,6 +36,7 @@ export default function Page() {
 					</option>
 				))}
 			</select>
+			{now !== undefined && <h1 className="mt-4 text-4xl">{formatTime(now)}</h1>}
 
 			<Room sessions={data[room]} key={room} />
 		</div>

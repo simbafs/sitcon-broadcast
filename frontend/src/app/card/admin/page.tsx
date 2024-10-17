@@ -10,7 +10,7 @@ import { formatTime } from '@/utils/formatTime'
 
 export default function Page() {
 	const [room, setRoom] = useState('R0')
-	const now = useSSEFetch('now', () => fetch('/api/now').then(res => res.json()))
+	const now = useSSEFetch('now', () => fetch('/api/now').then(res => res.json()).then(data => data.now))
 
 	const { data, error } = useSWR<Sessions>('/api/session', (url: string) => fetch(url).then(res => res.json()))
 

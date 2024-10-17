@@ -69,6 +69,7 @@ export function useSSEFetch<T>(name: string, init: () => Promise<T>, deps: any[]
 
 	useEffect(() => {
 		init().then(setData)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [...deps])
 
 	return latest || data

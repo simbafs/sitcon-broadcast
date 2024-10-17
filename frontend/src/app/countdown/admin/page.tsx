@@ -1,9 +1,9 @@
 'use client'
-import { type Countdown, COUNTING, PAUSE, useCountdown } from '@/hooks/useCountdown'
+import { edit, useEditor } from '@/components/useEditTime'
+import { Countdown, COUNTING, PAUSE, useCountdown } from '@/hooks/useCountdown'
+import { formatTime } from '@/utils/formatTime'
 import { btn } from '@/varients/btn'
 import Link from 'next/link'
-import { formatTime } from '@/utils/formatTime'
-import { edit, useEditor } from '@/components/useEditTime'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -82,43 +82,52 @@ function MyEditor({
 
 function Row({ countdown, edit }: { countdown: Countdown; edit: edit<number> }) {
 	return (
-		<div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_4fr]">
-			<div className="grid grid-cols-2 gap-6">
-				<div className="flex items-center justify-center">
-					<h2 className="text-3xl">{countdown.name}</h2>
-				</div>
-				<div className="flex items-center justify-center">
-					<p className="text-3xl">{formatTime(countdown.time)}</p>
-				</div>
+		<div className="grid grid-cols-6 gap-4">
+			<div className="col-span-3 flex items-center justify-center lg:col-span-6">
+				<h2 className="text-3xl">{countdown.name}</h2>
 			</div>
-			<div className="grid grid-cols-5 gap-6">
-				<button
-					className={btn({ color: countdown.state === PAUSE ? 'green' : 'normal' })}
-					onClick={countdown.start}
-					disabled={countdown.state === COUNTING}
-				>
-					開始
-				</button>
-				<button
-					className={btn({ color: countdown.state === COUNTING ? 'red' : 'normal' })}
-					onClick={countdown.pause}
-					disabled={countdown.state === PAUSE}
-				>
-					暫停
-				</button>
-				<button className={btn({ color: 'yellow' })} onClick={countdown.reset}>
-					重設
-				</button>
-				<button
-					className={btn({ color: 'yellow' })}
-					onClick={() => edit(countdown.inittime).then(countdown.setTime)}
-				>
-					設定時間
-				</button>
-				<Link className={btn()} href={`/countdown?room=${countdown.name}`} target="_blank">
-					開啟頁面
-				</Link>
+			<div className="col-span-3 flex items-center justify-center lg:col-span-1">
+				<p className="text-3xl">{formatTime(countdown.time)}</p>
 			</div>
+			<button
+				className={twMerge(
+					btn({ color: countdown.state === PAUSE ? 'green' : 'normal' }),
+					'col-span-3 lg:col-span-1',
+				)}
+				onClick={countdown.start}
+				disabled={countdown.state === COUNTING}
+			>
+				開始
+			</button>
+			<button
+				className={twMerge(
+					btn({ color: countdown.state === COUNTING ? 'red' : 'normal' }),
+					'col-span-3 lg:col-span-1',
+				)}
+				onClick={countdown.pause}
+				disabled={countdown.state === PAUSE}
+			>
+				暫停
+			</button>
+			<button
+				className={twMerge(btn({ color: 'yellow' }), 'col-span-3 sm:col-span-2 lg:col-span-1')}
+				onClick={countdown.reset}
+			>
+				重設
+			</button>
+			<button
+				className={twMerge(btn({ color: 'yellow' }), 'col-span-3 sm:col-span-2 lg:col-span-1')}
+				onClick={() => edit(countdown.inittime).then(countdown.setTime)}
+			>
+				設定時間
+			</button>
+			<Link
+				className={twMerge(btn(), 'col-span-6 sm:col-span-2 lg:col-span-1')}
+				href={`/countdown?room=${countdown.name}`}
+				target="_blank"
+			>
+				開啟頁面
+			</Link>
 		</div>
 	)
 }
@@ -133,7 +142,7 @@ function Rooms({ edit }: { edit: edit<number> }) {
 	]
 
 	return (
-		<div className="grid w-full gap-[50px]">
+		<div className="flex flex-col gap-12 divide-y">
 			{countdowns.map((c, i) => (
 				<Row key={i} countdown={c} edit={edit} />
 			))}
@@ -144,7 +153,7 @@ function Rooms({ edit }: { edit: edit<number> }) {
 export default function Page() {
 	const [Editor, edit] = useEditor<number>(MyEditor, 0)
 	return (
-		<div className="flex min-h-screen w-screen flex-col items-center justify-center px-[50px] py-[100px] lg:px-[100px]">
+		<div className="p-4 lg:px-20 ">
 			<Rooms edit={edit} />
 			<Editor />
 		</div>

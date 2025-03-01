@@ -1,9 +1,11 @@
 'use client'
-import useQuery from '@/hooks/useQuery'
 import { useRouter } from 'next/navigation'
+import { parseAsString, useQueryState } from 'nuqs'
 import { Suspense, useState } from 'react'
 
 export default function Page() {
+	return <Token />
+	// TODO: wtf is this doing?
 	return (
 		<Suspense>
 			<Token />
@@ -12,7 +14,7 @@ export default function Page() {
 }
 
 function Token() {
-	const callback = useQuery('redirect', '/')
+	const [callback] = useQueryState('redirect', parseAsString.withDefault('/'))
 	const router = useRouter()
 	const [token, setToken] = useState('')
 	const [valid, setValid] = useState<null | boolean>(null)

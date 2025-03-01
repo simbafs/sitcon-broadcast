@@ -6,6 +6,7 @@ import { btn } from '@/varients/btn'
 import { useTime } from '@/components/useTime'
 import { mutate } from 'swr'
 import { useMediaQuery } from 'usehooks-ts'
+import { twMerge } from 'tailwind-merge'
 
 export function Room({ sessions }: { sessions: Session[] }) {
 	const now = getCurrent(sessions)
@@ -123,9 +124,22 @@ function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: n
 
 	const content = session ? (
 		<>
-			<h1 className="text-2xl">{session.title}</h1>
-			<p>{session.speakers.join('、')}</p>
-			{session.broadcast.length > 0 && <p>轉播：{session.broadcast.join('、')}</p>}
+			<div className="flex w-full">
+				<div className="grow">
+					<h1 className="text-2xl">{session.title}</h1>
+					<p>{session.speakers.join('、')}</p>
+					{session.broadcast.length > 0 && <p>轉播：{session.broadcast.join('、')}</p>}
+				</div>
+				<div>
+					<a
+						href={`/card?room=${session.room}&idx=${idx}`}
+						className={twMerge(btn({ size: '2xl' }), 'grid place-items-center')}
+						target="_blank"
+					>
+						<span>開啟字卡</span>
+					</a>
+				</div>
+			</div>
 			<p data-show={!detail && !isMd} className="data-[show=false]:hidden">
 				{formatTime(session.start)} - {formatTime(session.end)}
 			</p>

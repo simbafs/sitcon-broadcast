@@ -1,8 +1,8 @@
 'use client'
 import { RoomData } from '@/hooks/useCountdown'
-import useQuery from '@/hooks/useQuery'
 import { useSSE } from '@/hooks/useSSE'
 import { formatTime } from '@/utils/formatTime'
+import { parseAsString, useQueryState } from 'nuqs'
 import { Suspense, useEffect, useState } from 'react'
 
 export default function Page() {
@@ -13,7 +13,7 @@ export default function Page() {
 	)
 }
 function Countdown() {
-	const room = useQuery('room', 'R0')
+	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
 	const [time, setTime] = useState(0)
 
 	const latest = useSSE<RoomData>(`countdown-${room}`).at(-1)

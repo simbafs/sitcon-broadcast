@@ -7,11 +7,11 @@ import { formatTime } from '@/utils/formatTime'
 import { useSSE } from '@/hooks/useSSE'
 import { Suspense, useEffect, useState } from 'react'
 import { Session, ZeroSession } from '@/types/card'
-import useQuery from '@/hooks/useQuery'
+import { parseAsString, useQueryState } from 'nuqs'
 
 function useCard() {
-	const room = useQuery('room', 'R0')
-	const idx = useQuery('idx', null)
+	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
+	const [idx] = useQueryState('idx')
 
 	const needUpdate = idx === null
 	let url = `/api/card/${room}/${idx}`
@@ -23,13 +23,20 @@ function useCard() {
 	const [card, setCard] = useState(ZeroSession)
 
 	const latest = useSSE<Session>(`card-%{room}`).at(-1)
+	const [error, setError] = useState<Error>()
 
 	// init
 	useEffect(() => {
 		fetch(url)
 			.then(res => res.json())
+			.then(data => {
+				if (data.error) {
+					throw new Error(data.error)
+				}
+				return data
+			})
 			.then(setCard)
-			.catch(console.error)
+			.catch(e => setError(new Error(`Failed to fetch card: ${e}`)))
 	}, [url])
 
 	// update
@@ -40,13 +47,23 @@ function useCard() {
 		setCard(latest)
 	}, [latest, needUpdate])
 
-	return card
+	return [card, error] as const
 }
 
 function Card() {
-	const card = useCard()
+	const [card, error] = useCard()
 
 	const speakers = card.speakers.join('、')
+
+	// TODO: should I show the error?
+	// if (error) {
+	// 	return (
+	// 		<div className="flex grow flex-col px-[6vw] py-[2vw]">
+	// 			<h1 className="text-[5vw] text-[#9f3b24]">Error</h1>
+	// 			<pre>{error.message}</pre>
+	// 		</div>
+	// 	)
+	// }
 
 	return (
 		<div className="flex grow flex-col px-[6vw] py-[2vw]">

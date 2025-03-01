@@ -1,20 +1,24 @@
 package session
 
 import (
-	"backend/models/now"
-	"bytes"
 	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+
+	"backend/models/now"
 )
 
-//go:embed sessions.json
-var file []byte
 var Data *DataType
 
 func init() {
-	data, err := GetSessions(bytes.NewReader(file))
+	file, err := os.OpenFile("sessions.json", os.O_RDWR, 0x664)
+	if err != nil {
+		panic(err)
+	}
+
+	data, err := GetSessions(file)
 	if err != nil {
 		panic(err)
 	}

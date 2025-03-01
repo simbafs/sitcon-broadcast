@@ -7,8 +7,9 @@ import { twMerge } from 'tailwind-merge'
 import { useSSEFetch } from '@/hooks/useSSE'
 import { formatTime } from '@/utils/formatTime'
 import { parseAsString, useQueryState } from 'nuqs'
+import { Suspense } from 'react'
 
-export default function Page() {
+function Admin() {
 	const [room, setRoom] = useQueryState('room', parseAsString.withDefault('R0'))
 	const now = useSSEFetch('now', () =>
 		fetch('/api/now')
@@ -41,7 +42,11 @@ export default function Page() {
 						</option>
 					))}
 				</select>
-				<a href={`/card?room=${room}`} className={twMerge(btn({ size: '2xl' }), "grid place-items-center")} target="_blank">
+				<a
+					href={`/card?room=${room}`}
+					className={twMerge(btn({ size: '2xl' }), 'grid place-items-center')}
+					target="_blank"
+				>
 					<span>開啟字卡</span>
 				</a>
 			</div>
@@ -50,4 +55,10 @@ export default function Page() {
 			<Room sessions={data[room]} key={room} />
 		</div>
 	)
+}
+
+export default function Page() {
+	return <Suspense>
+		<Admin />
+	</Suspense>
 }

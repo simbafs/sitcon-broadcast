@@ -5,7 +5,7 @@ SITCON 2024 製播組要用的東西
 
 # TODO
 
-- [ ] 動態引入 session.json
+- [ ] 動態引入 session.json，有個參數可以調整 session.json 的路徑
 - [ ] 更新字卡頁面樣式
 - [ ] 需要一個 debug 頁面
 - [ ] 新增一個議程表頁面

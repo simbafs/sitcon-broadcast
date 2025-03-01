@@ -30,6 +30,7 @@ WORKDIR /app
 
 COPY --from=build /build/main /app/main
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY ./backend/sessions.json /app/sessions.json
 
 EXPOSE 3000
 CMD [ "./main" ]

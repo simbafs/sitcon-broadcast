@@ -1,17 +1,18 @@
 package ticker
 
 import (
+	"time"
+
 	"backend/logger"
 	"backend/middleware"
 	"backend/models/now"
 	"backend/models/room"
 	"backend/models/session"
-	"time"
 )
 
 var log = logger.New("ticker")
 
-func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}) {
+func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}, updateAll chan struct{}) {
 	log.Println("Listening for updates")
 
 	perSecond := time.NewTicker(1 * time.Second)
@@ -23,6 +24,11 @@ func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}) {
 			UpdateCountdown(broadcast)
 			UpdatePing(broadcast)
 		case <-perMinute.C:
+			UpdateNow(broadcast)
+			UpdateCard(broadcast)
+		case <-updateAll:
+			UpdateCountdown(broadcast)
+			UpdatePing(broadcast)
 			UpdateNow(broadcast)
 			UpdateCard(broadcast)
 		case <-quit:

@@ -1,13 +1,14 @@
 package api
 
 import (
+	"net/http"
+
 	"backend/api/card"
 	"backend/api/countdown"
 	"backend/api/now"
 	"backend/middleware"
 	"backend/models/session"
 	"backend/ticker"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,12 +21,14 @@ func Route(r *gin.Engine, t *middleware.TokenVerifyer) {
 		c.JSON(http.StatusOK, session.Data.Rooms)
 	})
 
+	updateAll := make(chan struct{})
+
 	card.Route(api, sse.Message, t)
-	now.Route(api, sse.Message, t)
+	now.Route(api, sse.Message, t, updateAll)
 	countdown.Route(api, sse.Message, t)
 
 	api.GET("/sse", sse.GinHandler())
 
 	quit := make(chan struct{})
-	go ticker.Listen(sse.Message, quit)
+	go ticker.Listen(sse.Message, quit, updateAll)
 }

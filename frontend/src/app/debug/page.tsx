@@ -15,9 +15,11 @@ function SSE() {
 				{Object.entries(msg).map(([name, msgs]) => (
 					<div key={name} className="rounded border border-black p-4">
 						<h2>{name}</h2>
-						<ul>
+						<ul className="list-disc">
 							{msgs.map((msg, i) => (
-								<li key={i}>{JSON.stringify(msg, null, 1)}</li>
+								<li key={i}>
+									<pre>{JSON.stringify(msg, null, 1)}</pre>
+								</li>
 							))}
 						</ul>
 					</div>

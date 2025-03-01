@@ -22,7 +22,7 @@ function useCard() {
 
 	const [card, setCard] = useState(ZeroSession)
 
-	const latest = useSSE<Session>(`card-%{room}`).at(-1)
+	const latest = useSSE<Session>(`card-${room}`).at(-1)
 	const [error, setError] = useState<Error>()
 
 	// init

@@ -1,16 +1,17 @@
 package now
 
 import (
-	"backend/middleware"
-	"backend/models/now"
 	"io"
 	"net/http"
 	"strconv"
 
+	"backend/middleware"
+	"backend/models/now"
+
 	"github.com/gin-gonic/gin"
 )
 
-func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenVerifyer) {
+func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenVerifyer, updateAll chan struct{}) {
 	route := r.Group("/now")
 
 	route.GET("/", func(c *gin.Context) {
@@ -35,18 +36,12 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenV
 
 		now.SetNow(t)
 		c.JSON(http.StatusOK, gin.H{"time": t})
-		broadcast <- middleware.SSEMsg{
-			Name: "now",
-			Data: now.GetNow(),
-		}
+		updateAll <- struct{}{}
 	})
 
 	route.DELETE("/", t.VerifyToken, func(c *gin.Context) {
 		now.ClearNow()
 		c.JSON(http.StatusOK, gin.H{"message": "cleared"})
-		broadcast <- middleware.SSEMsg{
-			Name: "now",
-			Data: now.GetNow(),
-		}
+		updateAll <- struct{}{}
 	})
 }

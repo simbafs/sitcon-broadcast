@@ -1,14 +1,15 @@
 package main
 
 import (
-	"backend/api"
-	"backend/internal/fileserver"
-	"backend/internal/staticfs"
-	"backend/middleware"
 	"embed"
 	"fmt"
 	"log"
 	"os"
+
+	"backend/api"
+	"backend/internal/fileserver"
+	"backend/internal/staticfs"
+	"backend/middleware"
 
 	"github.com/gin-gonic/gin"
 	flag "github.com/spf13/pflag"
@@ -34,7 +35,8 @@ func run(addr string) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
 
-	t := middleware.NewTokenVerifyer("token", "localhost")
+	// TODO: change the env to a config file
+	t := middleware.NewTokenVerifyer(os.Getenv("token"), os.Getenv("domain"))
 
 	r.Use(t.ProtectRoute([]string{"/newCard/admin", "/countdown/admin", "/card/admin"}))
 	r.GET("/verify", t.VerifyToken)

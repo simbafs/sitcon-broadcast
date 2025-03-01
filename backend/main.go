@@ -38,7 +38,7 @@ func run(addr string) error {
 	// TODO: change the env to a config file
 	t := middleware.NewTokenVerifyer(os.Getenv("token"), os.Getenv("domain"))
 
-	r.Use(t.ProtectRoute([]string{"/newCard/admin", "/countdown/admin", "/card/admin"}))
+	r.Use(t.ProtectRoute([]string{"/newCard/admin", "/countdown/admin", "/card/admin", "/debug"}))
 	r.GET("/verify", t.VerifyToken)
 
 	api.Route(r, t)
@@ -59,7 +59,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("token is %s\n", os.Getenv("TOKEN"))
+	fmt.Printf("token is %s\n", os.Getenv("token"))
 
 	if err := run(*addr); err != nil {
 		logger.Printf("Oops, there's an error: %v\n", err)

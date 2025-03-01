@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"backend/logger"
 	"net/http"
+
+	"backend/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,7 +56,7 @@ func (t *TokenVerifyer) ProtectRoute(routes []string) gin.HandlerFunc {
 	}
 }
 
-// a gin middleware, if invalid it will return 401, for API
+// A gin handler to provide a token verification endpoint
 func (t *TokenVerifyer) VerifyToken(c *gin.Context) {
 	if !t.Allow(c) {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -64,7 +65,21 @@ func (t *TokenVerifyer) VerifyToken(c *gin.Context) {
 		return
 	}
 
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"message": "ok",
-	// })
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+	})
+	c.Abort()
+}
+
+// a gin middleware to let only valid token pass
+func (t *TokenVerifyer) Auth(c *gin.Context) {
+	if !t.Allow(c) {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+		c.Abort()
+		return
+	}
+
+	c.Next()
 }

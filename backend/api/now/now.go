@@ -20,7 +20,7 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenV
 		})
 	})
 
-	route.POST("/", t.VerifyToken, func(c *gin.Context) {
+	route.POST("/", t.Auth, func(c *gin.Context) {
 		b, err := io.ReadAll(c.Request.Body)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
@@ -39,7 +39,7 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenV
 		updateAll <- struct{}{}
 	})
 
-	route.DELETE("/", t.VerifyToken, func(c *gin.Context) {
+	route.DELETE("/", t.Auth, func(c *gin.Context) {
 		now.ClearNow()
 		c.JSON(http.StatusOK, gin.H{"message": "cleared"})
 		updateAll <- struct{}{}

@@ -11,6 +11,7 @@ SITCON 2024 製播組要用的東西
 - [ ] 新增一個議程表頁面
 - [ ] 移除 session.json 中的「休息」，動態補齊空洞
 - [ ] 持久化儲存 session.json
+- [ ] 統一的設定方式（env、args...）
 
 # Known Bugs
 * 字卡好像不會動

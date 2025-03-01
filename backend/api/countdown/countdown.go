@@ -34,7 +34,7 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenV
 		})
 	})
 
-	route.POST("/:name", t.VerifyToken, func(c *gin.Context) {
+	route.POST("/:name", t.Auth, func(c *gin.Context) {
 		name := c.Param("name")
 		if _, ok := room.Rooms[name]; !ok {
 			c.JSON(http.StatusBadRequest, gin.H{

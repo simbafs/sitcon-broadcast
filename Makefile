@@ -85,4 +85,7 @@ session:
 checkFrontend:
 	knip --directory frontend
 
+ent: 
+	cd backend && go generate ./ent
+
 .PHONY: devBackend devFrontend build buildBackend buildFrontend clean dep depFrontend depBackend session checkFrontend

@@ -2,17 +2,15 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"log"
-	"os"
 
 	"backend/api"
+	"backend/config"
 	"backend/internal/fileserver"
 	"backend/internal/staticfs"
 	"backend/middleware"
 
 	"github.com/gin-gonic/gin"
-	flag "github.com/spf13/pflag"
 )
 
 // go embed ignore files begin with '_' or '.', 'all:' tells go embed to embed all files
@@ -31,12 +29,11 @@ var (
 
 var logger = log.New(gin.DefaultWriter, "[main] ", log.LstdFlags|log.Lmsgprefix)
 
-func run(addr string) error {
+func run(c *config.Config) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
 
-	// TODO: change the env to a config file
-	t := middleware.NewTokenVerifyer(os.Getenv("token"), os.Getenv("domain"))
+	t := middleware.NewTokenVerifyer(c.Token, c.Domain)
 
 	r.Use(t.ProtectRoute([]string{"/newCard/admin", "/countdown/admin", "/card/admin", "/debug"}))
 	r.GET("/verify", t.VerifyToken)
@@ -44,24 +41,16 @@ func run(addr string) error {
 	api.Route(r, t)
 	fileserver.Route(r, static, Mode)
 
-	logger.Printf("Server is running at %s\n", addr)
-	return r.Run(addr)
+	logger.Printf("Server is running at %s\n", c.Addr)
+	return r.Run(c.Addr)
 }
 
 func main() {
-	addr := flag.StringP("addr", "a", ":3000", "server address")
-	version := flag.BoolP("version", "v", false, "show version")
-	flag.StringVarP(&Mode, "mode", "m", Mode, "server mode")
-	flag.Parse()
+	c := &config.Config{}
+	c.SetDefault()
+	c.FromEnv()
 
-	if *version {
-		fmt.Printf("Version: %s\nCommitHash: %s\nBuildTime: %s\n", Version, CommitHash, BuildTime)
-		return
-	}
-
-	fmt.Printf("token is %s\n", os.Getenv("token"))
-
-	if err := run(*addr); err != nil {
+	if err := run(c); err != nil {
 		logger.Printf("Oops, there's an error: %v\n", err)
 	}
 }

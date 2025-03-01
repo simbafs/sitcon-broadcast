@@ -16,8 +16,8 @@ RUN apt-get update && \
     wget -q https://go.dev/dl/go1.20.7.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.20.7.linux-amd64.tar.gz && \
     # install nodejs v16 and pnpm
-    wget -q https://nodejs.org/dist/v18.17.1/node-v18.17.1-linux-x64.tar.xz && \
-    tar -C /usr/local -xJf node-v18.17.1-linux-x64.tar.xz && \
+    wget -q https://nodejs.org/dist/v18.17.1/node-v23.3.0-linux-x64.tar.xz && \
+    tar -C /usr/local -xJf node-v23.3.0-linux-x64.tar.xz && \
     npm install -g pnpm
 
 COPY . .

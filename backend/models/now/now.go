@@ -15,7 +15,7 @@ func (t Time) Minute() int {
 }
 
 func (t Time) Time() time.Time {
-	return time.Date(2024, 3, 9, t.Hour(), t.Minute(), 0, 0, time.Local)
+	return time.Date(2024, 3, 9, t.Hour(), t.Minute(), 0, 0, time.FixedZone("Asia/Taipei", 8))
 }
 
 var now = Time(0)

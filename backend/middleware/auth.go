@@ -64,7 +64,7 @@ func (t *TokenVerifyer) VerifyToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "ok",
-	})
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"message": "ok",
+	// })
 }

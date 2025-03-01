@@ -32,8 +32,8 @@ const pages: Page[] = [
 		],
 	},
 	{
-		name: 'SSE',
-		link: '/sse',
+		name: 'Debug',
+		link: '/debug',
 	},
 ]
 

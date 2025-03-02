@@ -1,92 +1,145 @@
 package session
 
 import (
+	"context"
 	_ "embed"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
-	"os"
+	"time"
 
+	"backend/ent"
+	"backend/ent/session"
 	"backend/models/now"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
-var Data *DataType
+// TODO: maybe move the initialize of ent to another files?
+var Client *ent.Client
 
 func init() {
-	file, err := os.OpenFile("sessions.json", os.O_RDWR, 0x664)
+	var err error
+	Client, err = ent.Open("sqlite3", "file:sessions.db?cache=shared&_fk=1")
 	if err != nil {
 		panic(err)
 	}
 
-	data, err := GetSessions(file)
-	if err != nil {
+	if err = Client.Schema.Create(context.Background()); err != nil {
 		panic(err)
 	}
-
-	Data = data
 }
 
-type Room []SessionItem
+// no Create
 
-func (r Room) IsOverlap(idx int, start now.Time, end now.Time) bool {
-	for i, s := range r {
-		if i == idx {
-			continue
-		}
-		if (start >= s.Start && start < s.End) || (end > s.Start && end <= s.End) {
-			return true
-		}
-	}
-
-	return false
+// ReadAll
+func ReadAll(ctx context.Context) ([]*ent.Session, error) {
+	return Client.Session.Query().
+		All(ctx)
 }
 
-func (r Room) GetNow() (SessionItem, bool) {
-	for _, s := range r {
-		if s.Start > now.GetNow() {
-			return s, true
-		}
-	}
-
-	return SessionItem{}, false
+// ReadByID
+func ReadByID(ctx context.Context, id string) (*ent.Session, error) {
+	return Client.Session.Query().
+		Where(session.ID(id)).
+		Only(ctx)
 }
 
-type Rooms map[string]Room
-
-func (r Rooms) Get(room string, index int) (SessionItem, bool) {
-	if room, ok := r[room]; ok && index >= 0 && index < len(room) {
-		return room[index], true
-	}
-
-	return SessionItem{}, false
-}
-
-type DataType struct {
-	Rooms  Rooms `json:"sessions"`
-	NextID int   `json:"nextID"`
-}
-
-func (d *DataType) GetNextID() string {
-	d.NextID++
-	return fmt.Sprintf("id-%d", d.NextID-1)
-}
-
-type SessionItem struct {
-	ID        string   `json:"id"`
-	Title     string   `json:"title"`
-	Type      string   `json:"type"`
-	Speakers  []string `json:"speakers"`
-	Room      string   `json:"room"`
-	Broadcast []string `json:"broadcast"`
-	Start     now.Time `json:"start"`
-	End       now.Time `json:"end"`
-}
-
-func GetSessions(file io.Reader) (*DataType, error) {
-	var data DataType
-	if err := json.NewDecoder(file).Decode(&data); err != nil {
+// ReadCurrentByRoom
+func ReadCurrentByRoom(ctx context.Context, room string) (*ent.Session, error) {
+	sessions, err := Client.Session.Query().
+		Where(session.Room(room)).
+		Order(ent.Asc(session.FieldStart)).
+		All(ctx)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, nil
+	now := now.Read()
+
+	var target *ent.Session
+	for _, s := range sessions {
+		if s.End.After(now) {
+			target = s
+			break
+		}
+	}
+
+	if target == nil {
+		target = sessions[len(sessions)-1]
+	}
+
+	return target, nil
 }
+
+func Update(ctx context.Context, id string, start, end time.Time) error {
+	if start.After(end) {
+		return fmt.Errorf("start time cannot be after end time")
+	}
+
+	sess, err := Client.Session.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	sameRoomSessions, err := Client.Session.
+		Query().
+		Where(session.Room(sess.Room)).
+		Order(ent.Asc("start")).
+		All(ctx)
+	if err != nil {
+		return err
+	}
+
+	var prevSession, nextSession *ent.Session
+	for i, s := range sameRoomSessions {
+		if s.ID == id {
+			if i > 0 {
+				prevSession = sameRoomSessions[i-1]
+			}
+			if i < len(sameRoomSessions)-1 {
+				nextSession = sameRoomSessions[i+1]
+			}
+			break
+		}
+	}
+
+	if prevSession != nil && start.Before(prevSession.Start) {
+		return errors.New("start time cannot be before previous session's start time")
+	}
+	if nextSession != nil && end.After(nextSession.End) {
+		return errors.New("end time cannot be after next session's end time")
+	}
+
+	// 更新當前 Session
+	err = Client.Session.UpdateOneID(id).
+		SetStart(start).
+		SetEnd(end).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	// 更新前一個 Session 的 end 時間
+	if prevSession != nil {
+		err = Client.Session.UpdateOneID(prevSession.ID).
+			SetEnd(start).
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	// 更新下一個 Session 的 start 時間
+	if nextSession != nil {
+		err = Client.Session.UpdateOneID(nextSession.ID).
+			SetStart(end).
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// no Delete

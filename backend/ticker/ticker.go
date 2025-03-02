@@ -1,6 +1,7 @@
 package ticker
 
 import (
+	"context"
 	"time"
 
 	"backend/logger"
@@ -12,7 +13,17 @@ import (
 
 var log = logger.New("ticker")
 
-func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}, updateAll chan struct{}) {
+type Msg int
+
+const (
+	MsgPing Msg = 0x01 << iota
+	MsgNow
+	MsgCountdown
+	MsgCard
+	MsgAll = MsgPing | MsgNow | MsgCountdown | MsgCard
+)
+
+func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}, update chan Msg) {
 	log.Println("Listening for updates")
 
 	perSecond := time.NewTicker(1 * time.Second)
@@ -26,11 +37,19 @@ func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}, updateAll chan
 		case <-perMinute.C:
 			UpdateNow(broadcast)
 			UpdateCard(broadcast)
-		case <-updateAll:
-			UpdateCountdown(broadcast)
-			UpdatePing(broadcast)
-			UpdateNow(broadcast)
-			UpdateCard(broadcast)
+		case msg := <-update:
+			if msg&MsgPing == MsgPing {
+				UpdatePing(broadcast)
+			}
+			if msg&MsgNow == MsgNow {
+				UpdateNow(broadcast)
+			}
+			if msg&MsgCountdown == MsgCountdown {
+				UpdateCountdown(broadcast)
+			}
+			if msg&MsgCard == MsgCard {
+				UpdateCard(broadcast)
+			}
 		case <-quit:
 			perSecond.Stop()
 			perMinute.Stop()
@@ -49,7 +68,7 @@ func UpdatePing(broadcast chan middleware.SSEMsg) {
 func UpdateNow(broadcast chan middleware.SSEMsg) {
 	broadcast <- middleware.SSEMsg{
 		Name: "now",
-		Data: now.GetNow(),
+		Data: now.Read(),
 	}
 }
 
@@ -75,11 +94,13 @@ func UpdateCountdown(broadcast chan middleware.SSEMsg) {
 	}
 }
 
+var rooms = []string{"R0", "R1", "R2", "R3", "S"}
+
 func UpdateCard(broadcast chan middleware.SSEMsg) {
-	for name, r := range session.Data.Rooms {
-		if now, ok := r.GetNow(); ok {
+	for _, room := range rooms {
+		if now, err := session.ReadCurrentByRoom(context.Background(), room); err != nil {
 			broadcast <- middleware.SSEMsg{
-				Name: "card-" + name,
+				Name: "card-" + room,
 				Data: now,
 			}
 		}

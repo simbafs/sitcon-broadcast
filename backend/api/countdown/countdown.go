@@ -1,15 +1,17 @@
 package countdown
 
 import (
-	"backend/middleware"
-	"backend/models/room"
 	"log"
 	"net/http"
+
+	"backend/middleware"
+	"backend/models/room"
+	"backend/ticker"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenVerifyer) {
+func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	route := r.Group("/countdown")
 
 	route.GET("/", func(c *gin.Context) {
@@ -58,9 +60,6 @@ func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenV
 		c.JSON(http.StatusOK, gin.H{
 			"message": "success update room",
 		})
-		broadcast <- middleware.SSEMsg{
-			Name: "countdown-" + r.Name,
-			Data: r,
-		}
+		update <- ticker.MsgCountdown
 	})
 }

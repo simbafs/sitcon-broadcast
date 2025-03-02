@@ -7,6 +7,7 @@ toolchain go1.23.6
 require (
 	entgo.io/ent v0.14.3
 	github.com/gin-gonic/gin v1.9.1
+	github.com/mattn/go-sqlite3 v1.14.24
 )
 
 require (

@@ -75,12 +75,9 @@ func (s *SSE) GinHandler() gin.HandlerFunc {
 			s.CloseConn <- conn
 		}()
 
-		for {
-			select {
-			case msg := <-conn:
-				c.Writer.Write([]byte(msg))
-				c.Writer.Flush()
-			}
+		for msg := range conn {
+			c.Writer.Write([]byte(msg))
+			c.Writer.Flush()
 		}
 	}
 }

@@ -2,12 +2,12 @@ package main
 
 import (
 	"embed"
-	"log"
 
 	"backend/api"
 	"backend/config"
 	"backend/internal/fileserver"
 	"backend/internal/staticfs"
+	"backend/logger"
 	"backend/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +27,7 @@ var (
 	BuildTime  = "n/a"
 )
 
-var logger = log.New(gin.DefaultWriter, "[main] ", log.LstdFlags|log.Lmsgprefix)
+var log = logger.New("main")
 
 func run(c *config.Config) error {
 	gin.SetMode(Mode)
@@ -41,7 +41,7 @@ func run(c *config.Config) error {
 	api.Route(r, t)
 	fileserver.Route(r, static, Mode)
 
-	logger.Printf("Server is running at %s\n", c.Addr)
+	log.Printf("Server is running at %s\n", c.Addr)
 	return r.Run(c.Addr)
 }
 
@@ -51,6 +51,6 @@ func main() {
 	c.FromEnv()
 
 	if err := run(c); err != nil {
-		logger.Printf("Oops, there's an error: %v\n", err)
+		log.Printf("Oops, there's an error: %v\n", err)
 	}
 }

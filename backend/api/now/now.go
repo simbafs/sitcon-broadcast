@@ -1,47 +1,46 @@
 package now
 
 import (
-	"io"
 	"net/http"
-	"strconv"
+	"time"
 
 	"backend/middleware"
 	"backend/models/now"
+	"backend/ticker"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Route(r gin.IRouter, broadcast chan middleware.SSEMsg, t *middleware.TokenVerifyer, updateAll chan struct{}) {
+type NowBody struct {
+	Now time.Time `json:"time"`
+}
+
+func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	route := r.Group("/now")
 
 	route.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"now": now.GetNow(),
+		c.JSON(http.StatusOK, NowBody{
+			Now: now.Read(),
 		})
 	})
 
 	route.POST("/", t.Auth, func(c *gin.Context) {
-		b, err := io.ReadAll(c.Request.Body)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-			return
-		}
-		s := string(b)
+		t := NowBody{}
 
-		t, err := strconv.Atoi(s)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid time"})
+		if err := c.BindJSON(&t); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
 			return
 		}
 
-		now.SetNow(t)
-		c.JSON(http.StatusOK, gin.H{"time": t})
-		updateAll <- struct{}{}
+		now.Update(t.Now)
+
+		c.JSON(http.StatusOK, gin.H{"message": "updated"})
+		update <- ticker.MsgNow
 	})
 
 	route.DELETE("/", t.Auth, func(c *gin.Context) {
-		now.ClearNow()
+		now.Delete()
 		c.JSON(http.StatusOK, gin.H{"message": "cleared"})
-		updateAll <- struct{}{}
+		update <- ticker.MsgNow
 	})
 }

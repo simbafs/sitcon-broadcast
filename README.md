@@ -13,6 +13,7 @@ SITCON 2024 製播組要用的東西
 - [ ] 持久化儲存 session.json
 - [ ] 統一的設定方式（env、args...）
 - [ ] 寫死時區
+- [ ] time.Time 型別在 JS 接收、發送
 
 # Known Bugs
 * 字卡好像不會動

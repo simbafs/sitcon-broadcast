@@ -12,7 +12,7 @@ import (
 )
 
 type NowBody struct {
-	Now time.Time `json:"time"`
+	Now time.Time `json:"now"`
 }
 
 func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
@@ -24,7 +24,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		})
 	})
 
-	route.POST("/", t.Auth, func(c *gin.Context) {
+	route.PUT("/", t.Auth, func(c *gin.Context) {
 		t := NowBody{}
 
 		if err := c.BindJSON(&t); err != nil {

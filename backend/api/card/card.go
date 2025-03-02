@@ -23,7 +23,18 @@ type UpdateSession struct {
 func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	route := r.Group("/card")
 
-	// get session
+	// get all sessions
+	route.GET("/", func(c *gin.Context) {
+		s, err := session.ReadAll(c.Request.Context())
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "fail to get sessions"})
+			return
+		}
+
+		c.JSON(http.StatusOK, s)
+	})
+
+	// get session by id
 	route.GET("/:id", func(c *gin.Context) {
 		id := c.Param("id")
 
@@ -35,7 +46,8 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		}
 	})
 
-	route.GET("/:room", func(c *gin.Context) {
+	// get current session in a room
+	route.GET("/room/current/:room", func(c *gin.Context) {
 		room := c.Param("room")
 
 		if s, err := session.ReadCurrentByRoom(c.Request.Context(), room); err != nil {
@@ -47,7 +59,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	})
 
 	// update session, the session must exist
-	route.POST("/:id", t.VerifyToken, func(c *gin.Context) {
+	route.PUT("/:id", t.VerifyToken, func(c *gin.Context) {
 		id := c.Param("id")
 
 		var u UpdateSession
@@ -60,6 +72,8 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "filaed to update session"})
 			return
 		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "updated"})
 
 		update <- ticker.MsgCard
 	})

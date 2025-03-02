@@ -15,9 +15,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	route := r.Group("/countdown")
 
 	route.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"rooms": room.Rooms,
-		})
+		c.JSON(http.StatusOK, room.Rooms)
 	})
 
 	route.GET("/:name", func(c *gin.Context) {
@@ -31,12 +29,10 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"room": targetRoom,
-		})
+		c.JSON(http.StatusOK, targetRoom)
 	})
 
-	route.POST("/:name", t.Auth, func(c *gin.Context) {
+	route.PUT("/:name", t.Auth, func(c *gin.Context) {
 		name := c.Param("name")
 		if _, ok := room.Rooms[name]; !ok {
 			c.JSON(http.StatusBadRequest, gin.H{

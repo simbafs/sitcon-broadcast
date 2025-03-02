@@ -1,36 +1,36 @@
 import { useEffect, useState } from 'react'
 import { useSSE } from './useSSE'
+import { COUNTING, GetCountdownByName, PAUSE, Room, UpdateCountdown } from '@/sdk/sdk'
 
-export const PAUSE = 0
-export const COUNTING = 1
-
-export type State = typeof PAUSE | typeof COUNTING
-
-export type RoomData = {
-	inittime: number
-	time: number
-	state: State
-	name: string
-}
+// export const PAUSE = 0
+// export const COUNTING = 1
+//
+// export type State = typeof PAUSE | typeof COUNTING
+//
+// export type RoomData = {
+// 	inittime: number
+// 	time: number
+// 	state: State
+// 	name: string
+// }
 
 export type Countdown = ReturnType<typeof useCountdown>
 
 export function useCountdown(name: string) {
 	const [stopUpdate, setStopUpdate] = useState(false)
-	const [countdown, setCountdown] = useState<RoomData>({
+	const [countdown, setCountdown] = useState<Room>({
 		inittime: 10,
 		time: 0,
 		state: 0,
 		name: name,
 	})
-	const latest = useSSE<RoomData>(`countdown-${countdown.name}`).at(-1)
+	const latest = useSSE<Room>(`countdown-${name}`).at(-1)
+
+	useEffect(() => console.log(latest), [latest])
 
 	// get init
 	useEffect(() => {
-		fetch(`/api/countdown/${name}`)
-			.then(res => res.json())
-			.then(data => setCountdown(data.room))
-			.catch(console.error)
+		GetCountdownByName(name).then(setCountdown).catch(console.error)
 	}, [name])
 
 	// get update
@@ -44,24 +44,18 @@ export function useCountdown(name: string) {
 	// operations
 	const start = () => {
 		setStopUpdate(true)
-		fetch(`/api/countdown/${name}`, {
-			method: 'post',
-			body: JSON.stringify({
-				...countdown,
-				state: COUNTING,
-			}),
+		UpdateCountdown(name, {
+			...countdown,
+			state: COUNTING,
 		})
 			.finally(() => setStopUpdate(false))
 			.catch(console.error)
 	}
 	const pause = () => {
 		setStopUpdate(true)
-		fetch(`/api/countdown/${name}`, {
-			method: 'post',
-			body: JSON.stringify({
-				...countdown,
-				state: PAUSE,
-			}),
+		UpdateCountdown(name, {
+			...countdown,
+			state: PAUSE,
 		})
 			.finally(() => setStopUpdate(false))
 			.catch(console.error)
@@ -73,27 +67,21 @@ export function useCountdown(name: string) {
 			time: time,
 			inittime: time,
 		})
-		fetch(`/api/countdown/${name}`, {
-			method: 'post',
-			body: JSON.stringify({
-				...countdown,
-				time: time,
-				inittime: time,
-				state: PAUSE,
-			}),
+		UpdateCountdown(name, {
+			...countdown,
+			time: time,
+			inittime: time,
+			state: PAUSE,
 		})
 			.finally(() => setStopUpdate(false))
 			.catch(console.error)
 	}
 	const reset = () => {
 		setStopUpdate(true)
-		fetch(`/api/countdown/${name}`, {
-			method: 'post',
-			body: JSON.stringify({
-				...countdown,
-				time: countdown.inittime,
-				state: PAUSE,
-			}),
+		UpdateCountdown(name, {
+			...countdown,
+			time: countdown.inittime,
+			state: PAUSE,
 		})
 			.finally(() => setStopUpdate(false))
 			.catch(console.error)

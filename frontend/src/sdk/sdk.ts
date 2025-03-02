@@ -87,9 +87,9 @@ export async function UpdateSession(id: string, start: Date, end: Date) {
 	return api(`/card/${id}`, 'PUT', { start, end })
 }
 
-export type CountdownState = number
-export const PAUSE: CountdownState = 0
-export const COUNTING: CountdownState = 1
+export const PAUSE = 0
+export const COUNTING = 1
+export type CountdownState = typeof PAUSE | typeof COUNTING
 
 export type Room = {
 	inittime: number
@@ -107,5 +107,6 @@ export async function GetCountdownByName(name: string) {
 }
 
 export async function UpdateCountdown(name: string, updated: Room) {
+	console.log('update countdown', name, updated)
 	return api(`/countdown/${name}`, 'PUT', updated)
 }

@@ -8,14 +8,11 @@ import { useSSEFetch } from '@/hooks/useSSE'
 import { formatTime } from '@/utils/formatTime'
 import { parseAsString, useQueryState } from 'nuqs'
 import { Suspense } from 'react'
+import { GetNow } from '@/sdk/sdk'
 
 function Admin() {
 	const [room, setRoom] = useQueryState('room', parseAsString.withDefault('R0'))
-	const now = useSSEFetch('now', () =>
-		fetch('/api/now')
-			.then(res => res.json())
-			.then(data => data.now),
-	)
+	const now = useSSEFetch('now', GetNow)
 
 	const { data, error } = useSWR<Sessions>('/api/session', (url: string) => fetch(url).then(res => res.json()))
 
@@ -58,7 +55,9 @@ function Admin() {
 }
 
 export default function Page() {
-	return <Suspense>
-		<Admin />
-	</Suspense>
+	return (
+		<Suspense>
+			<Admin />
+		</Suspense>
+	)
 }

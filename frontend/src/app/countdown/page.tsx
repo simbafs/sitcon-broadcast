@@ -1,7 +1,7 @@
 'use client'
-import { RoomData } from '@/hooks/useCountdown'
 import { useSSE } from '@/hooks/useSSE'
-import { formatTime } from '@/utils/formatTime'
+import { Room } from '@/sdk/sdk'
+import { formatCountdown } from '@/utils/formatTime'
 import { parseAsString, useQueryState } from 'nuqs'
 import { Suspense, useEffect, useState } from 'react'
 
@@ -16,7 +16,7 @@ function Countdown() {
 	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
 	const [time, setTime] = useState(0)
 
-	const latest = useSSE<RoomData>(`countdown-${room}`).at(-1)
+	const latest = useSSE<Room>(`countdown-${room}`).at(-1)
 
 	// init
 	useEffect(() => {
@@ -34,7 +34,7 @@ function Countdown() {
 
 	return (
 		<div className="grid h-screen w-screen place-items-center">
-			<h1 className="text-[35vw] leading-[0.8]">{formatTime(time || 0)}</h1>
+			<h1 className="text-[35vw] leading-[0.8]">{formatCountdown(time || 0)}</h1>
 		</div>
 	)
 }

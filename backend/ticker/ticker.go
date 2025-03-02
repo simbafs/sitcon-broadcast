@@ -72,20 +72,19 @@ func UpdateNow(broadcast chan middleware.SSEMsg) {
 	}
 }
 
+// TODO: only send updates when changing.
 func UpdateCountdown(broadcast chan middleware.SSEMsg) {
 	for i, r := range room.Rooms {
-		if r.State == room.PAUSE {
-			continue
+		if r.State == room.COUNTING {
+			r.Time -= 1
+
+			if r.Time <= 0 {
+				r.State = room.PAUSE
+				r.Time = 0
+			}
+
+			room.Rooms[i] = r
 		}
-
-		r.Time -= 1
-
-		if r.Time <= 0 {
-			r.State = room.PAUSE
-			r.Time = 0
-		}
-
-		room.Rooms[i] = r
 
 		broadcast <- middleware.SSEMsg{
 			Name: "countdown-" + r.Name,

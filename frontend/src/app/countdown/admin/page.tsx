@@ -1,7 +1,8 @@
 'use client'
 import { edit, useEditor } from '@/components/useEditTime'
-import { Countdown, COUNTING, PAUSE, useCountdown } from '@/hooks/useCountdown'
-import { formatTime } from '@/utils/formatTime'
+import { Countdown, useCountdown } from '@/hooks/useCountdown'
+import { COUNTING, PAUSE } from '@/sdk/sdk'
+import { formatCountdown } from '@/utils/formatTime'
 import { btn } from '@/varients/btn'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -87,7 +88,7 @@ function Row({ countdown, edit }: { countdown: Countdown; edit: edit<number> }) 
 				<h2 className="text-3xl">{countdown.name}</h2>
 			</div>
 			<div className="col-span-3 flex items-center justify-center lg:col-span-1">
-				<p className="text-3xl">{formatTime(countdown.time)}</p>
+				<p className="text-3xl">{formatCountdown(countdown.time)}</p>
 			</div>
 			<button
 				className={twMerge(

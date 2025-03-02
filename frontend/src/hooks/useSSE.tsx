@@ -42,7 +42,10 @@ export const SSEProvider = ({
 
 		eventSource.onerror = err => {
 			console.error('EventSource failed:', err)
-			eventSource.close()
+		}
+
+		eventSource.onopen = () => {
+			console.log('SSE connected')
 		}
 
 		return () => {

@@ -47,7 +47,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	})
 
 	// get current session in a room
-	route.GET("/room/current/:room", func(c *gin.Context) {
+	route.GET("/current/:room", func(c *gin.Context) {
 		room := c.Param("room")
 
 		if s, err := session.ReadCurrentByRoom(c.Request.Context(), room); err != nil {

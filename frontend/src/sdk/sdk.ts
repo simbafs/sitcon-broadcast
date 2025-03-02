@@ -13,7 +13,7 @@
 
 type Method = 'POST' | 'GET' | 'PUT' | 'DELETE'
 
-function parseJSONWithDates(jsonString: string) {
+export function parseJSONWithDates(jsonString: string) {
 	const data = JSON.parse(jsonString, (key, value) => {
 		if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2}|Z)$/)) {
 			return new Date(value)
@@ -57,7 +57,7 @@ export async function ResetNow() {
 	return api('/now', 'DELETE')
 }
 
-export type Card = Partial<{
+export type Session = {
 	id: string
 	title: string
 	type: string
@@ -69,18 +69,39 @@ export type Card = Partial<{
 	slido: string
 	slide: string
 	hackmd: string
-}>
+}
+
+export const ZeroSession: Session = {
+	id: '',
+	title: '',
+	type: '',
+	speakers: [],
+	room: '',
+	broadcast: [],
+	start: new Date(0),
+	end: new Date(0),
+	slido: '',
+	slide: '',
+	hackmd: '',
+}
+
+function ensureSession(session: Partial<Session>): Session {
+	return {
+		...ZeroSession,
+		...session,
+	}
+}
 
 export async function GetAllSessions() {
-	return api<Card[]>('/card', 'GET')
+	return api<Session[]>('/card', 'GET').then(sessions => sessions.map(ensureSession))
 }
 
 export async function GetSessionByID(id: string) {
-	return api<Card>(`/card/${id}`, 'GET')
+	return api<Session>(`/card/${id}`, 'GET').then(ensureSession)
 }
 
 export async function GetCurrentSession(room: string) {
-	return api<Card>(`/card/current/${room}`, 'GET')
+	return api<Session>(`/card/current/${room}`, 'GET').then(ensureSession)
 }
 
 export async function UpdateSession(id: string, start: Date, end: Date) {

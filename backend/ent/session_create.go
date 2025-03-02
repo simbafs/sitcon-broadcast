@@ -26,9 +26,25 @@ func (sc *SessionCreate) SetTitle(s string) *SessionCreate {
 	return sc
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableTitle(s *string) *SessionCreate {
+	if s != nil {
+		sc.SetTitle(*s)
+	}
+	return sc
+}
+
 // SetType sets the "type" field.
 func (sc *SessionCreate) SetType(s string) *SessionCreate {
 	sc.mutation.SetType(s)
+	return sc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableType(s *string) *SessionCreate {
+	if s != nil {
+		sc.SetType(*s)
+	}
 	return sc
 }
 
@@ -44,6 +60,14 @@ func (sc *SessionCreate) SetRoom(s string) *SessionCreate {
 	return sc
 }
 
+// SetNillableRoom sets the "room" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableRoom(s *string) *SessionCreate {
+	if s != nil {
+		sc.SetRoom(*s)
+	}
+	return sc
+}
+
 // SetBroadcast sets the "broadcast" field.
 func (sc *SessionCreate) SetBroadcast(s []string) *SessionCreate {
 	sc.mutation.SetBroadcast(s)
@@ -56,9 +80,25 @@ func (sc *SessionCreate) SetStart(t time.Time) *SessionCreate {
 	return sc
 }
 
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableStart(t *time.Time) *SessionCreate {
+	if t != nil {
+		sc.SetStart(*t)
+	}
+	return sc
+}
+
 // SetEnd sets the "end" field.
 func (sc *SessionCreate) SetEnd(t time.Time) *SessionCreate {
 	sc.mutation.SetEnd(t)
+	return sc
+}
+
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableEnd(t *time.Time) *SessionCreate {
+	if t != nil {
+		sc.SetEnd(*t)
+	}
 	return sc
 }
 
@@ -68,9 +108,25 @@ func (sc *SessionCreate) SetSlido(s string) *SessionCreate {
 	return sc
 }
 
+// SetNillableSlido sets the "slido" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableSlido(s *string) *SessionCreate {
+	if s != nil {
+		sc.SetSlido(*s)
+	}
+	return sc
+}
+
 // SetSlide sets the "slide" field.
 func (sc *SessionCreate) SetSlide(s string) *SessionCreate {
 	sc.mutation.SetSlide(s)
+	return sc
+}
+
+// SetNillableSlide sets the "slide" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableSlide(s *string) *SessionCreate {
+	if s != nil {
+		sc.SetSlide(*s)
+	}
 	return sc
 }
 
@@ -80,9 +136,25 @@ func (sc *SessionCreate) SetHackmd(s string) *SessionCreate {
 	return sc
 }
 
+// SetNillableHackmd sets the "hackmd" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableHackmd(s *string) *SessionCreate {
+	if s != nil {
+		sc.SetHackmd(*s)
+	}
+	return sc
+}
+
 // SetID sets the "id" field.
 func (sc *SessionCreate) SetID(s string) *SessionCreate {
 	sc.mutation.SetID(s)
+	return sc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableID(s *string) *SessionCreate {
+	if s != nil {
+		sc.SetID(*s)
+	}
 	return sc
 }
 
@@ -93,6 +165,7 @@ func (sc *SessionCreate) Mutation() *SessionMutation {
 
 // Save creates the Session in the database.
 func (sc *SessionCreate) Save(ctx context.Context) (*Session, error) {
+	sc.defaults()
 	return withHooks(ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
@@ -115,6 +188,54 @@ func (sc *SessionCreate) Exec(ctx context.Context) error {
 func (sc *SessionCreate) ExecX(ctx context.Context) {
 	if err := sc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (sc *SessionCreate) defaults() {
+	if _, ok := sc.mutation.Title(); !ok {
+		v := session.DefaultTitle
+		sc.mutation.SetTitle(v)
+	}
+	if _, ok := sc.mutation.GetType(); !ok {
+		v := session.DefaultType
+		sc.mutation.SetType(v)
+	}
+	if _, ok := sc.mutation.Speakers(); !ok {
+		v := session.DefaultSpeakers
+		sc.mutation.SetSpeakers(v)
+	}
+	if _, ok := sc.mutation.Room(); !ok {
+		v := session.DefaultRoom
+		sc.mutation.SetRoom(v)
+	}
+	if _, ok := sc.mutation.Broadcast(); !ok {
+		v := session.DefaultBroadcast
+		sc.mutation.SetBroadcast(v)
+	}
+	if _, ok := sc.mutation.Start(); !ok {
+		v := session.DefaultStart
+		sc.mutation.SetStart(v)
+	}
+	if _, ok := sc.mutation.End(); !ok {
+		v := session.DefaultEnd
+		sc.mutation.SetEnd(v)
+	}
+	if _, ok := sc.mutation.Slido(); !ok {
+		v := session.DefaultSlido
+		sc.mutation.SetSlido(v)
+	}
+	if _, ok := sc.mutation.Slide(); !ok {
+		v := session.DefaultSlide
+		sc.mutation.SetSlide(v)
+	}
+	if _, ok := sc.mutation.Hackmd(); !ok {
+		v := session.DefaultHackmd
+		sc.mutation.SetHackmd(v)
+	}
+	if _, ok := sc.mutation.ID(); !ok {
+		v := session.DefaultID
+		sc.mutation.SetID(v)
 	}
 }
 
@@ -246,6 +367,7 @@ func (scb *SessionCreateBulk) Save(ctx context.Context) ([]*Session, error) {
 	for i := range scb.builders {
 		func(i int, root context.Context) {
 			builder := scb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SessionMutation)
 				if !ok {

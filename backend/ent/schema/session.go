@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
@@ -13,17 +15,17 @@ type Session struct {
 // Fields of the Session.
 func (Session) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id"),
-		field.String("title"),
-		field.String("type"),
-		field.Strings("speakers"),
-		field.String("room"),
-		field.Strings("broadcast"),
-		field.Time("start"),
-		field.Time("end"),
-		field.String("slido"), // json: qa
-		field.String("slide"),
-		field.String("hackmd"), // json: co_write
+		field.String("id").Default(""),
+		field.String("title").Default(""),
+		field.String("type").Default(""),
+		field.Strings("speakers").Default([]string{}),
+		field.String("room").Default(""),
+		field.Strings("broadcast").Default([]string{}),
+		field.Time("start").Default(time.Time{}),
+		field.Time("end").Default(time.Time{}),
+		field.String("slido").Default(""), // json: qa
+		field.String("slide").Default(""),
+		field.String("hackmd").Default(""), // json: co_write
 	}
 }
 

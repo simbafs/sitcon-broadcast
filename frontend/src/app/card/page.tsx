@@ -6,19 +6,14 @@ import x from '@/img/x.svg'
 import { formatTime } from '@/utils/formatTime'
 import { useSSE } from '@/hooks/useSSE'
 import { Suspense, useEffect, useState } from 'react'
-import { Session, ZeroSession } from '@/types/card'
 import { parseAsString, useQueryState } from 'nuqs'
+import { GetCurrentSession, GetSessionByID, Session, ZeroSession } from '@/sdk/sdk'
 
 function useCard() {
 	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
-	const [idx] = useQueryState('idx')
+	const [id] = useQueryState('id')
 
-	const needUpdate = idx === null
-	let url = `/api/card/${room}/${idx}`
-
-	if (needUpdate) {
-		url = `/api/card/${room}`
-	}
+	const needUpdate = id === null
 
 	const [card, setCard] = useState(ZeroSession)
 
@@ -27,17 +22,9 @@ function useCard() {
 
 	// init
 	useEffect(() => {
-		fetch(url)
-			.then(res => res.json())
-			.then(data => {
-				if (data.error) {
-					throw new Error(data.error)
-				}
-				return data
-			})
-			.then(setCard)
-			.catch(e => setError(new Error(`Failed to fetch card: ${e}`)))
-	}, [url])
+		if (!id) GetCurrentSession(room).then(setCard).catch(setError)
+		else GetSessionByID(id).then(setCard).catch(setError)
+	}, [room, id])
 
 	// update
 	// TODO: test if updating works

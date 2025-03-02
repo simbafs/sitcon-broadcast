@@ -2,8 +2,60 @@
 
 package ent
 
+import (
+	"backend/ent/schema"
+	"backend/ent/session"
+	"time"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	sessionFields := schema.Session{}.Fields()
+	_ = sessionFields
+	// sessionDescTitle is the schema descriptor for title field.
+	sessionDescTitle := sessionFields[1].Descriptor()
+	// session.DefaultTitle holds the default value on creation for the title field.
+	session.DefaultTitle = sessionDescTitle.Default.(string)
+	// sessionDescType is the schema descriptor for type field.
+	sessionDescType := sessionFields[2].Descriptor()
+	// session.DefaultType holds the default value on creation for the type field.
+	session.DefaultType = sessionDescType.Default.(string)
+	// sessionDescSpeakers is the schema descriptor for speakers field.
+	sessionDescSpeakers := sessionFields[3].Descriptor()
+	// session.DefaultSpeakers holds the default value on creation for the speakers field.
+	session.DefaultSpeakers = sessionDescSpeakers.Default.([]string)
+	// sessionDescRoom is the schema descriptor for room field.
+	sessionDescRoom := sessionFields[4].Descriptor()
+	// session.DefaultRoom holds the default value on creation for the room field.
+	session.DefaultRoom = sessionDescRoom.Default.(string)
+	// sessionDescBroadcast is the schema descriptor for broadcast field.
+	sessionDescBroadcast := sessionFields[5].Descriptor()
+	// session.DefaultBroadcast holds the default value on creation for the broadcast field.
+	session.DefaultBroadcast = sessionDescBroadcast.Default.([]string)
+	// sessionDescStart is the schema descriptor for start field.
+	sessionDescStart := sessionFields[6].Descriptor()
+	// session.DefaultStart holds the default value on creation for the start field.
+	session.DefaultStart = sessionDescStart.Default.(time.Time)
+	// sessionDescEnd is the schema descriptor for end field.
+	sessionDescEnd := sessionFields[7].Descriptor()
+	// session.DefaultEnd holds the default value on creation for the end field.
+	session.DefaultEnd = sessionDescEnd.Default.(time.Time)
+	// sessionDescSlido is the schema descriptor for slido field.
+	sessionDescSlido := sessionFields[8].Descriptor()
+	// session.DefaultSlido holds the default value on creation for the slido field.
+	session.DefaultSlido = sessionDescSlido.Default.(string)
+	// sessionDescSlide is the schema descriptor for slide field.
+	sessionDescSlide := sessionFields[9].Descriptor()
+	// session.DefaultSlide holds the default value on creation for the slide field.
+	session.DefaultSlide = sessionDescSlide.Default.(string)
+	// sessionDescHackmd is the schema descriptor for hackmd field.
+	sessionDescHackmd := sessionFields[10].Descriptor()
+	// session.DefaultHackmd holds the default value on creation for the hackmd field.
+	session.DefaultHackmd = sessionDescHackmd.Default.(string)
+	// sessionDescID is the schema descriptor for id field.
+	sessionDescID := sessionFields[0].Descriptor()
+	// session.DefaultID holds the default value on creation for the id field.
+	session.DefaultID = sessionDescID.Default.(string)
 }

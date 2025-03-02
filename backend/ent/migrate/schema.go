@@ -11,16 +11,16 @@ var (
 	// SessionsColumns holds the columns for the "sessions" table.
 	SessionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
-		{Name: "title", Type: field.TypeString},
-		{Name: "type", Type: field.TypeString},
+		{Name: "title", Type: field.TypeString, Default: ""},
+		{Name: "type", Type: field.TypeString, Default: ""},
 		{Name: "speakers", Type: field.TypeJSON},
-		{Name: "room", Type: field.TypeString},
+		{Name: "room", Type: field.TypeString, Default: ""},
 		{Name: "broadcast", Type: field.TypeJSON},
 		{Name: "start", Type: field.TypeTime},
 		{Name: "end", Type: field.TypeTime},
-		{Name: "slido", Type: field.TypeString},
-		{Name: "slide", Type: field.TypeString},
-		{Name: "hackmd", Type: field.TypeString},
+		{Name: "slido", Type: field.TypeString, Default: ""},
+		{Name: "slide", Type: field.TypeString, Default: ""},
+		{Name: "hackmd", Type: field.TypeString, Default: ""},
 	}
 	// SessionsTable holds the schema information for the "sessions" table.
 	SessionsTable = &schema.Table{

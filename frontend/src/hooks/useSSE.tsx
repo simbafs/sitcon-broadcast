@@ -1,4 +1,5 @@
 'use client'
+import { parseJSONWithDates } from '@/sdk/sdk'
 import { createContext, useContext, useEffect, ReactNode, useReducer, useState } from 'react'
 
 type Events = Record<string, any[]>
@@ -33,7 +34,7 @@ export const SSEProvider = ({
 
 		eventSource.onmessage = event => {
 			try {
-				const parsedData: { name: string; data: any } = JSON.parse(event.data)
+				const parsedData: { name: string; data: any } = parseJSONWithDates(event.data)
 				updateEvents(parsedData)
 			} catch (err) {
 				console.error('Error parsing SSE data:', err)

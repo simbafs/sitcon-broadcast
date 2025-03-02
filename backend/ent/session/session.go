@@ -3,6 +3,8 @@
 package session
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -59,6 +61,31 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// DefaultTitle holds the default value on creation for the "title" field.
+	DefaultTitle string
+	// DefaultType holds the default value on creation for the "type" field.
+	DefaultType string
+	// DefaultSpeakers holds the default value on creation for the "speakers" field.
+	DefaultSpeakers []string
+	// DefaultRoom holds the default value on creation for the "room" field.
+	DefaultRoom string
+	// DefaultBroadcast holds the default value on creation for the "broadcast" field.
+	DefaultBroadcast []string
+	// DefaultStart holds the default value on creation for the "start" field.
+	DefaultStart time.Time
+	// DefaultEnd holds the default value on creation for the "end" field.
+	DefaultEnd time.Time
+	// DefaultSlido holds the default value on creation for the "slido" field.
+	DefaultSlido string
+	// DefaultSlide holds the default value on creation for the "slide" field.
+	DefaultSlide string
+	// DefaultHackmd holds the default value on creation for the "hackmd" field.
+	DefaultHackmd string
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID string
+)
 
 // OrderOption defines the ordering options for the Session queries.
 type OrderOption func(*sql.Selector)

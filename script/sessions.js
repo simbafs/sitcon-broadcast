@@ -159,13 +159,13 @@ function loadSlidoMappings(csvPath) {
 	const sessionTypes = Object.fromEntries(data.session_types.map(item => [item.id, item.zh.name]))
 
 	const sessions = data.sessions.map(s => ({
-		id: s.id,
-		title: s.zh.title,
-		type: sessionTypes[s.type],
-		speakers: s.speakers.map(id => speakers[id]),
-		room: s.room,
+		id: s.id || '',
+		title: s.zh.title || '',
+		type: sessionTypes[s.type] || '',
+		speakers: s.speakers.map(id => speakers[id]) || [],
+		room: s.room || '',
 		broadcast: s.broadcast || [],
-		start: convertTime(s.start),
+		start: convertTime(s.start) ,
 		end: convertTime(s.end),
 		slido: slidoMap[s.qa?.trim()] || '', // 這裡使用 slido.csv 對應的 Slido 連結
 		slide: s.slide || '',

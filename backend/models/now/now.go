@@ -11,12 +11,14 @@ var (
 
 // no Create
 
+var tw = time.FixedZone("Asia/Taipei", 8)
+
 func Read() time.Time {
 	n := time.Now()
 	if now.Equal(zero) {
-		return n
+		return n.In(tw)
 	} else {
-		return now
+		return now.In(tw)
 	}
 }
 

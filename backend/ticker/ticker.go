@@ -18,6 +18,7 @@ type (
 	MsgPing      struct{}
 	MsgNow       struct{}
 	MsgCountdown string
+	MsgOneCard   string
 	MsgCard      struct {
 		Room string
 		ID   string
@@ -37,17 +38,18 @@ func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}, update chan Ms
 			UpdatePing(broadcast)
 		case <-perMinute.C:
 			UpdateNow(broadcast)
-			UpdateAllCard(broadcast)
+			UpdateAllCurrentCard(broadcast)
 		case msg := <-update:
 			switch msg := msg.(type) {
 			case MsgPing:
 				UpdatePing(broadcast)
 			case MsgNow:
 				UpdateNow(broadcast)
+				UpdateAllCurrentCard(broadcast)
 			case MsgCountdown:
 				UpdateCountdown(broadcast)
 			case MsgCard:
-				UpdateCard(broadcast, msg.Room, msg.ID)
+				UpdateCardInRoom(broadcast, msg.Room, msg.ID)
 			}
 		case <-quit:
 			perSecond.Stop()
@@ -94,42 +96,73 @@ func UpdateCountdown(broadcast chan middleware.SSEMsg) {
 
 var rooms = []string{"R0", "R1", "R2", "R3", "S"}
 
-func UpdateAllCard(broadcast chan middleware.SSEMsg) {
+func UpdateAllCurrentCard(broadcast chan middleware.SSEMsg) {
 	for _, room := range rooms {
 		curr, err := session.ReadCurrentByRoom(context.Background(), room)
 		if err != nil {
 			log.Printf("failed to get current session of rooom %s: %s", room, err)
 		}
 		broadcast <- middleware.SSEMsg{
-			Name: "card-" + room,
+			Name: "card-current-" + room,
 			Data: curr,
 		}
 	}
 }
 
-func UpdateCard(broadcast chan middleware.SSEMsg, room string, id string) {
-	prev, current, next, err := session.ReadPrevNext(context.Background(), room, id)
+func UpdateOneCard(broadcast chan middleware.SSEMsg, id string) {
+	curr, err := session.ReadByID(context.Background(), id)
+	if err != nil {
+		log.Printf("failed to get current session of rooom %s: %s", id, err)
+	}
+
+	broadcast <- middleware.SSEMsg{
+		Name: "card-id-" + curr.ID,
+		Data: curr,
+	}
+}
+
+func UpdateCardInRoom(broadcast chan middleware.SSEMsg, room string, id string) {
+	prev, curr, next, err := session.ReadPrevNext(context.Background(), room, id)
 	if err != nil {
 		log.Println("failed to get prev, current, next session", err)
 		return
 	}
 
-	if current != nil {
+	if curr != nil {
+		log.Println("curr", curr)
 		broadcast <- middleware.SSEMsg{
 			Name: "card-" + room,
-			Data: current,
+			Data: curr,
+		}
+		broadcast <- middleware.SSEMsg{
+			Name: "card-current-" + room,
+			Data: curr,
+		}
+		broadcast <- middleware.SSEMsg{
+			Name: "card-id-" + curr.ID,
+			Data: curr,
 		}
 	}
 	if prev != nil {
+		log.Println("prev", prev)
+		broadcast <- middleware.SSEMsg{
+			Name: "card-" + room,
+			Data: prev,
+		}
+		broadcast <- middleware.SSEMsg{
+			Name: "card-id-" + prev.ID,
+			Data: prev,
+		}
+	}
+	if next != nil {
+		log.Println("next", next)
 		broadcast <- middleware.SSEMsg{
 			Name: "card-" + room,
 			Data: next,
 		}
-	}
-	if next != nil {
 		broadcast <- middleware.SSEMsg{
-			Name: "card-" + room,
-			Data: prev,
+			Name: "card-id-" + next.ID,
+			Data: next,
 		}
 	}
 }

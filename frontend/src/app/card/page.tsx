@@ -7,32 +7,29 @@ import { formatTime } from '@/utils/formatTime'
 import { useSSE } from '@/hooks/useSSE'
 import { Suspense, useEffect, useState } from 'react'
 import { parseAsString, useQueryState } from 'nuqs'
-import { GetCurrentSession, GetSessionByID, Session, ZeroSession } from '@/sdk/sdk'
+import { ensureSession, GetCurrentSession, GetSessionByID, Session, ZeroSession } from '@/sdk/sdk'
 
 function useCard() {
 	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
 	const [id] = useQueryState('id')
-
-	const needUpdate = id === null
-
 	const [card, setCard] = useState(ZeroSession)
 
-	const latest = useSSE<Session>(`card-${room}`).at(-1)
+	const keepUpdate = id == null
+	const sseStr = keepUpdate ? `card-current-${room}` : `card-id-${id}`
+
+	const update = useSSE<Session>(sseStr).at(-1)
 	const [error, setError] = useState<Error>()
 
 	// init
 	useEffect(() => {
-		if (!id) GetCurrentSession(room).then(setCard).catch(setError)
-		else GetSessionByID(id).then(setCard).catch(setError)
-	}, [room, id])
+		if (keepUpdate) GetCurrentSession(room).then(setCard, setError)
+		else GetSessionByID(id).then(setCard, setError)
+	}, [id, keepUpdate, room])
 
-	// update
-	// TODO: test if updating works
 	useEffect(() => {
-		if (!needUpdate) return
-		if (!latest) return
-		setCard(latest)
-	}, [latest, needUpdate])
+		if (!update) return
+		setCard(ensureSession(update))
+	}, [update])
 
 	return [card, error] as const
 }

@@ -1,21 +1,21 @@
-// GET /card
-// GET /card/:id
-// GET /card/current/:room
-// PUT /card/:id
+// GET    /api/card/
+// GET    /api/card/:id
+// GET    /api/card/current/:room
+// PUT    /api/card/:room/:id
 //
-// GET /countdown
-// GET /countdown/:name
-// PUT /countdown/:name
+// GET    /api/now/
+// PUT    /api/now/
+// DELETE /api/now/
 //
-// GET /now
-// PUT /now
-// Delete /now
+// GET    /api/countdown/
+// GET    /api/countdown/:name
+// PUT    /api/countdown/:name
 
 type Method = 'POST' | 'GET' | 'PUT' | 'DELETE'
 
 export function parseJSONWithDates(jsonString: string) {
 	const data = JSON.parse(jsonString, (key, value) => {
-		if (typeof value === 'string' && value.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}/)) {
+		if (typeof value === 'string' && value.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
 			return new Date(value)
 		}
 		return value
@@ -44,13 +44,11 @@ async function api<T extends any>(path: string, method: Method, body?: any) {
 }
 
 export async function GetNow() {
-	return api<{ now: Date }>('/now', 'GET').then(data => data.now)
+	return api<{ now: Date }>('/now', 'GET').then(data => new Date(data.now))
 }
 
 export async function SetNow(now: Date) {
-	return api('/now', 'POST', {
-		now,
-	})
+	return api('/now', 'PUT', { now })
 }
 
 export async function ResetNow() {
@@ -85,7 +83,7 @@ export const ZeroSession: Session = {
 	hackmd: '',
 }
 
-function ensureSession(session: Partial<Session>): Session {
+export function ensureSession(session: Partial<Session>): Session {
 	return {
 		...ZeroSession,
 		...session,
@@ -104,8 +102,8 @@ export async function GetCurrentSession(room: string) {
 	return api<Session>(`/card/current/${room}`, 'GET').then(ensureSession)
 }
 
-export async function UpdateSession(id: string, start: Date, end: Date) {
-	return api(`/card/${id}`, 'PUT', { start, end })
+export async function UpdateSession(room: string, id: string, start: Date, end: Date) {
+	return api(`/card/${room}/${id}`, 'PUT', { start, end })
 }
 
 export const PAUSE = 0

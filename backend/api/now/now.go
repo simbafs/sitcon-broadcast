@@ -2,7 +2,6 @@ package now
 
 import (
 	"net/http"
-	"time"
 
 	"backend/middleware"
 	"backend/models/now"
@@ -12,7 +11,7 @@ import (
 )
 
 type NowBody struct {
-	Now time.Time `json:"now"`
+	Now now.Now `json:"now"`
 }
 
 func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
@@ -35,12 +34,12 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		now.Update(t.Now)
 
 		c.JSON(http.StatusOK, gin.H{"message": "updated"})
-		update <- ticker.MsgNow
+		update <- ticker.MsgNow{}
 	})
 
 	route.DELETE("/", t.Auth, func(c *gin.Context) {
 		now.Delete()
 		c.JSON(http.StatusOK, gin.H{"message": "cleared"})
-		update <- ticker.MsgNow
+		update <- ticker.MsgNow{}
 	})
 }

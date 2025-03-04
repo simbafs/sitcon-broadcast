@@ -102,7 +102,9 @@ function saveSessionsToDB(sessionsByRoom) {
 			end TEXT,
 			slido TEXT,
 			slide TEXT,
-			hackmd TEXT
+			hackmd TEXT,
+			next TEXT,
+			prev TEXT
 		);
 	`)
 
@@ -110,8 +112,8 @@ function saveSessionsToDB(sessionsByRoom) {
 	console.log('刪除後的紀錄數量:', db.prepare('SELECT COUNT(*) FROM sessions').get())
 
 	const insertSession = db.prepare(`
-		INSERT OR REPLACE INTO sessions (id, title, type, speakers, room, broadcast, start, end, slido, slide, hackmd)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+		INSERT OR REPLACE INTO sessions (id, title, type, speakers, room, broadcast, start, end, slido, slide, hackmd, next, prev)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`)
 
 	const insertMany = db.transaction(sessions => {
@@ -137,6 +139,8 @@ function saveSessionsToDB(sessionsByRoom) {
 				session.slido,
 				session.slide,
 				session.hackmd,
+				session.next,
+				session.prev
 			)
 		}
 
@@ -174,6 +178,25 @@ function loadSlidoMappings(csvPath) {
 	})
 }
 
+function linked_listtify(sessionsByRoom) {
+	for (let room of Object.keys(sessionsByRoom)) {
+		const sessions = sessionsByRoom[room]
+		if (sessions.length === 0) continue
+
+		// 先排序，確保 sessions 依時間順序排列
+		sessions.sort((a, b) => new Date(a.start) - new Date(b.start))
+
+		for (let i = 0; i < sessions.length; i++) {
+			const prevSession = sessions[i - 1] || null
+			const nextSession = sessions[i + 1] || null
+
+			sessions[i].prev = prevSession ? prevSession.id : ''
+			sessions[i].next = nextSession ? nextSession.id : ''
+		}
+	}
+	return sessionsByRoom
+}
+
 ;(async () => {
 	const slidoMap = await loadSlidoMappings(SLIDO_CSV)
 	const data = await fetch(URL).then(res => res.json())
@@ -196,7 +219,7 @@ function loadSlidoMappings(csvPath) {
 		hackmd: s.co_write || '',
 	}))
 
-	const filledSessions = {}
+	let filledSessions = {}
 	for (let room of rooms) {
 		let roomSessions = sessions.filter(s => s.room === room || s.broadcast.includes(room))
 		roomSessions = mergeSessions(roomSessions)
@@ -211,6 +234,8 @@ function loadSlidoMappings(csvPath) {
 			return session
 		})
 	}
+
+	filledSessions = linked_listtify(filledSessions)
 
 	saveSessionsToDB(filledSessions)
 })()

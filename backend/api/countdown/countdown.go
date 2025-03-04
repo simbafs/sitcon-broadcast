@@ -56,6 +56,6 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "success update room",
 		})
-		update <- ticker.MsgCountdown
+		update <- ticker.MsgCountdown(name)
 	})
 }

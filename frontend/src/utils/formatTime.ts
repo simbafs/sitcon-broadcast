@@ -1,7 +1,7 @@
 const to2 = (n: number) => n.toString().padStart(2, '0')
 export function formatTime(time: Date) {
 	if (time instanceof Date == false) {
-		console.log(time)
+		// console.log(time)
 		time = new Date(time)
 	}
 	if (time === new Date(0)) return '00:00'

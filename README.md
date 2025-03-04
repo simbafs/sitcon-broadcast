@@ -15,6 +15,8 @@ SITCON 2024 製播組要用的東西
 - [ ] 寫死時區
 - [ ] time.Time 型別在 JS 接收、發送
 - [ ] Countdown 的時間對齊問題
+- [ ] 統一 Go 到底怎麼把 time.Time 轉成字串
+- [ ] linked list 是錯誤的，因為依照議程廳不同，前後關係也會不同
 
 # Known Bugs
 * 字卡好像不會動

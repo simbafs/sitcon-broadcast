@@ -1,20 +1,19 @@
 'use client'
-import { Sessions } from '@/types/card'
 import { btn } from '@/varients/btn'
 import { Room } from './room'
-import useSWR from 'swr'
 import { twMerge } from 'tailwind-merge'
 import { useSSEFetch } from '@/hooks/useSSE'
 import { formatTime } from '@/utils/formatTime'
 import { parseAsString, useQueryState } from 'nuqs'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { GetNow } from '@/sdk/sdk'
+import { useSessions } from '@/hooks/useSessions'
 
 function Admin() {
 	const [room, setRoom] = useQueryState('room', parseAsString.withDefault('R0'))
 	const now = useSSEFetch('now', GetNow)
 
-	const { data, error } = useSWR<Sessions>('/api/session', (url: string) => fetch(url).then(res => res.json()))
+	const [sessions, error] = useSessions(room)
 
 	if (error)
 		return (
@@ -23,7 +22,7 @@ function Admin() {
 				<pre>{JSON.stringify(error, null, 2)}</pre>
 			</>
 		)
-	if (!data) return <h1>Loading...</h1>
+	if (!sessions) return <h1>Loading...</h1>
 
 	return (
 		<div className="flex min-h-screen w-screen flex-col items-center px-8 py-4">
@@ -33,7 +32,7 @@ function Admin() {
 					onChange={e => setRoom(e.target.value)}
 					className={twMerge(btn({ size: '4xl' }), 'grow')}
 				>
-					{Object.keys(data).map(r => (
+					{['R0', 'R1', 'R2', 'R3', 'S'].map(r => (
 						<option key={r} value={r}>
 							{r}
 						</option>
@@ -49,7 +48,7 @@ function Admin() {
 			</div>
 			{now !== undefined && <h1 className="mt-4 text-4xl">{formatTime(now)}</h1>}
 
-			<Room sessions={data[room]} key={room} />
+			<Room sessions={sessions} key={room} />
 		</div>
 	)
 }

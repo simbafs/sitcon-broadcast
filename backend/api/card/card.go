@@ -51,6 +51,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		room := c.Param("room")
 
 		if s, err := session.ReadCurrentByRoom(c.Request.Context(), room); err != nil {
+			log.Println(err)
 			c.JSON(http.StatusNotFound, gin.H{"error": "session not found"})
 			return
 		} else {
@@ -59,7 +60,8 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	})
 
 	// update session, the session must exist
-	route.PUT("/:id", t.VerifyToken, func(c *gin.Context) {
+	route.PUT("/:room/:id", t.Auth, func(c *gin.Context) {
+		room := c.Param("room")
 		id := c.Param("id")
 
 		var u UpdateSession
@@ -68,13 +70,17 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 			return
 		}
 
-		if err := session.Update(c.Request.Context(), id, u.Start, u.End); err != nil {
+		if err := session.Update(c.Request.Context(), room, id, u.Start, u.End); err != nil {
+			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "filaed to update session"})
 			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "updated"})
 
-		update <- ticker.MsgCard
+		update <- ticker.MsgCard{
+			Room: room,
+			ID:   id,
+		}
 	})
 }

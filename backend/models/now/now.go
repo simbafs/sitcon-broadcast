@@ -4,25 +4,42 @@ import (
 	"time"
 )
 
+type Now struct {
+	time.Time
+}
+
+func (n Now) MarshalJSON() ([]byte, error) {
+	loc, err := time.LoadLocation("Asia/Taipei")
+	if err != nil {
+		return nil, err
+	}
+
+	return []byte(`"` + n.In(loc).Format("2006-01-02 15:04:05") + `"`), nil
+}
+
 var (
-	zero = time.Time{}
-	now  = time.Time{}
+	zero = Now{}
+	now  = Now{}
 )
 
 // no Create
 
 var tw = time.FixedZone("Asia/Taipei", 8)
 
-func Read() time.Time {
-	n := time.Now()
-	if now.Equal(zero) {
-		return n.In(tw)
+func getRealNow() Now {
+	return Now{time.Now()}
+}
+
+func Read() Now {
+	n := getRealNow()
+	if now.Equal(zero.Time) {
+		return n
 	} else {
-		return now.In(tw)
+		return now
 	}
 }
 
-func Update(t time.Time) {
+func Update(t Now) {
 	now = t
 }
 

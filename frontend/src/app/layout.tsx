@@ -1,5 +1,5 @@
-import { SSEProvider } from '@/hooks/useSSE'
 import './globals.css'
+import { SSEProvider } from '@/hooks/useSSE'
 import { Noto_Sans_TC } from 'next/font/google'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 

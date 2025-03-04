@@ -112,8 +112,8 @@ function saveSessionsToDB(sessionsByRoom) {
 	console.log('刪除後的紀錄數量:', db.prepare('SELECT COUNT(*) FROM sessions').get())
 
 	const insertSession = db.prepare(`
-		INSERT OR REPLACE INTO sessions (id, title, type, speakers, room, broadcast, start, end, slido, slide, hackmd, next, prev)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+		INSERT OR REPLACE INTO sessions (id, title, type, speakers, room, broadcast, start, end, slido, slide, hackmd)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`)
 
 	const insertMany = db.transaction(sessions => {
@@ -139,8 +139,6 @@ function saveSessionsToDB(sessionsByRoom) {
 				session.slido,
 				session.slide,
 				session.hackmd,
-				session.next,
-				session.prev
 			)
 		}
 
@@ -178,28 +176,11 @@ function loadSlidoMappings(csvPath) {
 	})
 }
 
-function linked_listtify(sessionsByRoom) {
-	for (let room of Object.keys(sessionsByRoom)) {
-		const sessions = sessionsByRoom[room]
-		if (sessions.length === 0) continue
-
-		// 先排序，確保 sessions 依時間順序排列
-		sessions.sort((a, b) => new Date(a.start) - new Date(b.start))
-
-		for (let i = 0; i < sessions.length; i++) {
-			const prevSession = sessions[i - 1] || null
-			const nextSession = sessions[i + 1] || null
-
-			sessions[i].prev = prevSession ? prevSession.id : ''
-			sessions[i].next = nextSession ? nextSession.id : ''
-		}
-	}
-	return sessionsByRoom
-}
-
 ;(async () => {
 	const slidoMap = await loadSlidoMappings(SLIDO_CSV)
 	const data = await fetch(URL).then(res => res.json())
+
+	console.log(data.sessions.length)
 
 	const rooms = data.rooms.map(item => item.zh.name)
 	const speakers = Object.fromEntries(data.speakers.map(item => [item.id, item.zh.name]))
@@ -222,8 +203,10 @@ function linked_listtify(sessionsByRoom) {
 	let filledSessions = {}
 	for (let room of rooms) {
 		let roomSessions = sessions.filter(s => s.room === room || s.broadcast.includes(room))
-		roomSessions = mergeSessions(roomSessions)
-		filledSessions[room] = fillGaps(roomSessions)
+		// TDOO: 2025 的議程表是緊湊的，不需要合併相鄰的議程和填補休息
+		// roomSessions = mergeSessions(roomSessions)
+		// filledSessions[room] = fillGaps(roomSessions)
+		filledSessions[room] = roomSessions
 	}
 
 	for (let room of rooms) {
@@ -234,8 +217,6 @@ function linked_listtify(sessionsByRoom) {
 			return session
 		})
 	}
-
-	filledSessions = linked_listtify(filledSessions)
 
 	saveSessionsToDB(filledSessions)
 })()

@@ -11,8 +11,6 @@ export function Room({ sessions, room }: { sessions: Session[]; room: string }) 
 	const now = getCurrent(sessions) // get current session id
 	const [current, setCurrent] = useState(() => getCurrent(sessions))
 
-	// return <pre>{JSON.stringify({ sessions, now }, null, 2)}</pre>
-
 	return (
 		<div className="mt-4 grid w-full gap-4 md:grid-cols-[100px_1fr]">
 			<div className="grid w-full grid-cols-3 gap-2 md:grid-cols-1">
@@ -94,7 +92,7 @@ function EditSession({
 				</div>
 				<div>
 					<a
-						href={`/card?room=${session.room}&idx=${idx}`}
+						href={`/card?id=${session.id}`}
 						className={twMerge(btn({ size: '2xl' }), 'grid place-items-center')}
 						target="_blank"
 					>

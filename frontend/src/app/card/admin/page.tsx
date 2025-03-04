@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge'
 import { useSSEFetch } from '@/hooks/useSSE'
 import { formatTime } from '@/utils/formatTime'
 import { parseAsString, useQueryState } from 'nuqs'
-import { Suspense, useEffect } from 'react'
+import { Suspense } from 'react'
 import { GetNow } from '@/sdk/sdk'
 import { useSessions } from '@/app/card/admin/useSessions'
 

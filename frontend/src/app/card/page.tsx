@@ -50,32 +50,28 @@ function Card() {
 	// }
 
 	return (
-		<div className="flex grow flex-col px-[6vw] py-[2vw]">
-			<h1 className="text-[5vw] text-[#9f3b24]">{card.title}</h1>
-			<div className="flex grow flex-wrap items-center">
-				<h2 className="text-[4vw] text-[#383839]">
-					{formatTime(card.start)}-{formatTime(card.end)}
-				</h2>
-				<span className="grow" />
-				<h2 className={twMerge('text-[#383839]', speakers.length > 60 ? 'text-[3vw]' : 'text-[4vw]')}>
-					{speakers}
-				</h2>
+		<div className="flex grow flex-col justify-between p-2 font-card">
+			<div className="flex items-center justify-between">
+				<p className="text-3xl text-[#2540a7]">{card.type}</p>
+				<p className="text-2xl text-[#8144b5]">
+					{formatTime(card.start)}~{formatTime(card.end)}
+				</p>
 			</div>
+			<p className="text-4xl text-[#000000]">{card.title}</p>
+			<p className="text-4xl text-[#917c6a]">{speakers}</p>
 		</div>
 	)
 }
 
 export default function Page() {
 	return (
-		<div className="h-screen w-screen overflow-hidden bg-transparent">
-			<div className="flex aspect-[1.8/1] w-[70vw] flex-col bg-[#f7f6f6] shadow-[18px_18px_50px_0px_rgba(0,0,0,0.1)]">
-				<div className="flex h-[6vw] items-center justify-end bg-[#406096]">
-					<Image src={x} width={18} height={18} alt="Close" className="mr-[2vw] h-[4vw] w-[4vw]" />
-				</div>
+		<>
+			<div className="flex min-h-[250px] w-[400px] flex-col bg-[#fdfdfd]">
 				<Suspense>
 					<Card />
 				</Suspense>
 			</div>
-		</div>
+			<p className="mt-2">400px x 250px</p>
+		</>
 	)
 }

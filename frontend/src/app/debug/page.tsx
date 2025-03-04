@@ -8,7 +8,7 @@ import { SSE } from './sse'
 export default function Page() {
 	return (
 		<div className="p-20">
-			<details open>
+			<details>
 				<summary>SSE</summary>
 				<SSE />
 			</details>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSSE } from './useSSE'
+import { useSSE } from '../../hooks/useSSE'
 import { COUNTING, GetCountdownByName, PAUSE, Room, UpdateCountdown } from '@/sdk/sdk'
 
 // export const PAUSE = 0

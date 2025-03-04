@@ -1,13 +1,13 @@
 import { formatTime } from '@/utils/formatTime'
 import { useState } from 'react'
 import { btn } from '@/varients/btn'
-import { EditTime } from '@/components/useTime'
+import { EditTime } from '@/app/card/admin/useTime'
 import { useMediaQuery } from 'usehooks-ts'
 import { twMerge } from 'tailwind-merge'
 import { Session, UpdateSession } from '@/sdk/sdk'
 import { getCurrent } from './getCurrent'
 
-export function Room({ sessions }: { sessions: Session[] }) {
+export function Room({ sessions, room }: { sessions: Session[]; room: string }) {
 	const now = getCurrent(sessions) // get current session id
 	const [current, setCurrent] = useState(() => getCurrent(sessions))
 
@@ -32,18 +32,40 @@ export function Room({ sessions }: { sessions: Session[] }) {
 
 			<ul className="flex w-full flex-col justify-stretch gap-4">
 				{/* previous */}
-				<EditSession idx={current - 1} sessions={sessions} isCurrent={now == current - 1} key={current - 1} />
+				<EditSession
+					idx={current - 1}
+					room={room}
+					sessions={sessions}
+					isCurrent={now == current - 1}
+					key={current - 1}
+				/>
 				{/* current */}
-				<EditSession idx={current} sessions={sessions} isCurrent={now == current} key={current} />
+				<EditSession idx={current} room={room} sessions={sessions} isCurrent={now == current} key={current} />
 				{/* <button className={twMerge(btn())}>新增議程(Unimplemented)</button> */}
 				{/* next */}
-				<EditSession idx={current + 1} sessions={sessions} isCurrent={now == current + 1} key={current + 1} />
+				<EditSession
+					idx={current + 1}
+					room={room}
+					sessions={sessions}
+					isCurrent={now == current + 1}
+					key={current + 1}
+				/>
 			</ul>
 		</div>
 	)
 }
 
-function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: number; isCurrent: boolean }) {
+function EditSession({
+	idx,
+	room,
+	sessions,
+	isCurrent,
+}: {
+	idx: number
+	room: string
+	sessions: Session[]
+	isCurrent: boolean
+}) {
 	// return <pre>{JSON.stringify({ s: sessions[idx] }, null, 2)}</pre>
 	const session = sessions[idx] as Session | undefined
 	const [detail, setDetail] = useState(false)
@@ -53,13 +75,13 @@ function EditSession({ sessions, idx, isCurrent }: { sessions: Session[]; idx: n
 	const setStart = (start: Date) => {
 		if (!session) return
 		console.log(start)
-		UpdateSession(session.id, start, session.end).catch(console.error)
+		UpdateSession(room, session.id, start, session.end).catch(console.error)
 	}
 
 	const setEnd = (end: Date) => {
 		if (!session) return
 		console.log(end)
-		UpdateSession(session.id, session.start, end).catch(console.error)
+		UpdateSession(room, session.id, session.start, end).catch(console.error)
 	}
 
 	const speakers = session && session.speakers ? session.speakers.join('、') : ''

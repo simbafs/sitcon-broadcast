@@ -1,6 +1,6 @@
 'use client'
-import { edit, useEditor } from '@/components/useEditTime'
-import { Countdown, useCountdown } from '@/hooks/useCountdown'
+import { edit, useEditor } from '@/app/countdown/admin/useEditTime'
+import { Countdown, useCountdown } from '@/app/countdown/useCountdown'
 import { COUNTING, PAUSE } from '@/sdk/sdk'
 import { formatCountdown } from '@/utils/formatTime'
 import { btn } from '@/varients/btn'

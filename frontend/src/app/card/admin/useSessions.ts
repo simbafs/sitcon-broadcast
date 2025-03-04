@@ -1,6 +1,6 @@
 import { ensureSession, GetAllSessions, Session } from '@/sdk/sdk'
 import { useEffect, useState } from 'react'
-import { useSSE } from './useSSE'
+import { useSSE } from '../../../hooks/useSSE'
 
 export function useSessions(room: string) {
 	const [sessions, setSessions] = useState<Session[]>([])

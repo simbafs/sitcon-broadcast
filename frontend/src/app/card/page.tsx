@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
-import x from '@/img/x.svg'
+import x from './x.svg'
 import { formatTime } from '@/utils/formatTime'
 import { useSSE } from '@/hooks/useSSE'
 import { Suspense, useEffect, useState } from 'react'

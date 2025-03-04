@@ -7,7 +7,7 @@ import { formatTime } from '@/utils/formatTime'
 import { parseAsString, useQueryState } from 'nuqs'
 import { Suspense, useEffect } from 'react'
 import { GetNow } from '@/sdk/sdk'
-import { useSessions } from '@/hooks/useSessions'
+import { useSessions } from '@/app/card/admin/useSessions'
 
 function Admin() {
 	const [room, setRoom] = useQueryState('room', parseAsString.withDefault('R0'))
@@ -48,7 +48,7 @@ function Admin() {
 			</div>
 			{now !== undefined && <h1 className="mt-4 text-4xl">{formatTime(now)}</h1>}
 
-			<Room sessions={sessions} key={room} />
+			<Room sessions={sessions} room={room} key={room} />
 		</div>
 	)
 }

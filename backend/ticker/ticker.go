@@ -122,25 +122,32 @@ func UpdateOneCard(broadcast chan middleware.SSEMsg, id string) {
 }
 
 func UpdateCardInRoom(broadcast chan middleware.SSEMsg, room string, id string) {
-	prev, curr, next, err := session.ReadPrevNext(context.Background(), room, id)
+	prev, target, next, err := session.ReadPrevNext(context.Background(), room, id)
 	if err != nil {
 		log.Println("failed to get prev, current, next session", err)
 		return
 	}
 
-	if curr != nil {
-		log.Println("curr", curr)
+	curr, err := session.ReadCurrentByRoom(context.Background(), room)
+	if err != nil {
+		log.Println("failed to get current session", err)
+		return
+	}
+
+	broadcast <- middleware.SSEMsg{
+		Name: "card-current-" + room,
+		Data: curr,
+	}
+
+	if target != nil {
+		log.Println("curr", target)
 		broadcast <- middleware.SSEMsg{
 			Name: "card-" + room,
-			Data: curr,
+			Data: target,
 		}
 		broadcast <- middleware.SSEMsg{
-			Name: "card-current-" + room,
-			Data: curr,
-		}
-		broadcast <- middleware.SSEMsg{
-			Name: "card-id-" + curr.ID,
-			Data: curr,
+			Name: "card-id-" + target.ID,
+			Data: target,
 		}
 	}
 	if prev != nil {

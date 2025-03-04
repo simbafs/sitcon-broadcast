@@ -11,3 +11,4 @@
 
 -   [ ] 把 `Name` 改成 `Topic`，也就是說一條訊息可以包含好幾個 Topic，節省流量
 -   [x] ~~當 now 更新時，要檢查要不要重送 card-current-R0~~ 直接在收到 MsgNow 時順便更新所有現在字卡
+-   [x] ~~當某個字卡因為更新時間不再是目前字卡時，需要通知 card-current-R0~~ 修正 UpdateCardInRoom

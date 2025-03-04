@@ -74,13 +74,11 @@ function EditSession({
 	// TODO: case of the session with broadcasts
 	const setStart = (start: Date) => {
 		if (!session) return
-		console.log(start)
 		UpdateSession(room, session.id, start, session.end).catch(console.error)
 	}
 
 	const setEnd = (end: Date) => {
 		if (!session) return
-		console.log(end)
 		UpdateSession(room, session.id, session.start, end).catch(console.error)
 	}
 

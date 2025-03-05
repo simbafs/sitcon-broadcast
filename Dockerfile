@@ -54,7 +54,7 @@ WORKDIR /app
 COPY --from=backend-build /main /app/main
 # COPY --from=backend-build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # COPY --from=backend-build /usr/share/zoneinfo /usr/share/zoneinfo
-COPY ./script/sessions.db /app/sessions.db
+# COPY ./script/sessions.db /app/sessions.db
 
 EXPOSE 3000
 CMD ["/app/main"]

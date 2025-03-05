@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Session is the client for interacting with the Session builders.
 	Session *SessionClient
+	// Special is the client for interacting with the Special builders.
+	Special *SpecialClient
 
 	// lazily loaded.
 	client     *Client
@@ -146,6 +148,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Session = NewSessionClient(tx.config)
+	tx.Special = NewSpecialClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

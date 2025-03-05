@@ -8,3 +8,6 @@ import (
 
 // Session is the predicate function for session builders.
 type Session func(*sql.Selector)
+
+// Special is the predicate function for special builders.
+type Special func(*sql.Selector)

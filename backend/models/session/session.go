@@ -13,29 +13,16 @@ import (
 	"backend/ent/session"
 	"backend/models/now"
 
+	m "backend/models"
+
 	_ "github.com/mattn/go-sqlite3"
 )
-
-// TODO: maybe move the initialize of ent to another files?
-var Client *ent.Client
-
-func init() {
-	var err error
-	Client, err = ent.Open("sqlite3", "file:sessions.db?cache=shared&_fk=1")
-	if err != nil {
-		panic(err)
-	}
-
-	if err = Client.Schema.Create(context.Background()); err != nil {
-		panic(err)
-	}
-}
 
 // no Create
 
 // ReadAll
 func ReadAll(ctx context.Context) ([]*ent.Session, error) {
-	return Client.Session.Query().
+	return m.Client.Session.Query().
 		Order(ent.Asc(session.FieldStart)).
 		All(ctx)
 }
@@ -58,7 +45,7 @@ func ReadAllInRoom(ctx context.Context, room string) ([]*ent.Session, error) {
 
 // ReadByID
 func ReadByID(ctx context.Context, id string) (*ent.Session, error) {
-	return Client.Session.Query().
+	return m.Client.Session.Query().
 		Where(session.ID(id)).
 		Only(ctx)
 }
@@ -130,7 +117,7 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 	}
 
 	// 更新當前 Session
-	err = Client.Session.UpdateOneID(id).
+	err = m.Client.Session.UpdateOneID(id).
 		SetStart(start).
 		SetEnd(end).
 		Exec(ctx)
@@ -140,7 +127,7 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 
 	// 更新前一個 Session 的 end 時間
 	if prev != nil {
-		err = Client.Session.UpdateOneID(prev.ID).
+		err = m.Client.Session.UpdateOneID(prev.ID).
 			SetEnd(start).
 			Exec(ctx)
 		if err != nil {
@@ -150,7 +137,7 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 
 	// 更新下一個 Session 的 start 時間
 	if next != nil {
-		err = Client.Session.UpdateOneID(next.ID).
+		err = m.Client.Session.UpdateOneID(next.ID).
 			SetStart(end).
 			Exec(ctx)
 		if err != nil {

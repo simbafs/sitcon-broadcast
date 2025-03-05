@@ -12,6 +12,7 @@ import (
 	"backend/ent/migrate"
 
 	"backend/ent/session"
+	"backend/ent/special"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -25,6 +26,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Session is the client for interacting with the Session builders.
 	Session *SessionClient
+	// Special is the client for interacting with the Special builders.
+	Special *SpecialClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -37,6 +40,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Session = NewSessionClient(c.config)
+	c.Special = NewSpecialClient(c.config)
 }
 
 type (
@@ -130,6 +134,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:     ctx,
 		config:  cfg,
 		Session: NewSessionClient(cfg),
+		Special: NewSpecialClient(cfg),
 	}, nil
 }
 
@@ -150,6 +155,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:     ctx,
 		config:  cfg,
 		Session: NewSessionClient(cfg),
+		Special: NewSpecialClient(cfg),
 	}, nil
 }
 
@@ -179,12 +185,14 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Session.Use(hooks...)
+	c.Special.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Session.Intercept(interceptors...)
+	c.Special.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -192,6 +200,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *SessionMutation:
 		return c.Session.mutate(ctx, m)
+	case *SpecialMutation:
+		return c.Special.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -330,12 +340,145 @@ func (c *SessionClient) mutate(ctx context.Context, m *SessionMutation) (Value, 
 	}
 }
 
+// SpecialClient is a client for the Special schema.
+type SpecialClient struct {
+	config
+}
+
+// NewSpecialClient returns a client for the Special from the given config.
+func NewSpecialClient(c config) *SpecialClient {
+	return &SpecialClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `special.Hooks(f(g(h())))`.
+func (c *SpecialClient) Use(hooks ...Hook) {
+	c.hooks.Special = append(c.hooks.Special, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `special.Intercept(f(g(h())))`.
+func (c *SpecialClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Special = append(c.inters.Special, interceptors...)
+}
+
+// Create returns a builder for creating a Special entity.
+func (c *SpecialClient) Create() *SpecialCreate {
+	mutation := newSpecialMutation(c.config, OpCreate)
+	return &SpecialCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Special entities.
+func (c *SpecialClient) CreateBulk(builders ...*SpecialCreate) *SpecialCreateBulk {
+	return &SpecialCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SpecialClient) MapCreateBulk(slice any, setFunc func(*SpecialCreate, int)) *SpecialCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SpecialCreateBulk{err: fmt.Errorf("calling to SpecialClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SpecialCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SpecialCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Special.
+func (c *SpecialClient) Update() *SpecialUpdate {
+	mutation := newSpecialMutation(c.config, OpUpdate)
+	return &SpecialUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SpecialClient) UpdateOne(s *Special) *SpecialUpdateOne {
+	mutation := newSpecialMutation(c.config, OpUpdateOne, withSpecial(s))
+	return &SpecialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SpecialClient) UpdateOneID(id string) *SpecialUpdateOne {
+	mutation := newSpecialMutation(c.config, OpUpdateOne, withSpecialID(id))
+	return &SpecialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Special.
+func (c *SpecialClient) Delete() *SpecialDelete {
+	mutation := newSpecialMutation(c.config, OpDelete)
+	return &SpecialDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SpecialClient) DeleteOne(s *Special) *SpecialDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SpecialClient) DeleteOneID(id string) *SpecialDeleteOne {
+	builder := c.Delete().Where(special.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SpecialDeleteOne{builder}
+}
+
+// Query returns a query builder for Special.
+func (c *SpecialClient) Query() *SpecialQuery {
+	return &SpecialQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSpecial},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Special entity by its id.
+func (c *SpecialClient) Get(ctx context.Context, id string) (*Special, error) {
+	return c.Query().Where(special.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SpecialClient) GetX(ctx context.Context, id string) *Special {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SpecialClient) Hooks() []Hook {
+	return c.hooks.Special
+}
+
+// Interceptors returns the client interceptors.
+func (c *SpecialClient) Interceptors() []Interceptor {
+	return c.inters.Special
+}
+
+func (c *SpecialClient) mutate(ctx context.Context, m *SpecialMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SpecialCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SpecialUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SpecialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SpecialDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Special mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Session []ent.Hook
+		Session, Special []ent.Hook
 	}
 	inters struct {
-		Session []ent.Interceptor
+		Session, Special []ent.Interceptor
 	}
 )

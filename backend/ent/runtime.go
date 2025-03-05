@@ -5,6 +5,7 @@ package ent
 import (
 	"backend/ent/schema"
 	"backend/ent/session"
+	"backend/ent/special"
 	"time"
 )
 
@@ -58,4 +59,14 @@ func init() {
 	sessionDescID := sessionFields[0].Descriptor()
 	// session.DefaultID holds the default value on creation for the id field.
 	session.DefaultID = sessionDescID.Default.(string)
+	specialFields := schema.Special{}.Fields()
+	_ = specialFields
+	// specialDescData is the schema descriptor for data field.
+	specialDescData := specialFields[1].Descriptor()
+	// special.DefaultData holds the default value on creation for the data field.
+	special.DefaultData = specialDescData.Default.(string)
+	// specialDescID is the schema descriptor for id field.
+	specialDescID := specialFields[0].Descriptor()
+	// special.DefaultID holds the default value on creation for the id field.
+	special.DefaultID = specialDescID.Default.(string)
 }

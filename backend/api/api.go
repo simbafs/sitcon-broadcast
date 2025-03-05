@@ -4,6 +4,7 @@ import (
 	"backend/api/card"
 	"backend/api/countdown"
 	"backend/api/now"
+	"backend/api/special"
 	"backend/middleware"
 	"backend/ticker"
 
@@ -19,6 +20,7 @@ func Route(r *gin.Engine, t *middleware.TokenVerifyer) {
 	card.Route(api, t, update)
 	now.Route(api, t, update)
 	countdown.Route(api, t, update)
+	special.Route(api, t, update)
 
 	api.GET("/sse", sse.GinHandler())
 

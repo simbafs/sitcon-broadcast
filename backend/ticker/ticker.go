@@ -9,6 +9,7 @@ import (
 	"backend/models/now"
 	"backend/models/room"
 	"backend/models/session"
+	"backend/models/special"
 )
 
 var log = logger.New("ticker")
@@ -23,6 +24,7 @@ type (
 		Room string
 		ID   string
 	}
+	MsgSpecial string
 )
 
 func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}, update chan Msg) {
@@ -50,6 +52,8 @@ func Listen(broadcast chan middleware.SSEMsg, quit chan struct{}, update chan Ms
 				UpdateCountdown(broadcast)
 			case MsgCard:
 				UpdateCardInRoom(broadcast, msg.Room, msg.ID)
+			case MsgSpecial:
+				UpdateSepcial(broadcast, string(msg))
 			}
 		case <-quit:
 			perSecond.Stop()
@@ -171,5 +175,18 @@ func UpdateCardInRoom(broadcast chan middleware.SSEMsg, room string, id string) 
 			Name: "card-id-" + next.ID,
 			Data: next,
 		}
+	}
+}
+
+func UpdateSepcial(broadcast chan middleware.SSEMsg, id string) {
+	s, err := special.Read(context.Background(), id)
+	if err != nil {
+		log.Println("failed to get special", err)
+		return
+	}
+
+	broadcast <- middleware.SSEMsg{
+		Name: "special-" + id,
+		Data: s.Data,
 	}
 }

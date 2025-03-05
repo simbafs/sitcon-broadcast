@@ -6,6 +6,7 @@
 |     card-R0     | 所有關於 R0 的字卡更新，用於 /card/admin |
 | card-current-R0 | R0 現在字卡的更新，用於 /card?room=R0    |
 | card-id-2d8a5e  | 某個字卡的更新，用於 /card?id=2d8a5e     |
+| special-2d8a5e  | 關於某個字卡的特殊調整更新               |
 
 # TODO
 

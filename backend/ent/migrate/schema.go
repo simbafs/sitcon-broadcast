@@ -28,9 +28,21 @@ var (
 		Columns:    SessionsColumns,
 		PrimaryKey: []*schema.Column{SessionsColumns[0]},
 	}
+	// SpecialsColumns holds the columns for the "specials" table.
+	SpecialsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "data", Type: field.TypeString, Default: ""},
+	}
+	// SpecialsTable holds the schema information for the "specials" table.
+	SpecialsTable = &schema.Table{
+		Name:       "specials",
+		Columns:    SpecialsColumns,
+		PrimaryKey: []*schema.Column{SpecialsColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		SessionsTable,
+		SpecialsTable,
 	}
 )
 

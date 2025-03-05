@@ -152,6 +152,36 @@ function loadSlidoMappings(csvPath) {
 	})
 }
 
+function loadAndSaveSpecial() {
+	console.log('載入特殊議程')
+	const cases = require('./special_cases.json')
+
+	const db = new Database(DB_FILE)
+
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS specials (
+			id text NOT NULL, 
+			data text NOT NULL DEFAULT (''), 
+			PRIMARY KEY (id)
+		) 
+	`)
+
+	db.exec('DELETE FROM specials;')
+	console.log('刪除後的紀錄數量:', db.prepare('SELECT COUNT(*) FROM specials').get())
+
+	const insertCase = db.prepare(`
+		INSERT OR REPLACE INTO specials (id, data)
+		VALUES (?, ?);
+	`)
+
+	for (const [id, data] of Object.entries(cases)) {
+		insertCase.run(id, JSON.stringify(data))
+	}
+
+	console.log('資料已成功寫入 SQLite')
+	db.close()
+}
+
 ;(async () => {
 	const slidoMap = await loadSlidoMappings(SLIDO_CSV)
 	const data = await fetch(URL).then(res => res.json())
@@ -195,4 +225,5 @@ function loadSlidoMappings(csvPath) {
 	}
 
 	saveSessionsToDB(filledSessions)
+	loadAndSaveSpecial()
 })()

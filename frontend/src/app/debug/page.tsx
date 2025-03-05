@@ -3,6 +3,7 @@
 import { Countdown } from './countdown'
 import { Now } from './now'
 import { Session } from './session'
+import { Special } from './special'
 import { SSE } from './sse'
 
 export default function Page() {
@@ -23,6 +24,10 @@ export default function Page() {
 			<details>
 				<summary>Countdown</summary>
 				<Countdown />
+			</details>
+			<details>
+				<summary>Special</summary>
+				<Special />
 			</details>
 		</div>
 	)

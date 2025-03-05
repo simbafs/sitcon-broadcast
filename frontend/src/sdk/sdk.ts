@@ -126,6 +126,24 @@ export async function GetCountdownByName(name: string) {
 }
 
 export async function UpdateCountdown(name: string, updated: Room) {
-	console.log('update countdown', name, updated)
 	return api(`/countdown/${name}`, 'PUT', updated)
+}
+
+export type Special = {
+	title?: string
+	speakers?: string
+	titleStyle?: string
+	speakersStyle?: string
+}
+
+export async function GetAllSpecial() {
+	return api<Special>(`/special`, 'GET')
+}
+
+export async function GetSpecialByID(id: string) {
+	return api<Special>(`/special/${id}`, 'GET')
+}
+
+export async function UpdateSpecial(id: string, updated: string) {
+	return api<Special>(`/special/${id}`, 'PUT', updated)
 }

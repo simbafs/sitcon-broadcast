@@ -5,7 +5,7 @@ import Image from 'next/image'
 import QRCode from 'react-qr-code'
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 import { formatTime } from '@/utils/formatTime'
-import { Session } from '@/sdk/sdk'
+import { Session, Special } from '@/sdk/sdk'
 import { useCard } from './useCard'
 
 import hackmd from './hackmd.svg'
@@ -17,15 +17,8 @@ import ppt from './ptt.svg'
 import google from './google.svg'
 import { twMerge } from 'tailwind-merge'
 
-type SpecialCase = {
-	title?: string
-	speakers?: string
-	titleStyle?: string
-	speakersStyle?: string
-}
-
 // TODO: get this list from server
-const specialCases: Record<string, SpecialCase> = {
+const specialCases: Record<string, Special> = {
 	'1d8007': {
 		title: 'Lines of Flight：資訊科技不斷重構，是跨域融合的契機還是枷鎖？',
 		speakers: '主持人：路怡珍\n與談人：吳哲宇、李奕樵、蔡宗翰',

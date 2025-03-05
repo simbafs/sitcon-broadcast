@@ -31,14 +31,14 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 			return
 		}
 
-		c.Data(http.StatusOK, "application/json",[]byte(s.Data))
+		c.Data(http.StatusOK, "application/json", []byte(s.Data))
 	})
 
 	route.PUT("/:id", t.Auth, func(c *gin.Context) {
 		id := c.Param("id")
 		var data string
 
-		if err := c.BindJSON(&t); err != nil {
+		if err := c.BindJSON(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
 			return
 		}

@@ -35,7 +35,7 @@ func run(c *config.Config) error {
 
 	t := middleware.NewTokenVerifyer(c.Token, c.Domain)
 
-	r.Use(t.ProtectRoute([]string{"/newCard/admin", "/countdown/admin", "/card/admin", "/debug"}))
+	r.Use(t.ProtectRoute([]string{"/card/admin", "/countdown/admin", "/debug"}))
 	r.GET("/verify", t.VerifyToken)
 
 	api.Route(r, t)

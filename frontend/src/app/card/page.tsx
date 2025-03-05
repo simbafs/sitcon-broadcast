@@ -8,14 +8,41 @@ import { formatTime } from '@/utils/formatTime'
 import { Session } from '@/sdk/sdk'
 import { useCard } from './useCard'
 
-import slido from './slido.svg'
 import hackmd from './hackmd.svg'
+
+// TODO: a fucntion to choose icon by the link
+import slido from './slido.svg'
 import slides from './slides.svg'
 import ppt from './ptt.svg'
 import google from './google.svg'
+import { twMerge } from 'tailwind-merge'
+
+type SpecialCase = {
+	title?: string
+	speakers?: string
+	titleStyle?: string
+	speakersStyle?: string
+}
+
+// TODO: get this list from server
+const specialCases: Record<string, SpecialCase> = {
+	'1d8007': {
+		title: 'Lines of Flight：資訊科技不斷重構，是跨域融合的契機還是枷鎖？',
+		speakers: '主持人：路怡珍\n與談人：吳哲宇、李奕樵、蔡宗翰',
+		titleStyle: 'text-2xl',
+		speakersStyle: 'text-2xl',
+	},
+}
 
 function Card({ card }: { card: Session }) {
-	const speakers = card.speakers.join('、')
+	let speakers = card.speakers.join('、')
+
+	const special = specialCases[card.id]
+
+	if (special) {
+		if (special.title) card.title = special.title
+		if (special.speakers) speakers = special.speakers
+	}
 
 	return (
 		<div className="font-card flex h-[200px] grow flex-col justify-between overflow-hidden bg-white p-2">
@@ -25,8 +52,8 @@ function Card({ card }: { card: Session }) {
 					{formatTime(card.start)}~{formatTime(card.end)}
 				</p>
 			</div>
-			<p className="text-3xl text-[#000000]">{card.title}</p>
-			<p className="text-3xl text-[#917c6a]">{speakers}</p>
+			<p className={twMerge('text-3xl text-[#000000]', special?.titleStyle)}>{card.title}</p>
+			<pre className={twMerge('text-3xl text-[#917c6a]', special?.speakersStyle)}>{speakers}</pre>
 		</div>
 	)
 }

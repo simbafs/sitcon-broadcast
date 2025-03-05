@@ -15,31 +15,7 @@ function uniqueID() {
 }
 
 function convertTime(t) {
-	return formatDate(new Date(t))
-}
-
-function formatDate(date) {
-	if (date instanceof Date == false) throw new Error('date is not Date')
-	const pad = (num, size = 2) => String(num).padStart(size, '0')
-
-	const year = date.getFullYear()
-	const month = pad(date.getMonth() + 1)
-	const day = pad(date.getDate())
-	const hours = pad(date.getHours())
-	const minutes = pad(date.getMinutes())
-	const seconds = pad(date.getSeconds())
-
-	// 獲取奈秒級精度
-	const milliseconds = date.getMilliseconds()
-	const nanoseconds = pad(milliseconds * 1000000, 9)
-
-	// 獲取時區偏移
-	const offsetMinutes = date.getTimezoneOffset()
-	const offsetHours = Math.abs(Math.floor(offsetMinutes / 60))
-	const offsetMins = Math.abs(offsetMinutes % 60)
-	const timezone = `${offsetMinutes > 0 ? '-' : '+'}${pad(offsetHours)}:${pad(offsetMins)}`
-
-	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${nanoseconds}${timezone}`
+	return new Date(t).toISOString()
 }
 
 function mergeSessions(sessions) {

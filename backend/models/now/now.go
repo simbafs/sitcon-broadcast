@@ -4,14 +4,12 @@ import (
 	"time"
 )
 
-var tw = time.FixedZone("Asia/Taipei", 8)
-
 type Now struct {
 	time.Time
 }
 
 func (n Now) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + n.In(tw).Format("2006-01-02 15:04:05") + `"`), nil
+	return []byte(`"` + n.Format("2006-01-02T15:04:05.000000000Z") + `"`), nil
 }
 
 var (

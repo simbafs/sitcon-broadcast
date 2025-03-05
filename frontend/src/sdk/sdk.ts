@@ -130,10 +130,24 @@ export async function UpdateCountdown(name: string, updated: Room) {
 }
 
 export type Special = {
-	title?: string
-	speakers?: string
-	titleStyle?: string
-	speakersStyle?: string
+	title: string
+	speakers: string
+	titleStyle: string
+	speakersStyle: string
+}
+
+export const ZeroSpecial: Special = {
+	title: '',
+	speakers: '',
+	titleStyle: '',
+	speakersStyle: '',
+}
+
+export function ensureSpecial(special: Partial<Special>): Special {
+	return {
+		...ZeroSpecial,
+		...special,
+	}
 }
 
 export async function GetAllSpecial() {

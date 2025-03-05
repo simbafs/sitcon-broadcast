@@ -4,17 +4,14 @@ import (
 	"time"
 )
 
+var tw = time.FixedZone("Asia/Taipei", 8)
+
 type Now struct {
 	time.Time
 }
 
 func (n Now) MarshalJSON() ([]byte, error) {
-	loc, err := time.LoadLocation("Asia/Taipei")
-	if err != nil {
-		return nil, err
-	}
-
-	return []byte(`"` + n.In(loc).Format("2006-01-02 15:04:05") + `"`), nil
+	return []byte(`"` + n.In(tw).Format("2006-01-02 15:04:05") + `"`), nil
 }
 
 var (
@@ -23,8 +20,6 @@ var (
 )
 
 // no Create
-
-var tw = time.FixedZone("Asia/Taipei", 8)
 
 func getRealNow() Now {
 	return Now{time.Now()}

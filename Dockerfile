@@ -1,36 +1,60 @@
-FROM debian:bullseye-slim as build
+# Step 1: Build Frontend
+FROM node:23-alpine3.21 as frontend-build
 
-WORKDIR /build
-LABEL org.opencontainers.image.source="https://github.com/simbafs/coscup-attendance"
-LABEL org.opencontainers.image.authors="Simba Fs <me@simbafs.cc>"
+WORKDIR /frontend
 
-ENV PATH="/usr/local/go/bin:/usr/local/node-v23.3.0-linux-x64/bin:$PATH"
+# Install pnpm
+RUN npm install -g pnpm
 
-# install dependencies
-RUN apt-get update && \
-    apt-get install -y make xz-utils wget ca-certificates git --no-install-recommends && \
-    # config ssl
-    mkdir -p /etc/ssl/certs && \
-    update-ca-certificates --fresh && \
-    # install go v1.20
-    wget -q https://go.dev/dl/go1.20.7.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.20.7.linux-amd64.tar.gz && \
-    # install nodejs v16 and pnpm
-    wget -q https://nodejs.org/dist/v23.3.0/node-v23.3.0-linux-x64.tar.xz && \
-    tar -C /usr/local -xJf node-v23.3.0-linux-x64.tar.xz && \
-    npm install -g pnpm
+# Copy frontend files
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
+RUN pnpm install
 
-COPY . .
-RUN make dep && \
-    make build 
+# Build frontend
+COPY frontend ./
+RUN sh build.sh
 
-FROM scratch 
+# Step 2: Build Backend
+FROM golang:alpine3.21 as backend-build
+
+WORKDIR /backend
+ENV PATH="/usr/local/go/bin:$PATH"
+ENV CGO_ENABLED=1
+
+# Install dependencies
+RUN apk add --no-cache \
+    # Important: required for go-sqlite3
+    gcc \
+    # Required for Alpine
+    musl-dev \
+    ca-certificates \
+    bash \
+    git
+RUN mkdir -p /etc/ssl/certs && \
+    update-ca-certificates --fresh
+
+# Install backend dependencies
+COPY backend/go.mod backend/go.sum ./
+RUN go mod download
+
+# Copy backend code
+COPY --from=frontend-build /frontend/out/ /backend/static/
+COPY backend ./
+
+# Build backend
+RUN bash build.sh
+
+# Step 3: Final Image
+FROM alpine:3.21
+# FROM scratch
 
 WORKDIR /app
 
-COPY --from=build /build/main /app/main
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY ./backend/sessions.json /app/sessions.json
+# Copy built frontend and backend
+COPY --from=backend-build /main /app/main
+# COPY --from=backend-build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+# COPY --from=backend-build /usr/share/zoneinfo /usr/share/zoneinfo
+COPY ./script/sessions.db /app/sessions.db
 
 EXPOSE 3000
-CMD [ "./main" ]
+CMD ["/app/main"]

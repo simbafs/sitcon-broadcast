@@ -2,4 +2,7 @@ Dockerfile
 README.md
 backend/static
 frontend/node_modules
-sitcon_countdown.tgz
+backend/sessions.db
+Design.excalidraw
+docker-compose.yml
+dockerbuild.sh

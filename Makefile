@@ -88,4 +88,7 @@ checkFrontend:
 ent: 
 	cd backend && go generate ./ent
 
+staticcheck:
+	cd backend && staticcheck ./...; errcheck ./...
+
 .PHONY: devBackend devFrontend build buildBackend buildFrontend clean dep depFrontend depBackend session checkFrontend

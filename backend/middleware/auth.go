@@ -3,12 +3,8 @@ package middleware
 import (
 	"net/http"
 
-	"backend/logger"
-
 	"github.com/gin-gonic/gin"
 )
-
-var log = logger.New("middleware")
 
 type TokenVerifyer struct {
 	token  string

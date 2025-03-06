@@ -20,7 +20,7 @@ var (
 // no Create
 
 func getRealNow() Now {
-	return Now{time.Now()}
+	return Now{time.Now().UTC()}
 }
 
 func Read() Now {

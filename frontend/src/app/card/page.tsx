@@ -87,7 +87,7 @@ function SessionCard() {
 	return (
 		<div className="w-[420px]">
 			<Card card={card} special={special} />
-			<div className="h-[150px]" />
+			<div className="h-[151px]" />
 			<Slido card={card} />
 			<div className="mt-4 grid grid-cols-2">
 				<Slides card={card} />

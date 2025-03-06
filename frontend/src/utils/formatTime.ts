@@ -8,7 +8,7 @@ export function formatTime(time: Date) {
 		time = new Date(time)
 	}
 	if (time === new Date(0)) return '00:00'
-	const hour = time.getUTCHours() + timezone
+	const hour = (time.getUTCHours() + timezone) % 24
 	const minute = time.getUTCMinutes()
 	return `${to2(hour)}:${to2(minute)}`
 }

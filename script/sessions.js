@@ -63,7 +63,7 @@ function fillGaps(sessions) {
 	return filled
 }
 
-function saveSessionsToDB(sessionsByRoom) {
+function saveSessionsToDB(sessions) {
 	const db = new Database(DB_FILE)
 
 	db.exec(`
@@ -121,9 +121,11 @@ function saveSessionsToDB(sessionsByRoom) {
 		}
 	})
 
-	for (let room of Object.keys(sessionsByRoom)) {
-		insertMany(sessionsByRoom[room])
-	}
+	insertMany(sessions)
+	
+	// for (let room of Object.keys(sessionsByRoom)) {
+	// 	insertMany(sessionsByRoom[room])
+	// }
 
 	console.log('資料已成功寫入 SQLite')
 	console.log('寫入的紀錄數量:', db.prepare('SELECT COUNT(*) FROM sessions').get())
@@ -190,6 +192,11 @@ function loadAndSaveSpecial() {
 	const speakers = Object.fromEntries(data.speakers.map(item => [item.id, item.zh.name]))
 	const sessionTypes = Object.fromEntries(data.session_types.map(item => [item.id, item.zh.name]))
 
+	data.sessions.forEach(s => {
+		if (['d01cb7', '710069', '12775d', '1e9ea4', '7540dc', 'e13fad', '06dc3c'].includes(s.id)) {
+			console.log(s.id, s.broadcast)
+		}
+	})
 	const sessions = data.sessions.map(s => ({
 		id: s.id || '',
 		title: s.zh.title || '',
@@ -204,24 +211,31 @@ function loadAndSaveSpecial() {
 		hackmd: s.co_write || '',
 	}))
 
-	let filledSessions = {}
-	for (let room of rooms) {
-		let roomSessions = sessions.filter(s => s.room === room || s.broadcast.includes(room))
-		// TDOO: 2025 的議程表是緊湊的，不需要合併相鄰的議程和填補休息
-		// roomSessions = mergeSessions(roomSessions)
-		// filledSessions[room] = fillGaps(roomSessions)
-		filledSessions[room] = roomSessions
-	}
+	console.log('====')
+	sessions.forEach(s => {
+		if (['d01cb7', '710069', '12775d', '1e9ea4', '7540dc', 'e13fad', '06dc3c'].includes(s.id)) {
+			console.log(s.id, s.broadcast)
+		}
+	})
 
-	for (let room of rooms) {
-		filledSessions[room] = filledSessions[room].map(session => {
-			if (session.title === '休息') {
-				session.broadcast = []
-			}
-			return session
-		})
-	}
+	// let filledSessions = {}
+	// for (let room of rooms) {
+	// 	let roomSessions = sessions.filter(s => s.room === room || s.broadcast.includes(room))
+	// 	// TDOO: 2025 的議程表是緊湊的，不需要合併相鄰的議程和填補休息
+	// 	// roomSessions = mergeSessions(roomSessions)
+	// 	// filledSessions[room] = fillGaps(roomSessions)
+	// 	filledSessions[room] = roomSessions
+	// }
 
-	saveSessionsToDB(filledSessions)
+	// for (let room of rooms) {
+	// 	filledSessions[room] = filledSessions[room].map(session => {
+	// 		if (session.title === '休息') {
+	// 			session.broadcast = []
+	// 		}
+	// 		return session
+	// 	})
+	// }
+
+	saveSessionsToDB(sessions)
 	loadAndSaveSpecial()
 })()

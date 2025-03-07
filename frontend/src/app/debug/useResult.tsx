@@ -19,5 +19,5 @@ export function useResult() {
 		setResult('')
 	}
 
-	return { Result, set, clear }
+	return { Result, set, clear, result }
 }

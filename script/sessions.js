@@ -78,9 +78,7 @@ function saveSessionsToDB(sessionsByRoom) {
 			end TEXT,
 			slido TEXT,
 			slide TEXT,
-			hackmd TEXT,
-			next TEXT,
-			prev TEXT
+			hackmd TEXT
 		);
 	`)
 

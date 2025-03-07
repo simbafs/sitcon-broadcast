@@ -8,13 +8,13 @@ import { formatTime } from '@/utils/formatTime'
 import { Session, Special } from '@/sdk/sdk'
 import { useCard } from './useCard'
 
-import hackmd from './hackmd.svg'
-
 // TODO: a fucntion to choose icon by the link
+import hackmd from './hackmd.svg'
 import slido from './slido.svg'
-import slides from './slides.svg'
-import ppt from './ptt.svg'
+// import slides from './slides.svg'
+// import ppt from './ptt.svg'
 import google from './google.svg'
+import info from './info.png'
 import { twMerge } from 'tailwind-merge'
 import { useSpecial } from './useSpecial'
 
@@ -70,7 +70,13 @@ function QR({ Icon, title, link }: { Icon: StaticImport; title: string; link: st
 }
 
 function Slides({ card }: { card: Session }) {
-	return card.slide ? <QR Icon={google} title="簡報" link={card.slide} /> : <div />
+	return card.type == 'Event' ? (
+		<div />
+	) : card.slide ? (
+		<QR Icon={google} title="簡報" link={card.slide} />
+	) : (
+		<QR Icon={info} title="資訊" link={`https://sitcon.org/2025/agenda/${card.id}/`} />
+	)
 }
 
 function Hackmd({ card }: { card: Session }) {

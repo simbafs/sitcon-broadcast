@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -29,9 +28,9 @@ type Session struct {
 	// Broadcast holds the value of the "broadcast" field.
 	Broadcast []string `json:"broadcast,omitempty"`
 	// Start holds the value of the "start" field.
-	Start time.Time `json:"start,omitempty"`
+	Start int64 `json:"start,omitempty"`
 	// End holds the value of the "end" field.
-	End time.Time `json:"end,omitempty"`
+	End int64 `json:"end,omitempty"`
 	// Slido holds the value of the "slido" field.
 	Slido string `json:"slido,omitempty"`
 	// Slide holds the value of the "slide" field.
@@ -48,10 +47,10 @@ func (*Session) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case session.FieldSpeakers, session.FieldBroadcast:
 			values[i] = new([]byte)
+		case session.FieldStart, session.FieldEnd:
+			values[i] = new(sql.NullInt64)
 		case session.FieldID, session.FieldTitle, session.FieldType, session.FieldRoom, session.FieldSlido, session.FieldSlide, session.FieldHackmd:
 			values[i] = new(sql.NullString)
-		case session.FieldStart, session.FieldEnd:
-			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -108,16 +107,16 @@ func (s *Session) assignValues(columns []string, values []any) error {
 				}
 			}
 		case session.FieldStart:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field start", values[i])
 			} else if value.Valid {
-				s.Start = value.Time
+				s.Start = value.Int64
 			}
 		case session.FieldEnd:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field end", values[i])
 			} else if value.Valid {
-				s.End = value.Time
+				s.End = value.Int64
 			}
 		case session.FieldSlido:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -189,10 +188,10 @@ func (s *Session) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.Broadcast))
 	builder.WriteString(", ")
 	builder.WriteString("start=")
-	builder.WriteString(s.Start.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", s.Start))
 	builder.WriteString(", ")
 	builder.WriteString("end=")
-	builder.WriteString(s.End.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", s.End))
 	builder.WriteString(", ")
 	builder.WriteString("slido=")
 	builder.WriteString(s.Slido)

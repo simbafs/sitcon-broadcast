@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
@@ -21,8 +19,8 @@ func (Session) Fields() []ent.Field {
 		field.Strings("speakers").Default([]string{}),
 		field.String("room").Default(""),
 		field.Strings("broadcast").Default([]string{}),
-		field.Time("start").Default(time.Time{}),
-		field.Time("end").Default(time.Time{}),
+		field.Int64("start").Default(0),
+		field.Int64("end").Default(0),
 		field.String("slido").Default(""), // json: qa
 		field.String("slide").Default(""),
 		field.String("hackmd").Default(""), // json: co_write

@@ -90,16 +90,22 @@ export function ensureSession(session: Partial<Session>): Session {
 	}
 }
 
+function convertDate(s: Session) {
+	s.start = new Date(s.start)
+	s.end = new Date(s.end)
+	return s
+}
+
 export async function GetAllSessions() {
-	return api<Session[]>('/card', 'GET').then(sessions => sessions.map(ensureSession))
+	return api<Session[]>('/card', 'GET').then(sessions => sessions.map(ensureSession).map(convertDate))
 }
 
 export async function GetSessionByID(id: string) {
-	return api<Session>(`/card/${id}`, 'GET').then(ensureSession)
+	return api<Session>(`/card/${id}`, 'GET').then(ensureSession).then(convertDate)
 }
 
 export async function GetCurrentSession(room: string) {
-	return api<Session>(`/card/current/${room}`, 'GET').then(ensureSession)
+	return api<Session>(`/card/current/${room}`, 'GET').then(ensureSession).then(convertDate)
 }
 
 export async function UpdateSession(room: string, id: string, start: Date, end: Date) {

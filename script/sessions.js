@@ -15,7 +15,7 @@ function uniqueID() {
 }
 
 function convertTime(t) {
-	return new Date(t).toISOString()
+	return new Date(t).valueOf()
 }
 
 function mergeSessions(sessions) {
@@ -67,19 +67,20 @@ function saveSessionsToDB(sessions) {
 	const db = new Database(DB_FILE)
 
 	db.exec(`
-		CREATE TABLE IF NOT EXISTS sessions (
-			id TEXT PRIMARY KEY,
-			title TEXT,
-			type TEXT,
-			speakers TEXT,
-			room TEXT,
-			broadcast TEXT,
-			start TEXT,
-			end TEXT,
-			slido TEXT,
-			slide TEXT,
-			hackmd TEXT
-		);
+	CREATE TABLE IF NOT EXISTS sessions (
+	id text NOT NULL,
+	title text NOT NULL DEFAULT (''),
+	type text NOT NULL DEFAULT (''), 
+	speakers json NOT NULL, 
+	room text NOT NULL DEFAULT (''), 
+	broadcast json NOT NULL, 
+	start integer NOT NULL DEFAULT (0), 
+	end integer NOT NULL DEFAULT (0), 
+	slido text NOT NULL DEFAULT (''), 
+	slide text NOT NULL DEFAULT (''), 
+	hackmd text NOT NULL DEFAULT (''),
+	PRIMARY KEY (id)
+	)
 	`)
 
 	db.exec('DELETE FROM sessions;')
@@ -122,7 +123,7 @@ function saveSessionsToDB(sessions) {
 	})
 
 	insertMany(sessions)
-	
+
 	// for (let room of Object.keys(sessionsByRoom)) {
 	// 	insertMany(sessionsByRoom[room])
 	// }

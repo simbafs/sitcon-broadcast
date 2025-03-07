@@ -7,7 +7,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -75,29 +74,29 @@ func (sc *SessionCreate) SetBroadcast(s []string) *SessionCreate {
 }
 
 // SetStart sets the "start" field.
-func (sc *SessionCreate) SetStart(t time.Time) *SessionCreate {
-	sc.mutation.SetStart(t)
+func (sc *SessionCreate) SetStart(i int64) *SessionCreate {
+	sc.mutation.SetStart(i)
 	return sc
 }
 
 // SetNillableStart sets the "start" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableStart(t *time.Time) *SessionCreate {
-	if t != nil {
-		sc.SetStart(*t)
+func (sc *SessionCreate) SetNillableStart(i *int64) *SessionCreate {
+	if i != nil {
+		sc.SetStart(*i)
 	}
 	return sc
 }
 
 // SetEnd sets the "end" field.
-func (sc *SessionCreate) SetEnd(t time.Time) *SessionCreate {
-	sc.mutation.SetEnd(t)
+func (sc *SessionCreate) SetEnd(i int64) *SessionCreate {
+	sc.mutation.SetEnd(i)
 	return sc
 }
 
 // SetNillableEnd sets the "end" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableEnd(t *time.Time) *SessionCreate {
-	if t != nil {
-		sc.SetEnd(*t)
+func (sc *SessionCreate) SetNillableEnd(i *int64) *SessionCreate {
+	if i != nil {
+		sc.SetEnd(*i)
 	}
 	return sc
 }
@@ -327,11 +326,11 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_node.Broadcast = value
 	}
 	if value, ok := sc.mutation.Start(); ok {
-		_spec.SetField(session.FieldStart, field.TypeTime, value)
+		_spec.SetField(session.FieldStart, field.TypeInt64, value)
 		_node.Start = value
 	}
 	if value, ok := sc.mutation.End(); ok {
-		_spec.SetField(session.FieldEnd, field.TypeTime, value)
+		_spec.SetField(session.FieldEnd, field.TypeInt64, value)
 		_node.End = value
 	}
 	if value, ok := sc.mutation.Slido(); ok {

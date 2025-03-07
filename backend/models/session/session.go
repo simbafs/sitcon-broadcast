@@ -59,7 +59,7 @@ func ReadCurrentByRoom(ctx context.Context, room string) (*ent.Session, error) {
 	n := now.Read()
 
 	for _, v := range sessions {
-		if v.End.After(n.Time) {
+		if v.End > n.Time.Unix() {
 			return v, nil
 		}
 	}
@@ -109,17 +109,17 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 		return err
 	}
 
-	if prev != nil && start.Before(prev.Start) {
+	if prev != nil && start.Unix() < prev.Start {
 		return errors.New("start time cannot be before previous session's start time")
 	}
-	if next != nil && end.After(next.End) {
+	if next != nil && end.Unix() > next.End {
 		return errors.New("end time cannot be after next session's end time")
 	}
 
 	// 更新當前 Session
 	err = m.Client.Session.UpdateOneID(id).
-		SetStart(start).
-		SetEnd(end).
+		SetStart(start.Unix()).
+		SetEnd(end.Unix()).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -128,7 +128,7 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 	// 更新前一個 Session 的 end 時間
 	if prev != nil {
 		err = m.Client.Session.UpdateOneID(prev.ID).
-			SetEnd(start).
+			SetEnd(start.Unix()).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -138,7 +138,7 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 	// 更新下一個 Session 的 start 時間
 	if next != nil {
 		err = m.Client.Session.UpdateOneID(next.ID).
-			SetStart(end).
+			SetStart(end.Unix()).
 			Exec(ctx)
 		if err != nil {
 			return err

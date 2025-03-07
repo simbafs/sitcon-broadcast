@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -42,8 +41,10 @@ type SessionMutation struct {
 	room            *string
 	broadcast       *[]string
 	appendbroadcast []string
-	start           *time.Time
-	end             *time.Time
+	start           *int64
+	addstart        *int64
+	end             *int64
+	addend          *int64
 	slido           *string
 	slide           *string
 	hackmd          *string
@@ -368,12 +369,13 @@ func (m *SessionMutation) ResetBroadcast() {
 }
 
 // SetStart sets the "start" field.
-func (m *SessionMutation) SetStart(t time.Time) {
-	m.start = &t
+func (m *SessionMutation) SetStart(i int64) {
+	m.start = &i
+	m.addstart = nil
 }
 
 // Start returns the value of the "start" field in the mutation.
-func (m *SessionMutation) Start() (r time.Time, exists bool) {
+func (m *SessionMutation) Start() (r int64, exists bool) {
 	v := m.start
 	if v == nil {
 		return
@@ -384,7 +386,7 @@ func (m *SessionMutation) Start() (r time.Time, exists bool) {
 // OldStart returns the old "start" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldStart(ctx context.Context) (v time.Time, err error) {
+func (m *SessionMutation) OldStart(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStart is only allowed on UpdateOne operations")
 	}
@@ -398,18 +400,38 @@ func (m *SessionMutation) OldStart(ctx context.Context) (v time.Time, err error)
 	return oldValue.Start, nil
 }
 
+// AddStart adds i to the "start" field.
+func (m *SessionMutation) AddStart(i int64) {
+	if m.addstart != nil {
+		*m.addstart += i
+	} else {
+		m.addstart = &i
+	}
+}
+
+// AddedStart returns the value that was added to the "start" field in this mutation.
+func (m *SessionMutation) AddedStart() (r int64, exists bool) {
+	v := m.addstart
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetStart resets all changes to the "start" field.
 func (m *SessionMutation) ResetStart() {
 	m.start = nil
+	m.addstart = nil
 }
 
 // SetEnd sets the "end" field.
-func (m *SessionMutation) SetEnd(t time.Time) {
-	m.end = &t
+func (m *SessionMutation) SetEnd(i int64) {
+	m.end = &i
+	m.addend = nil
 }
 
 // End returns the value of the "end" field in the mutation.
-func (m *SessionMutation) End() (r time.Time, exists bool) {
+func (m *SessionMutation) End() (r int64, exists bool) {
 	v := m.end
 	if v == nil {
 		return
@@ -420,7 +442,7 @@ func (m *SessionMutation) End() (r time.Time, exists bool) {
 // OldEnd returns the old "end" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldEnd(ctx context.Context) (v time.Time, err error) {
+func (m *SessionMutation) OldEnd(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
 	}
@@ -434,9 +456,28 @@ func (m *SessionMutation) OldEnd(ctx context.Context) (v time.Time, err error) {
 	return oldValue.End, nil
 }
 
+// AddEnd adds i to the "end" field.
+func (m *SessionMutation) AddEnd(i int64) {
+	if m.addend != nil {
+		*m.addend += i
+	} else {
+		m.addend = &i
+	}
+}
+
+// AddedEnd returns the value that was added to the "end" field in this mutation.
+func (m *SessionMutation) AddedEnd() (r int64, exists bool) {
+	v := m.addend
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetEnd resets all changes to the "end" field.
 func (m *SessionMutation) ResetEnd() {
 	m.end = nil
+	m.addend = nil
 }
 
 // SetSlido sets the "slido" field.
@@ -714,14 +755,14 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 		m.SetBroadcast(v)
 		return nil
 	case session.FieldStart:
-		v, ok := value.(time.Time)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStart(v)
 		return nil
 	case session.FieldEnd:
-		v, ok := value.(time.Time)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -755,13 +796,26 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *SessionMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addstart != nil {
+		fields = append(fields, session.FieldStart)
+	}
+	if m.addend != nil {
+		fields = append(fields, session.FieldEnd)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *SessionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case session.FieldStart:
+		return m.AddedStart()
+	case session.FieldEnd:
+		return m.AddedEnd()
+	}
 	return nil, false
 }
 
@@ -770,6 +824,20 @@ func (m *SessionMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *SessionMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case session.FieldStart:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStart(v)
+		return nil
+	case session.FieldEnd:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEnd(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Session numeric field %s", name)
 }

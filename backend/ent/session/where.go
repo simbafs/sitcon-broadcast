@@ -4,7 +4,6 @@ package session
 
 import (
 	"backend/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 )
@@ -80,12 +79,12 @@ func Room(v string) predicate.Session {
 }
 
 // Start applies equality check predicate on the "start" field. It's identical to StartEQ.
-func Start(v time.Time) predicate.Session {
+func Start(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldStart, v))
 }
 
 // End applies equality check predicate on the "end" field. It's identical to EndEQ.
-func End(v time.Time) predicate.Session {
+func End(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldEnd, v))
 }
 
@@ -300,82 +299,82 @@ func RoomContainsFold(v string) predicate.Session {
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
-func StartEQ(v time.Time) predicate.Session {
+func StartEQ(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldStart, v))
 }
 
 // StartNEQ applies the NEQ predicate on the "start" field.
-func StartNEQ(v time.Time) predicate.Session {
+func StartNEQ(v int64) predicate.Session {
 	return predicate.Session(sql.FieldNEQ(FieldStart, v))
 }
 
 // StartIn applies the In predicate on the "start" field.
-func StartIn(vs ...time.Time) predicate.Session {
+func StartIn(vs ...int64) predicate.Session {
 	return predicate.Session(sql.FieldIn(FieldStart, vs...))
 }
 
 // StartNotIn applies the NotIn predicate on the "start" field.
-func StartNotIn(vs ...time.Time) predicate.Session {
+func StartNotIn(vs ...int64) predicate.Session {
 	return predicate.Session(sql.FieldNotIn(FieldStart, vs...))
 }
 
 // StartGT applies the GT predicate on the "start" field.
-func StartGT(v time.Time) predicate.Session {
+func StartGT(v int64) predicate.Session {
 	return predicate.Session(sql.FieldGT(FieldStart, v))
 }
 
 // StartGTE applies the GTE predicate on the "start" field.
-func StartGTE(v time.Time) predicate.Session {
+func StartGTE(v int64) predicate.Session {
 	return predicate.Session(sql.FieldGTE(FieldStart, v))
 }
 
 // StartLT applies the LT predicate on the "start" field.
-func StartLT(v time.Time) predicate.Session {
+func StartLT(v int64) predicate.Session {
 	return predicate.Session(sql.FieldLT(FieldStart, v))
 }
 
 // StartLTE applies the LTE predicate on the "start" field.
-func StartLTE(v time.Time) predicate.Session {
+func StartLTE(v int64) predicate.Session {
 	return predicate.Session(sql.FieldLTE(FieldStart, v))
 }
 
 // EndEQ applies the EQ predicate on the "end" field.
-func EndEQ(v time.Time) predicate.Session {
+func EndEQ(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldEnd, v))
 }
 
 // EndNEQ applies the NEQ predicate on the "end" field.
-func EndNEQ(v time.Time) predicate.Session {
+func EndNEQ(v int64) predicate.Session {
 	return predicate.Session(sql.FieldNEQ(FieldEnd, v))
 }
 
 // EndIn applies the In predicate on the "end" field.
-func EndIn(vs ...time.Time) predicate.Session {
+func EndIn(vs ...int64) predicate.Session {
 	return predicate.Session(sql.FieldIn(FieldEnd, vs...))
 }
 
 // EndNotIn applies the NotIn predicate on the "end" field.
-func EndNotIn(vs ...time.Time) predicate.Session {
+func EndNotIn(vs ...int64) predicate.Session {
 	return predicate.Session(sql.FieldNotIn(FieldEnd, vs...))
 }
 
 // EndGT applies the GT predicate on the "end" field.
-func EndGT(v time.Time) predicate.Session {
+func EndGT(v int64) predicate.Session {
 	return predicate.Session(sql.FieldGT(FieldEnd, v))
 }
 
 // EndGTE applies the GTE predicate on the "end" field.
-func EndGTE(v time.Time) predicate.Session {
+func EndGTE(v int64) predicate.Session {
 	return predicate.Session(sql.FieldGTE(FieldEnd, v))
 }
 
 // EndLT applies the LT predicate on the "end" field.
-func EndLT(v time.Time) predicate.Session {
+func EndLT(v int64) predicate.Session {
 	return predicate.Session(sql.FieldLT(FieldEnd, v))
 }
 
 // EndLTE applies the LTE predicate on the "end" field.
-func EndLTE(v time.Time) predicate.Session {
+func EndLTE(v int64) predicate.Session {
 	return predicate.Session(sql.FieldLTE(FieldEnd, v))
 }
 

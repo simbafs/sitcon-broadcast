@@ -6,7 +6,6 @@ import (
 	"backend/ent/schema"
 	"backend/ent/session"
 	"backend/ent/special"
-	"time"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -38,11 +37,11 @@ func init() {
 	// sessionDescStart is the schema descriptor for start field.
 	sessionDescStart := sessionFields[6].Descriptor()
 	// session.DefaultStart holds the default value on creation for the start field.
-	session.DefaultStart = sessionDescStart.Default.(time.Time)
+	session.DefaultStart = sessionDescStart.Default.(int64)
 	// sessionDescEnd is the schema descriptor for end field.
 	sessionDescEnd := sessionFields[7].Descriptor()
 	// session.DefaultEnd holds the default value on creation for the end field.
-	session.DefaultEnd = sessionDescEnd.Default.(time.Time)
+	session.DefaultEnd = sessionDescEnd.Default.(int64)
 	// sessionDescSlido is the schema descriptor for slido field.
 	sessionDescSlido := sessionFields[8].Descriptor()
 	// session.DefaultSlido holds the default value on creation for the slido field.

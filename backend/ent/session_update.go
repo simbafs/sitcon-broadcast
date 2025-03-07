@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -96,30 +95,44 @@ func (su *SessionUpdate) AppendBroadcast(s []string) *SessionUpdate {
 }
 
 // SetStart sets the "start" field.
-func (su *SessionUpdate) SetStart(t time.Time) *SessionUpdate {
-	su.mutation.SetStart(t)
+func (su *SessionUpdate) SetStart(i int64) *SessionUpdate {
+	su.mutation.ResetStart()
+	su.mutation.SetStart(i)
 	return su
 }
 
 // SetNillableStart sets the "start" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableStart(t *time.Time) *SessionUpdate {
-	if t != nil {
-		su.SetStart(*t)
+func (su *SessionUpdate) SetNillableStart(i *int64) *SessionUpdate {
+	if i != nil {
+		su.SetStart(*i)
 	}
+	return su
+}
+
+// AddStart adds i to the "start" field.
+func (su *SessionUpdate) AddStart(i int64) *SessionUpdate {
+	su.mutation.AddStart(i)
 	return su
 }
 
 // SetEnd sets the "end" field.
-func (su *SessionUpdate) SetEnd(t time.Time) *SessionUpdate {
-	su.mutation.SetEnd(t)
+func (su *SessionUpdate) SetEnd(i int64) *SessionUpdate {
+	su.mutation.ResetEnd()
+	su.mutation.SetEnd(i)
 	return su
 }
 
 // SetNillableEnd sets the "end" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableEnd(t *time.Time) *SessionUpdate {
-	if t != nil {
-		su.SetEnd(*t)
+func (su *SessionUpdate) SetNillableEnd(i *int64) *SessionUpdate {
+	if i != nil {
+		su.SetEnd(*i)
 	}
+	return su
+}
+
+// AddEnd adds i to the "end" field.
+func (su *SessionUpdate) AddEnd(i int64) *SessionUpdate {
+	su.mutation.AddEnd(i)
 	return su
 }
 
@@ -232,10 +245,16 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		})
 	}
 	if value, ok := su.mutation.Start(); ok {
-		_spec.SetField(session.FieldStart, field.TypeTime, value)
+		_spec.SetField(session.FieldStart, field.TypeInt64, value)
+	}
+	if value, ok := su.mutation.AddedStart(); ok {
+		_spec.AddField(session.FieldStart, field.TypeInt64, value)
 	}
 	if value, ok := su.mutation.End(); ok {
-		_spec.SetField(session.FieldEnd, field.TypeTime, value)
+		_spec.SetField(session.FieldEnd, field.TypeInt64, value)
+	}
+	if value, ok := su.mutation.AddedEnd(); ok {
+		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
 	}
 	if value, ok := su.mutation.Slido(); ok {
 		_spec.SetField(session.FieldSlido, field.TypeString, value)
@@ -333,30 +352,44 @@ func (suo *SessionUpdateOne) AppendBroadcast(s []string) *SessionUpdateOne {
 }
 
 // SetStart sets the "start" field.
-func (suo *SessionUpdateOne) SetStart(t time.Time) *SessionUpdateOne {
-	suo.mutation.SetStart(t)
+func (suo *SessionUpdateOne) SetStart(i int64) *SessionUpdateOne {
+	suo.mutation.ResetStart()
+	suo.mutation.SetStart(i)
 	return suo
 }
 
 // SetNillableStart sets the "start" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableStart(t *time.Time) *SessionUpdateOne {
-	if t != nil {
-		suo.SetStart(*t)
+func (suo *SessionUpdateOne) SetNillableStart(i *int64) *SessionUpdateOne {
+	if i != nil {
+		suo.SetStart(*i)
 	}
+	return suo
+}
+
+// AddStart adds i to the "start" field.
+func (suo *SessionUpdateOne) AddStart(i int64) *SessionUpdateOne {
+	suo.mutation.AddStart(i)
 	return suo
 }
 
 // SetEnd sets the "end" field.
-func (suo *SessionUpdateOne) SetEnd(t time.Time) *SessionUpdateOne {
-	suo.mutation.SetEnd(t)
+func (suo *SessionUpdateOne) SetEnd(i int64) *SessionUpdateOne {
+	suo.mutation.ResetEnd()
+	suo.mutation.SetEnd(i)
 	return suo
 }
 
 // SetNillableEnd sets the "end" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableEnd(t *time.Time) *SessionUpdateOne {
-	if t != nil {
-		suo.SetEnd(*t)
+func (suo *SessionUpdateOne) SetNillableEnd(i *int64) *SessionUpdateOne {
+	if i != nil {
+		suo.SetEnd(*i)
 	}
+	return suo
+}
+
+// AddEnd adds i to the "end" field.
+func (suo *SessionUpdateOne) AddEnd(i int64) *SessionUpdateOne {
+	suo.mutation.AddEnd(i)
 	return suo
 }
 
@@ -499,10 +532,16 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 		})
 	}
 	if value, ok := suo.mutation.Start(); ok {
-		_spec.SetField(session.FieldStart, field.TypeTime, value)
+		_spec.SetField(session.FieldStart, field.TypeInt64, value)
+	}
+	if value, ok := suo.mutation.AddedStart(); ok {
+		_spec.AddField(session.FieldStart, field.TypeInt64, value)
 	}
 	if value, ok := suo.mutation.End(); ok {
-		_spec.SetField(session.FieldEnd, field.TypeTime, value)
+		_spec.SetField(session.FieldEnd, field.TypeInt64, value)
+	}
+	if value, ok := suo.mutation.AddedEnd(); ok {
+		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
 	}
 	if value, ok := suo.mutation.Slido(); ok {
 		_spec.SetField(session.FieldSlido, field.TypeString, value)

@@ -3,8 +3,6 @@
 package session
 
 import (
-	"time"
-
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -74,9 +72,9 @@ var (
 	// DefaultBroadcast holds the default value on creation for the "broadcast" field.
 	DefaultBroadcast []string
 	// DefaultStart holds the default value on creation for the "start" field.
-	DefaultStart time.Time
+	DefaultStart int64
 	// DefaultEnd holds the default value on creation for the "end" field.
-	DefaultEnd time.Time
+	DefaultEnd int64
 	// DefaultSlido holds the default value on creation for the "slido" field.
 	DefaultSlido string
 	// DefaultSlide holds the default value on creation for the "slide" field.

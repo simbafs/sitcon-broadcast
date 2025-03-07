@@ -3,8 +3,21 @@ SITCON 2024 製播組要用的東西
 -   Lighten talk 的倒數計時
 -   直播右上角的字卡
 
-# TODO
+# Tech
 
+## Frontend
+
+-   nextjs
+-   tailwindcss
+
+## Backend
+
+-   Go
+-   entgo
+
+# TODO bugs
+
+-   [ ] **整理文件**
 -   [ ] 動態引入 session.json，有個參數可以調整 session.json 的路徑
 -   [x] 更新字卡頁面樣式
 -   [x] 需要一個 debug 頁面
@@ -23,3 +36,7 @@ SITCON 2024 製播組要用的東西
 -   [x] 有 broadcast 的議程要同步更新時間
 -   [ ] 有些字卡字太多，會影響大小
 -   [ ] API 失敗時，找個地方印出錯誤訊息（後端和前端都是）
+
+# TODO features
+
+-   [ ] 串 telegram 彈幕

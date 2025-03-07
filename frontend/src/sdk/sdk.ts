@@ -109,7 +109,10 @@ export async function GetCurrentSession(room: string) {
 }
 
 export async function UpdateSession(room: string, id: string, start: Date, end: Date) {
-	return api(`/card/${room}/${id}`, 'PUT', { start, end })
+	return api(`/card/${room}/${id}`, 'PUT', {
+		start: new Date(start).toISOString(),
+		end: new Date(end).toISOString(),
+	})
 }
 
 export const PAUSE = 0

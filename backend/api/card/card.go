@@ -66,13 +66,13 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 
 		var u UpdateSession
 		if err := c.BindJSON(&u); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		if err := session.Update(c.Request.Context(), room, id, u.Start, u.End); err != nil {
 			log.Println(err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": "filaed to update session"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

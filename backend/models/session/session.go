@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"slices"
+	"sync"
 	"time"
 
 	"backend/ent"
@@ -80,6 +81,7 @@ func ReadPrevNext(ctx context.Context, room string, id string) (*ent.Session, *e
 
 	for k, v := range sessions {
 		if v.ID == id {
+			log.Println("found", v.ID, k)
 			current = v
 			if k > 0 {
 				prev = sessions[k-1]
@@ -98,7 +100,15 @@ func ReadPrevNext(ctx context.Context, room string, id string) (*ent.Session, *e
 	return prev, current, next, nil
 }
 
+var mutex = sync.Mutex{}
+
 func Update(ctx context.Context, room string, id string, start, end time.Time) error {
+	mutex.Lock()
+	defer mutex.Unlock()
+	
+	startT := start.Unix() * 1000
+	endT := end.Unix() * 1000
+
 	log.Println(id, start, end)
 	if start.After(end) {
 		return fmt.Errorf("start time cannot be after end time")
@@ -109,17 +119,31 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 		return err
 	}
 
-	if prev != nil && start.Unix() < prev.Start {
+	if prev != nil {
+		log.Println("start", startT, prev.Start)
+		log.Println(endT <= prev.Start)
+
+	} else {
+		log.Println("prev is nil")
+	}
+	if next != nil {
+		log.Println("end", endT, next.End)
+		log.Println(startT >= next.End)
+	} else {
+		log.Println("next is nil")
+	}
+
+	if prev != nil && startT <= prev.Start {
 		return errors.New("start time cannot be before previous session's start time")
 	}
-	if next != nil && end.Unix() > next.End {
+	if next != nil && endT >= next.End {
 		return errors.New("end time cannot be after next session's end time")
 	}
 
 	// 更新當前 Session
 	err = m.Client.Session.UpdateOneID(id).
-		SetStart(start.Unix()).
-		SetEnd(end.Unix()).
+		SetStart(startT).
+		SetEnd(endT).
 		Exec(ctx)
 	if err != nil {
 		return err
@@ -128,7 +152,7 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 	// 更新前一個 Session 的 end 時間
 	if prev != nil {
 		err = m.Client.Session.UpdateOneID(prev.ID).
-			SetEnd(start.Unix()).
+			SetEnd(startT).
 			Exec(ctx)
 		if err != nil {
 			return err
@@ -138,7 +162,7 @@ func Update(ctx context.Context, room string, id string, start, end time.Time) e
 	// 更新下一個 Session 的 start 時間
 	if next != nil {
 		err = m.Client.Session.UpdateOneID(next.ID).
-			SetStart(end.Unix()).
+			SetStart(endT).
 			Exec(ctx)
 		if err != nil {
 			return err

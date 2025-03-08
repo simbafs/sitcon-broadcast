@@ -27,7 +27,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	route.GET("/", func(c *gin.Context) {
 		s, err := session.ReadAll(c.Request.Context())
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "fail to get sessions"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -39,7 +39,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		id := c.Param("id")
 
 		if s, err := session.ReadByID(c.Request.Context(), id); err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "session not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		} else {
 			c.JSON(http.StatusOK, s)
@@ -52,7 +52,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 
 		if s, err := session.ReadCurrentByRoom(c.Request.Context(), room); err != nil {
 			log.Println(err)
-			c.JSON(http.StatusNotFound, gin.H{"error": "session not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		} else {
 			c.JSON(http.StatusOK, s)

@@ -27,7 +27,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		t := NowBody{}
 
 		if err := c.BindJSON(&t); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

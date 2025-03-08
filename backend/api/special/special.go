@@ -16,7 +16,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 	route.GET("/", func(c *gin.Context) {
 		s, err := special.ReadAll(c)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read from db"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -27,7 +27,7 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		id := c.Param("id")
 		s, err := special.Read(c, id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read from db"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -39,13 +39,13 @@ func Route(r gin.IRouter, t *middleware.TokenVerifyer, update chan ticker.Msg) {
 		var data string
 
 		if err := c.BindJSON(&data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid data"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		s, err := special.Update(c, id, data)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "failed to update db"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

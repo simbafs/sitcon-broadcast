@@ -27,16 +27,3 @@ func Route(r *gin.Engine, t *middleware.TokenVerifyer) {
 	quit := make(chan struct{})
 	go ticker.Listen(sse.Message, quit, update)
 }
-
-// GET /card
-// GET /card/:id
-// GET /card/current/:room
-// POST /card/:id
-//
-// GET /countdown
-// GET /countdown/:name
-// POST /countdown/:name
-//
-// GET /now
-// POST /now
-// Delete /now

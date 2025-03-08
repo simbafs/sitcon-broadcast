@@ -138,9 +138,18 @@ func UpdateCardInRoom(broadcast chan middleware.SSEMsg, room string, id string) 
 		return
 	}
 
+	//TODO: reconsider which channel I need to broadcast
+
 	broadcast <- middleware.SSEMsg{
 		Name: "card-current-" + room,
 		Data: curr,
+	}
+
+	for _, room := range curr.Broadcast {
+		broadcast <- middleware.SSEMsg{
+			Name: "card-current-" + room,
+			Data: curr,
+		}
 	}
 
 	if target != nil {

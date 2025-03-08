@@ -11,7 +11,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -39,58 +38,6 @@ func (su *SessionUpdate) SetNillableTitle(s *string) *SessionUpdate {
 	if s != nil {
 		su.SetTitle(*s)
 	}
-	return su
-}
-
-// SetType sets the "type" field.
-func (su *SessionUpdate) SetType(s string) *SessionUpdate {
-	su.mutation.SetType(s)
-	return su
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableType(s *string) *SessionUpdate {
-	if s != nil {
-		su.SetType(*s)
-	}
-	return su
-}
-
-// SetSpeakers sets the "speakers" field.
-func (su *SessionUpdate) SetSpeakers(s []string) *SessionUpdate {
-	su.mutation.SetSpeakers(s)
-	return su
-}
-
-// AppendSpeakers appends s to the "speakers" field.
-func (su *SessionUpdate) AppendSpeakers(s []string) *SessionUpdate {
-	su.mutation.AppendSpeakers(s)
-	return su
-}
-
-// SetRoom sets the "room" field.
-func (su *SessionUpdate) SetRoom(s string) *SessionUpdate {
-	su.mutation.SetRoom(s)
-	return su
-}
-
-// SetNillableRoom sets the "room" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableRoom(s *string) *SessionUpdate {
-	if s != nil {
-		su.SetRoom(*s)
-	}
-	return su
-}
-
-// SetBroadcast sets the "broadcast" field.
-func (su *SessionUpdate) SetBroadcast(s []string) *SessionUpdate {
-	su.mutation.SetBroadcast(s)
-	return su
-}
-
-// AppendBroadcast appends s to the "broadcast" field.
-func (su *SessionUpdate) AppendBroadcast(s []string) *SessionUpdate {
-	su.mutation.AppendBroadcast(s)
 	return su
 }
 
@@ -136,44 +83,72 @@ func (su *SessionUpdate) AddEnd(i int64) *SessionUpdate {
 	return su
 }
 
-// SetSlido sets the "slido" field.
-func (su *SessionUpdate) SetSlido(s string) *SessionUpdate {
-	su.mutation.SetSlido(s)
+// SetSpeaker sets the "speaker" field.
+func (su *SessionUpdate) SetSpeaker(s string) *SessionUpdate {
+	su.mutation.SetSpeaker(s)
 	return su
 }
 
-// SetNillableSlido sets the "slido" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableSlido(s *string) *SessionUpdate {
+// SetNillableSpeaker sets the "speaker" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableSpeaker(s *string) *SessionUpdate {
 	if s != nil {
-		su.SetSlido(*s)
+		su.SetSpeaker(*s)
 	}
 	return su
 }
 
-// SetSlide sets the "slide" field.
-func (su *SessionUpdate) SetSlide(s string) *SessionUpdate {
-	su.mutation.SetSlide(s)
+// SetQa sets the "qa" field.
+func (su *SessionUpdate) SetQa(s string) *SessionUpdate {
+	su.mutation.SetQa(s)
 	return su
 }
 
-// SetNillableSlide sets the "slide" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableSlide(s *string) *SessionUpdate {
+// SetNillableQa sets the "qa" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableQa(s *string) *SessionUpdate {
 	if s != nil {
-		su.SetSlide(*s)
+		su.SetQa(*s)
 	}
 	return su
 }
 
-// SetHackmd sets the "hackmd" field.
-func (su *SessionUpdate) SetHackmd(s string) *SessionUpdate {
-	su.mutation.SetHackmd(s)
+// SetSlidoID sets the "slidoID" field.
+func (su *SessionUpdate) SetSlidoID(s string) *SessionUpdate {
+	su.mutation.SetSlidoID(s)
 	return su
 }
 
-// SetNillableHackmd sets the "hackmd" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableHackmd(s *string) *SessionUpdate {
+// SetNillableSlidoID sets the "slidoID" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableSlidoID(s *string) *SessionUpdate {
 	if s != nil {
-		su.SetHackmd(*s)
+		su.SetSlidoID(*s)
+	}
+	return su
+}
+
+// SetSlidoAdminLink sets the "slido_admin_link" field.
+func (su *SessionUpdate) SetSlidoAdminLink(s string) *SessionUpdate {
+	su.mutation.SetSlidoAdminLink(s)
+	return su
+}
+
+// SetNillableSlidoAdminLink sets the "slido_admin_link" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableSlidoAdminLink(s *string) *SessionUpdate {
+	if s != nil {
+		su.SetSlidoAdminLink(*s)
+	}
+	return su
+}
+
+// SetCoWrite sets the "co_write" field.
+func (su *SessionUpdate) SetCoWrite(s string) *SessionUpdate {
+	su.mutation.SetCoWrite(s)
+	return su
+}
+
+// SetNillableCoWrite sets the "co_write" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableCoWrite(s *string) *SessionUpdate {
+	if s != nil {
+		su.SetCoWrite(*s)
 	}
 	return su
 }
@@ -222,28 +197,6 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.Title(); ok {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := su.mutation.GetType(); ok {
-		_spec.SetField(session.FieldType, field.TypeString, value)
-	}
-	if value, ok := su.mutation.Speakers(); ok {
-		_spec.SetField(session.FieldSpeakers, field.TypeJSON, value)
-	}
-	if value, ok := su.mutation.AppendedSpeakers(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, session.FieldSpeakers, value)
-		})
-	}
-	if value, ok := su.mutation.Room(); ok {
-		_spec.SetField(session.FieldRoom, field.TypeString, value)
-	}
-	if value, ok := su.mutation.Broadcast(); ok {
-		_spec.SetField(session.FieldBroadcast, field.TypeJSON, value)
-	}
-	if value, ok := su.mutation.AppendedBroadcast(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, session.FieldBroadcast, value)
-		})
-	}
 	if value, ok := su.mutation.Start(); ok {
 		_spec.SetField(session.FieldStart, field.TypeInt64, value)
 	}
@@ -256,14 +209,20 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.AddedEnd(); ok {
 		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
 	}
-	if value, ok := su.mutation.Slido(); ok {
-		_spec.SetField(session.FieldSlido, field.TypeString, value)
+	if value, ok := su.mutation.Speaker(); ok {
+		_spec.SetField(session.FieldSpeaker, field.TypeString, value)
 	}
-	if value, ok := su.mutation.Slide(); ok {
-		_spec.SetField(session.FieldSlide, field.TypeString, value)
+	if value, ok := su.mutation.Qa(); ok {
+		_spec.SetField(session.FieldQa, field.TypeString, value)
 	}
-	if value, ok := su.mutation.Hackmd(); ok {
-		_spec.SetField(session.FieldHackmd, field.TypeString, value)
+	if value, ok := su.mutation.SlidoID(); ok {
+		_spec.SetField(session.FieldSlidoID, field.TypeString, value)
+	}
+	if value, ok := su.mutation.SlidoAdminLink(); ok {
+		_spec.SetField(session.FieldSlidoAdminLink, field.TypeString, value)
+	}
+	if value, ok := su.mutation.CoWrite(); ok {
+		_spec.SetField(session.FieldCoWrite, field.TypeString, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -296,58 +255,6 @@ func (suo *SessionUpdateOne) SetNillableTitle(s *string) *SessionUpdateOne {
 	if s != nil {
 		suo.SetTitle(*s)
 	}
-	return suo
-}
-
-// SetType sets the "type" field.
-func (suo *SessionUpdateOne) SetType(s string) *SessionUpdateOne {
-	suo.mutation.SetType(s)
-	return suo
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableType(s *string) *SessionUpdateOne {
-	if s != nil {
-		suo.SetType(*s)
-	}
-	return suo
-}
-
-// SetSpeakers sets the "speakers" field.
-func (suo *SessionUpdateOne) SetSpeakers(s []string) *SessionUpdateOne {
-	suo.mutation.SetSpeakers(s)
-	return suo
-}
-
-// AppendSpeakers appends s to the "speakers" field.
-func (suo *SessionUpdateOne) AppendSpeakers(s []string) *SessionUpdateOne {
-	suo.mutation.AppendSpeakers(s)
-	return suo
-}
-
-// SetRoom sets the "room" field.
-func (suo *SessionUpdateOne) SetRoom(s string) *SessionUpdateOne {
-	suo.mutation.SetRoom(s)
-	return suo
-}
-
-// SetNillableRoom sets the "room" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableRoom(s *string) *SessionUpdateOne {
-	if s != nil {
-		suo.SetRoom(*s)
-	}
-	return suo
-}
-
-// SetBroadcast sets the "broadcast" field.
-func (suo *SessionUpdateOne) SetBroadcast(s []string) *SessionUpdateOne {
-	suo.mutation.SetBroadcast(s)
-	return suo
-}
-
-// AppendBroadcast appends s to the "broadcast" field.
-func (suo *SessionUpdateOne) AppendBroadcast(s []string) *SessionUpdateOne {
-	suo.mutation.AppendBroadcast(s)
 	return suo
 }
 
@@ -393,44 +300,72 @@ func (suo *SessionUpdateOne) AddEnd(i int64) *SessionUpdateOne {
 	return suo
 }
 
-// SetSlido sets the "slido" field.
-func (suo *SessionUpdateOne) SetSlido(s string) *SessionUpdateOne {
-	suo.mutation.SetSlido(s)
+// SetSpeaker sets the "speaker" field.
+func (suo *SessionUpdateOne) SetSpeaker(s string) *SessionUpdateOne {
+	suo.mutation.SetSpeaker(s)
 	return suo
 }
 
-// SetNillableSlido sets the "slido" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableSlido(s *string) *SessionUpdateOne {
+// SetNillableSpeaker sets the "speaker" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableSpeaker(s *string) *SessionUpdateOne {
 	if s != nil {
-		suo.SetSlido(*s)
+		suo.SetSpeaker(*s)
 	}
 	return suo
 }
 
-// SetSlide sets the "slide" field.
-func (suo *SessionUpdateOne) SetSlide(s string) *SessionUpdateOne {
-	suo.mutation.SetSlide(s)
+// SetQa sets the "qa" field.
+func (suo *SessionUpdateOne) SetQa(s string) *SessionUpdateOne {
+	suo.mutation.SetQa(s)
 	return suo
 }
 
-// SetNillableSlide sets the "slide" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableSlide(s *string) *SessionUpdateOne {
+// SetNillableQa sets the "qa" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableQa(s *string) *SessionUpdateOne {
 	if s != nil {
-		suo.SetSlide(*s)
+		suo.SetQa(*s)
 	}
 	return suo
 }
 
-// SetHackmd sets the "hackmd" field.
-func (suo *SessionUpdateOne) SetHackmd(s string) *SessionUpdateOne {
-	suo.mutation.SetHackmd(s)
+// SetSlidoID sets the "slidoID" field.
+func (suo *SessionUpdateOne) SetSlidoID(s string) *SessionUpdateOne {
+	suo.mutation.SetSlidoID(s)
 	return suo
 }
 
-// SetNillableHackmd sets the "hackmd" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableHackmd(s *string) *SessionUpdateOne {
+// SetNillableSlidoID sets the "slidoID" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableSlidoID(s *string) *SessionUpdateOne {
 	if s != nil {
-		suo.SetHackmd(*s)
+		suo.SetSlidoID(*s)
+	}
+	return suo
+}
+
+// SetSlidoAdminLink sets the "slido_admin_link" field.
+func (suo *SessionUpdateOne) SetSlidoAdminLink(s string) *SessionUpdateOne {
+	suo.mutation.SetSlidoAdminLink(s)
+	return suo
+}
+
+// SetNillableSlidoAdminLink sets the "slido_admin_link" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableSlidoAdminLink(s *string) *SessionUpdateOne {
+	if s != nil {
+		suo.SetSlidoAdminLink(*s)
+	}
+	return suo
+}
+
+// SetCoWrite sets the "co_write" field.
+func (suo *SessionUpdateOne) SetCoWrite(s string) *SessionUpdateOne {
+	suo.mutation.SetCoWrite(s)
+	return suo
+}
+
+// SetNillableCoWrite sets the "co_write" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableCoWrite(s *string) *SessionUpdateOne {
+	if s != nil {
+		suo.SetCoWrite(*s)
 	}
 	return suo
 }
@@ -509,28 +444,6 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	if value, ok := suo.mutation.Title(); ok {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := suo.mutation.GetType(); ok {
-		_spec.SetField(session.FieldType, field.TypeString, value)
-	}
-	if value, ok := suo.mutation.Speakers(); ok {
-		_spec.SetField(session.FieldSpeakers, field.TypeJSON, value)
-	}
-	if value, ok := suo.mutation.AppendedSpeakers(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, session.FieldSpeakers, value)
-		})
-	}
-	if value, ok := suo.mutation.Room(); ok {
-		_spec.SetField(session.FieldRoom, field.TypeString, value)
-	}
-	if value, ok := suo.mutation.Broadcast(); ok {
-		_spec.SetField(session.FieldBroadcast, field.TypeJSON, value)
-	}
-	if value, ok := suo.mutation.AppendedBroadcast(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, session.FieldBroadcast, value)
-		})
-	}
 	if value, ok := suo.mutation.Start(); ok {
 		_spec.SetField(session.FieldStart, field.TypeInt64, value)
 	}
@@ -543,14 +456,20 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	if value, ok := suo.mutation.AddedEnd(); ok {
 		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
 	}
-	if value, ok := suo.mutation.Slido(); ok {
-		_spec.SetField(session.FieldSlido, field.TypeString, value)
+	if value, ok := suo.mutation.Speaker(); ok {
+		_spec.SetField(session.FieldSpeaker, field.TypeString, value)
 	}
-	if value, ok := suo.mutation.Slide(); ok {
-		_spec.SetField(session.FieldSlide, field.TypeString, value)
+	if value, ok := suo.mutation.Qa(); ok {
+		_spec.SetField(session.FieldQa, field.TypeString, value)
 	}
-	if value, ok := suo.mutation.Hackmd(); ok {
-		_spec.SetField(session.FieldHackmd, field.TypeString, value)
+	if value, ok := suo.mutation.SlidoID(); ok {
+		_spec.SetField(session.FieldSlidoID, field.TypeString, value)
+	}
+	if value, ok := suo.mutation.SlidoAdminLink(); ok {
+		_spec.SetField(session.FieldSlidoAdminLink, field.TypeString, value)
+	}
+	if value, ok := suo.mutation.CoWrite(); ok {
+		_spec.SetField(session.FieldCoWrite, field.TypeString, value)
 	}
 	_node = &Session{config: suo.config}
 	_spec.Assign = _node.assignValues

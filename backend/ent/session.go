@@ -19,24 +19,26 @@ type Session struct {
 	ID string `json:"id,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
-	// Type holds the value of the "type" field.
-	Type string `json:"type,omitempty"`
-	// Speakers holds the value of the "speakers" field.
-	Speakers []string `json:"speakers,omitempty"`
 	// Room holds the value of the "room" field.
 	Room string `json:"room,omitempty"`
-	// Broadcast holds the value of the "broadcast" field.
-	Broadcast []string `json:"broadcast,omitempty"`
+	// BroadcastTo holds the value of the "broadcastTo" field.
+	BroadcastTo []string `json:"broadcastTo,omitempty"`
+	// BroadcastFrom holds the value of the "broadcastFrom" field.
+	BroadcastFrom string `json:"broadcastFrom,omitempty"`
 	// Start holds the value of the "start" field.
 	Start int64 `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	End int64 `json:"end,omitempty"`
-	// Slido holds the value of the "slido" field.
-	Slido string `json:"slido,omitempty"`
-	// Slide holds the value of the "slide" field.
-	Slide string `json:"slide,omitempty"`
-	// Hackmd holds the value of the "hackmd" field.
-	Hackmd       string `json:"hackmd,omitempty"`
+	// Speaker holds the value of the "speaker" field.
+	Speaker string `json:"speaker,omitempty"`
+	// Qa holds the value of the "qa" field.
+	Qa string `json:"qa,omitempty"`
+	// SlidoID holds the value of the "slidoID" field.
+	SlidoID string `json:"slidoID,omitempty"`
+	// SlidoAdminLink holds the value of the "slido_admin_link" field.
+	SlidoAdminLink string `json:"slido_admin_link,omitempty"`
+	// CoWrite holds the value of the "co_write" field.
+	CoWrite      string `json:"co_write,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -45,11 +47,11 @@ func (*Session) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case session.FieldSpeakers, session.FieldBroadcast:
+		case session.FieldBroadcastTo:
 			values[i] = new([]byte)
 		case session.FieldStart, session.FieldEnd:
 			values[i] = new(sql.NullInt64)
-		case session.FieldID, session.FieldTitle, session.FieldType, session.FieldRoom, session.FieldSlido, session.FieldSlide, session.FieldHackmd:
+		case session.FieldID, session.FieldTitle, session.FieldRoom, session.FieldBroadcastFrom, session.FieldSpeaker, session.FieldQa, session.FieldSlidoID, session.FieldSlidoAdminLink, session.FieldCoWrite:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -78,33 +80,25 @@ func (s *Session) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Title = value.String
 			}
-		case session.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				s.Type = value.String
-			}
-		case session.FieldSpeakers:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field speakers", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &s.Speakers); err != nil {
-					return fmt.Errorf("unmarshal field speakers: %w", err)
-				}
-			}
 		case session.FieldRoom:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field room", values[i])
 			} else if value.Valid {
 				s.Room = value.String
 			}
-		case session.FieldBroadcast:
+		case session.FieldBroadcastTo:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field broadcast", values[i])
+				return fmt.Errorf("unexpected type %T for field broadcastTo", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &s.Broadcast); err != nil {
-					return fmt.Errorf("unmarshal field broadcast: %w", err)
+				if err := json.Unmarshal(*value, &s.BroadcastTo); err != nil {
+					return fmt.Errorf("unmarshal field broadcastTo: %w", err)
 				}
+			}
+		case session.FieldBroadcastFrom:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field broadcastFrom", values[i])
+			} else if value.Valid {
+				s.BroadcastFrom = value.String
 			}
 		case session.FieldStart:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -118,23 +112,35 @@ func (s *Session) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.End = value.Int64
 			}
-		case session.FieldSlido:
+		case session.FieldSpeaker:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field slido", values[i])
+				return fmt.Errorf("unexpected type %T for field speaker", values[i])
 			} else if value.Valid {
-				s.Slido = value.String
+				s.Speaker = value.String
 			}
-		case session.FieldSlide:
+		case session.FieldQa:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field slide", values[i])
+				return fmt.Errorf("unexpected type %T for field qa", values[i])
 			} else if value.Valid {
-				s.Slide = value.String
+				s.Qa = value.String
 			}
-		case session.FieldHackmd:
+		case session.FieldSlidoID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field hackmd", values[i])
+				return fmt.Errorf("unexpected type %T for field slidoID", values[i])
 			} else if value.Valid {
-				s.Hackmd = value.String
+				s.SlidoID = value.String
+			}
+		case session.FieldSlidoAdminLink:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field slido_admin_link", values[i])
+			} else if value.Valid {
+				s.SlidoAdminLink = value.String
+			}
+		case session.FieldCoWrite:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field co_write", values[i])
+			} else if value.Valid {
+				s.CoWrite = value.String
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -175,17 +181,14 @@ func (s *Session) String() string {
 	builder.WriteString("title=")
 	builder.WriteString(s.Title)
 	builder.WriteString(", ")
-	builder.WriteString("type=")
-	builder.WriteString(s.Type)
-	builder.WriteString(", ")
-	builder.WriteString("speakers=")
-	builder.WriteString(fmt.Sprintf("%v", s.Speakers))
-	builder.WriteString(", ")
 	builder.WriteString("room=")
 	builder.WriteString(s.Room)
 	builder.WriteString(", ")
-	builder.WriteString("broadcast=")
-	builder.WriteString(fmt.Sprintf("%v", s.Broadcast))
+	builder.WriteString("broadcastTo=")
+	builder.WriteString(fmt.Sprintf("%v", s.BroadcastTo))
+	builder.WriteString(", ")
+	builder.WriteString("broadcastFrom=")
+	builder.WriteString(s.BroadcastFrom)
 	builder.WriteString(", ")
 	builder.WriteString("start=")
 	builder.WriteString(fmt.Sprintf("%v", s.Start))
@@ -193,14 +196,20 @@ func (s *Session) String() string {
 	builder.WriteString("end=")
 	builder.WriteString(fmt.Sprintf("%v", s.End))
 	builder.WriteString(", ")
-	builder.WriteString("slido=")
-	builder.WriteString(s.Slido)
+	builder.WriteString("speaker=")
+	builder.WriteString(s.Speaker)
 	builder.WriteString(", ")
-	builder.WriteString("slide=")
-	builder.WriteString(s.Slide)
+	builder.WriteString("qa=")
+	builder.WriteString(s.Qa)
 	builder.WriteString(", ")
-	builder.WriteString("hackmd=")
-	builder.WriteString(s.Hackmd)
+	builder.WriteString("slidoID=")
+	builder.WriteString(s.SlidoID)
+	builder.WriteString(", ")
+	builder.WriteString("slido_admin_link=")
+	builder.WriteString(s.SlidoAdminLink)
+	builder.WriteString(", ")
+	builder.WriteString("co_write=")
+	builder.WriteString(s.CoWrite)
 	builder.WriteByte(')')
 	return builder.String()
 }

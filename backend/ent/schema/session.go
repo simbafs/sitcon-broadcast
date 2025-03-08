@@ -13,17 +13,18 @@ type Session struct {
 // Fields of the Session.
 func (Session) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").Default(""),
-		field.String("title").Default(""),
-		field.String("type").Default(""),
-		field.Strings("speakers").Default([]string{}),
-		field.String("room").Default(""),
-		field.Strings("broadcast").Default([]string{}),
-		field.Int64("start").Default(0),
-		field.Int64("end").Default(0),
-		field.String("slido").Default(""), // json: qa
-		field.String("slide").Default(""),
-		field.String("hackmd").Default(""), // json: co_write
+		field.String("title"),
+		field.String("id").Immutable(),
+		field.String("room").Immutable(),
+		field.Strings("broadcastTo").Immutable(),
+		field.String("broadcastFrom").Immutable(),
+		field.Int64("start"),
+		field.Int64("end"),
+		field.String("speaker"),
+		field.String("qa"),
+		field.String("slidoID"),
+		field.String("slido_admin_link"),
+		field.String("co_write"),
 	}
 }
 

@@ -4,28 +4,20 @@ import (
 	"time"
 )
 
-type Now struct {
-	time.Time
-}
+// Now is unix timestamp in seconds
+type Now int64
 
-func (n Now) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + n.Format("2006-01-02T15:04:05.000000000Z") + `"`), nil
-}
-
-var (
-	zero = Now{}
-	now  = Now{}
-)
+var now Now = 0
 
 // no Create
 
 func getRealNow() Now {
-	return Now{time.Now().UTC()}
+	return Now(time.Now().Unix())
 }
 
 func Read() Now {
 	n := getRealNow()
-	if now.Equal(zero.Time) {
+	if now == 0 {
 		return n
 	} else {
 		return now
@@ -37,5 +29,5 @@ func Update(t Now) {
 }
 
 func Delete() {
-	now = zero
+	now = 0
 }

@@ -68,14 +68,14 @@ func Title(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldTitle, v))
 }
 
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldType, v))
-}
-
 // Room applies equality check predicate on the "room" field. It's identical to RoomEQ.
 func Room(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldRoom, v))
+}
+
+// BroadcastFrom applies equality check predicate on the "broadcastFrom" field. It's identical to BroadcastFromEQ.
+func BroadcastFrom(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldBroadcastFrom, v))
 }
 
 // Start applies equality check predicate on the "start" field. It's identical to StartEQ.
@@ -88,19 +88,29 @@ func End(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldEnd, v))
 }
 
-// Slido applies equality check predicate on the "slido" field. It's identical to SlidoEQ.
-func Slido(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldSlido, v))
+// Speaker applies equality check predicate on the "speaker" field. It's identical to SpeakerEQ.
+func Speaker(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldSpeaker, v))
 }
 
-// Slide applies equality check predicate on the "slide" field. It's identical to SlideEQ.
-func Slide(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldSlide, v))
+// Qa applies equality check predicate on the "qa" field. It's identical to QaEQ.
+func Qa(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldQa, v))
 }
 
-// Hackmd applies equality check predicate on the "hackmd" field. It's identical to HackmdEQ.
-func Hackmd(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldHackmd, v))
+// SlidoID applies equality check predicate on the "slidoID" field. It's identical to SlidoIDEQ.
+func SlidoID(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldSlidoID, v))
+}
+
+// SlidoAdminLink applies equality check predicate on the "slido_admin_link" field. It's identical to SlidoAdminLinkEQ.
+func SlidoAdminLink(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldSlidoAdminLink, v))
+}
+
+// CoWrite applies equality check predicate on the "co_write" field. It's identical to CoWriteEQ.
+func CoWrite(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldCoWrite, v))
 }
 
 // TitleEQ applies the EQ predicate on the "title" field.
@@ -168,71 +178,6 @@ func TitleContainsFold(v string) predicate.Session {
 	return predicate.Session(sql.FieldContainsFold(FieldTitle, v))
 }
 
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldType, v))
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldType, v))
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldType, vs...))
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldType, v))
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldType, v))
-}
-
-// TypeContains applies the Contains predicate on the "type" field.
-func TypeContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldType, v))
-}
-
-// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
-func TypeHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldType, v))
-}
-
-// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
-func TypeHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldType, v))
-}
-
-// TypeEqualFold applies the EqualFold predicate on the "type" field.
-func TypeEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldType, v))
-}
-
-// TypeContainsFold applies the ContainsFold predicate on the "type" field.
-func TypeContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldType, v))
-}
-
 // RoomEQ applies the EQ predicate on the "room" field.
 func RoomEQ(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldRoom, v))
@@ -296,6 +241,71 @@ func RoomEqualFold(v string) predicate.Session {
 // RoomContainsFold applies the ContainsFold predicate on the "room" field.
 func RoomContainsFold(v string) predicate.Session {
 	return predicate.Session(sql.FieldContainsFold(FieldRoom, v))
+}
+
+// BroadcastFromEQ applies the EQ predicate on the "broadcastFrom" field.
+func BroadcastFromEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromNEQ applies the NEQ predicate on the "broadcastFrom" field.
+func BroadcastFromNEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromIn applies the In predicate on the "broadcastFrom" field.
+func BroadcastFromIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldBroadcastFrom, vs...))
+}
+
+// BroadcastFromNotIn applies the NotIn predicate on the "broadcastFrom" field.
+func BroadcastFromNotIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldBroadcastFrom, vs...))
+}
+
+// BroadcastFromGT applies the GT predicate on the "broadcastFrom" field.
+func BroadcastFromGT(v string) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromGTE applies the GTE predicate on the "broadcastFrom" field.
+func BroadcastFromGTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromLT applies the LT predicate on the "broadcastFrom" field.
+func BroadcastFromLT(v string) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromLTE applies the LTE predicate on the "broadcastFrom" field.
+func BroadcastFromLTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromContains applies the Contains predicate on the "broadcastFrom" field.
+func BroadcastFromContains(v string) predicate.Session {
+	return predicate.Session(sql.FieldContains(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromHasPrefix applies the HasPrefix predicate on the "broadcastFrom" field.
+func BroadcastFromHasPrefix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasPrefix(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromHasSuffix applies the HasSuffix predicate on the "broadcastFrom" field.
+func BroadcastFromHasSuffix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasSuffix(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromEqualFold applies the EqualFold predicate on the "broadcastFrom" field.
+func BroadcastFromEqualFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldBroadcastFrom, v))
+}
+
+// BroadcastFromContainsFold applies the ContainsFold predicate on the "broadcastFrom" field.
+func BroadcastFromContainsFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldBroadcastFrom, v))
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
@@ -378,199 +388,329 @@ func EndLTE(v int64) predicate.Session {
 	return predicate.Session(sql.FieldLTE(FieldEnd, v))
 }
 
-// SlidoEQ applies the EQ predicate on the "slido" field.
-func SlidoEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldSlido, v))
+// SpeakerEQ applies the EQ predicate on the "speaker" field.
+func SpeakerEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldSpeaker, v))
 }
 
-// SlidoNEQ applies the NEQ predicate on the "slido" field.
-func SlidoNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldSlido, v))
+// SpeakerNEQ applies the NEQ predicate on the "speaker" field.
+func SpeakerNEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldSpeaker, v))
 }
 
-// SlidoIn applies the In predicate on the "slido" field.
-func SlidoIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldSlido, vs...))
+// SpeakerIn applies the In predicate on the "speaker" field.
+func SpeakerIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldSpeaker, vs...))
 }
 
-// SlidoNotIn applies the NotIn predicate on the "slido" field.
-func SlidoNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldSlido, vs...))
+// SpeakerNotIn applies the NotIn predicate on the "speaker" field.
+func SpeakerNotIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldSpeaker, vs...))
 }
 
-// SlidoGT applies the GT predicate on the "slido" field.
-func SlidoGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldSlido, v))
+// SpeakerGT applies the GT predicate on the "speaker" field.
+func SpeakerGT(v string) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldSpeaker, v))
 }
 
-// SlidoGTE applies the GTE predicate on the "slido" field.
-func SlidoGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldSlido, v))
+// SpeakerGTE applies the GTE predicate on the "speaker" field.
+func SpeakerGTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldSpeaker, v))
 }
 
-// SlidoLT applies the LT predicate on the "slido" field.
-func SlidoLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldSlido, v))
+// SpeakerLT applies the LT predicate on the "speaker" field.
+func SpeakerLT(v string) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldSpeaker, v))
 }
 
-// SlidoLTE applies the LTE predicate on the "slido" field.
-func SlidoLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldSlido, v))
+// SpeakerLTE applies the LTE predicate on the "speaker" field.
+func SpeakerLTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldSpeaker, v))
 }
 
-// SlidoContains applies the Contains predicate on the "slido" field.
-func SlidoContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldSlido, v))
+// SpeakerContains applies the Contains predicate on the "speaker" field.
+func SpeakerContains(v string) predicate.Session {
+	return predicate.Session(sql.FieldContains(FieldSpeaker, v))
 }
 
-// SlidoHasPrefix applies the HasPrefix predicate on the "slido" field.
-func SlidoHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldSlido, v))
+// SpeakerHasPrefix applies the HasPrefix predicate on the "speaker" field.
+func SpeakerHasPrefix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasPrefix(FieldSpeaker, v))
 }
 
-// SlidoHasSuffix applies the HasSuffix predicate on the "slido" field.
-func SlidoHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldSlido, v))
+// SpeakerHasSuffix applies the HasSuffix predicate on the "speaker" field.
+func SpeakerHasSuffix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasSuffix(FieldSpeaker, v))
 }
 
-// SlidoEqualFold applies the EqualFold predicate on the "slido" field.
-func SlidoEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldSlido, v))
+// SpeakerEqualFold applies the EqualFold predicate on the "speaker" field.
+func SpeakerEqualFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldSpeaker, v))
 }
 
-// SlidoContainsFold applies the ContainsFold predicate on the "slido" field.
-func SlidoContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldSlido, v))
+// SpeakerContainsFold applies the ContainsFold predicate on the "speaker" field.
+func SpeakerContainsFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldSpeaker, v))
 }
 
-// SlideEQ applies the EQ predicate on the "slide" field.
-func SlideEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldSlide, v))
+// QaEQ applies the EQ predicate on the "qa" field.
+func QaEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldQa, v))
 }
 
-// SlideNEQ applies the NEQ predicate on the "slide" field.
-func SlideNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldSlide, v))
+// QaNEQ applies the NEQ predicate on the "qa" field.
+func QaNEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldQa, v))
 }
 
-// SlideIn applies the In predicate on the "slide" field.
-func SlideIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldSlide, vs...))
+// QaIn applies the In predicate on the "qa" field.
+func QaIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldQa, vs...))
 }
 
-// SlideNotIn applies the NotIn predicate on the "slide" field.
-func SlideNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldSlide, vs...))
+// QaNotIn applies the NotIn predicate on the "qa" field.
+func QaNotIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldQa, vs...))
 }
 
-// SlideGT applies the GT predicate on the "slide" field.
-func SlideGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldSlide, v))
+// QaGT applies the GT predicate on the "qa" field.
+func QaGT(v string) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldQa, v))
 }
 
-// SlideGTE applies the GTE predicate on the "slide" field.
-func SlideGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldSlide, v))
+// QaGTE applies the GTE predicate on the "qa" field.
+func QaGTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldQa, v))
 }
 
-// SlideLT applies the LT predicate on the "slide" field.
-func SlideLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldSlide, v))
+// QaLT applies the LT predicate on the "qa" field.
+func QaLT(v string) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldQa, v))
 }
 
-// SlideLTE applies the LTE predicate on the "slide" field.
-func SlideLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldSlide, v))
+// QaLTE applies the LTE predicate on the "qa" field.
+func QaLTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldQa, v))
 }
 
-// SlideContains applies the Contains predicate on the "slide" field.
-func SlideContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldSlide, v))
+// QaContains applies the Contains predicate on the "qa" field.
+func QaContains(v string) predicate.Session {
+	return predicate.Session(sql.FieldContains(FieldQa, v))
 }
 
-// SlideHasPrefix applies the HasPrefix predicate on the "slide" field.
-func SlideHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldSlide, v))
+// QaHasPrefix applies the HasPrefix predicate on the "qa" field.
+func QaHasPrefix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasPrefix(FieldQa, v))
 }
 
-// SlideHasSuffix applies the HasSuffix predicate on the "slide" field.
-func SlideHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldSlide, v))
+// QaHasSuffix applies the HasSuffix predicate on the "qa" field.
+func QaHasSuffix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasSuffix(FieldQa, v))
 }
 
-// SlideEqualFold applies the EqualFold predicate on the "slide" field.
-func SlideEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldSlide, v))
+// QaEqualFold applies the EqualFold predicate on the "qa" field.
+func QaEqualFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldQa, v))
 }
 
-// SlideContainsFold applies the ContainsFold predicate on the "slide" field.
-func SlideContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldSlide, v))
+// QaContainsFold applies the ContainsFold predicate on the "qa" field.
+func QaContainsFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldQa, v))
 }
 
-// HackmdEQ applies the EQ predicate on the "hackmd" field.
-func HackmdEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldHackmd, v))
+// SlidoIDEQ applies the EQ predicate on the "slidoID" field.
+func SlidoIDEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldSlidoID, v))
 }
 
-// HackmdNEQ applies the NEQ predicate on the "hackmd" field.
-func HackmdNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldHackmd, v))
+// SlidoIDNEQ applies the NEQ predicate on the "slidoID" field.
+func SlidoIDNEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldSlidoID, v))
 }
 
-// HackmdIn applies the In predicate on the "hackmd" field.
-func HackmdIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldHackmd, vs...))
+// SlidoIDIn applies the In predicate on the "slidoID" field.
+func SlidoIDIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldSlidoID, vs...))
 }
 
-// HackmdNotIn applies the NotIn predicate on the "hackmd" field.
-func HackmdNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldHackmd, vs...))
+// SlidoIDNotIn applies the NotIn predicate on the "slidoID" field.
+func SlidoIDNotIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldSlidoID, vs...))
 }
 
-// HackmdGT applies the GT predicate on the "hackmd" field.
-func HackmdGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldHackmd, v))
+// SlidoIDGT applies the GT predicate on the "slidoID" field.
+func SlidoIDGT(v string) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldSlidoID, v))
 }
 
-// HackmdGTE applies the GTE predicate on the "hackmd" field.
-func HackmdGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldHackmd, v))
+// SlidoIDGTE applies the GTE predicate on the "slidoID" field.
+func SlidoIDGTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldSlidoID, v))
 }
 
-// HackmdLT applies the LT predicate on the "hackmd" field.
-func HackmdLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldHackmd, v))
+// SlidoIDLT applies the LT predicate on the "slidoID" field.
+func SlidoIDLT(v string) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldSlidoID, v))
 }
 
-// HackmdLTE applies the LTE predicate on the "hackmd" field.
-func HackmdLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldHackmd, v))
+// SlidoIDLTE applies the LTE predicate on the "slidoID" field.
+func SlidoIDLTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldSlidoID, v))
 }
 
-// HackmdContains applies the Contains predicate on the "hackmd" field.
-func HackmdContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldHackmd, v))
+// SlidoIDContains applies the Contains predicate on the "slidoID" field.
+func SlidoIDContains(v string) predicate.Session {
+	return predicate.Session(sql.FieldContains(FieldSlidoID, v))
 }
 
-// HackmdHasPrefix applies the HasPrefix predicate on the "hackmd" field.
-func HackmdHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldHackmd, v))
+// SlidoIDHasPrefix applies the HasPrefix predicate on the "slidoID" field.
+func SlidoIDHasPrefix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasPrefix(FieldSlidoID, v))
 }
 
-// HackmdHasSuffix applies the HasSuffix predicate on the "hackmd" field.
-func HackmdHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldHackmd, v))
+// SlidoIDHasSuffix applies the HasSuffix predicate on the "slidoID" field.
+func SlidoIDHasSuffix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasSuffix(FieldSlidoID, v))
 }
 
-// HackmdEqualFold applies the EqualFold predicate on the "hackmd" field.
-func HackmdEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldHackmd, v))
+// SlidoIDEqualFold applies the EqualFold predicate on the "slidoID" field.
+func SlidoIDEqualFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldSlidoID, v))
 }
 
-// HackmdContainsFold applies the ContainsFold predicate on the "hackmd" field.
-func HackmdContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldHackmd, v))
+// SlidoIDContainsFold applies the ContainsFold predicate on the "slidoID" field.
+func SlidoIDContainsFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldSlidoID, v))
+}
+
+// SlidoAdminLinkEQ applies the EQ predicate on the "slido_admin_link" field.
+func SlidoAdminLinkEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkNEQ applies the NEQ predicate on the "slido_admin_link" field.
+func SlidoAdminLinkNEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkIn applies the In predicate on the "slido_admin_link" field.
+func SlidoAdminLinkIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldSlidoAdminLink, vs...))
+}
+
+// SlidoAdminLinkNotIn applies the NotIn predicate on the "slido_admin_link" field.
+func SlidoAdminLinkNotIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldSlidoAdminLink, vs...))
+}
+
+// SlidoAdminLinkGT applies the GT predicate on the "slido_admin_link" field.
+func SlidoAdminLinkGT(v string) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkGTE applies the GTE predicate on the "slido_admin_link" field.
+func SlidoAdminLinkGTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkLT applies the LT predicate on the "slido_admin_link" field.
+func SlidoAdminLinkLT(v string) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkLTE applies the LTE predicate on the "slido_admin_link" field.
+func SlidoAdminLinkLTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkContains applies the Contains predicate on the "slido_admin_link" field.
+func SlidoAdminLinkContains(v string) predicate.Session {
+	return predicate.Session(sql.FieldContains(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkHasPrefix applies the HasPrefix predicate on the "slido_admin_link" field.
+func SlidoAdminLinkHasPrefix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasPrefix(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkHasSuffix applies the HasSuffix predicate on the "slido_admin_link" field.
+func SlidoAdminLinkHasSuffix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasSuffix(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkEqualFold applies the EqualFold predicate on the "slido_admin_link" field.
+func SlidoAdminLinkEqualFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldSlidoAdminLink, v))
+}
+
+// SlidoAdminLinkContainsFold applies the ContainsFold predicate on the "slido_admin_link" field.
+func SlidoAdminLinkContainsFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldSlidoAdminLink, v))
+}
+
+// CoWriteEQ applies the EQ predicate on the "co_write" field.
+func CoWriteEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldCoWrite, v))
+}
+
+// CoWriteNEQ applies the NEQ predicate on the "co_write" field.
+func CoWriteNEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldCoWrite, v))
+}
+
+// CoWriteIn applies the In predicate on the "co_write" field.
+func CoWriteIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldCoWrite, vs...))
+}
+
+// CoWriteNotIn applies the NotIn predicate on the "co_write" field.
+func CoWriteNotIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldCoWrite, vs...))
+}
+
+// CoWriteGT applies the GT predicate on the "co_write" field.
+func CoWriteGT(v string) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldCoWrite, v))
+}
+
+// CoWriteGTE applies the GTE predicate on the "co_write" field.
+func CoWriteGTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldCoWrite, v))
+}
+
+// CoWriteLT applies the LT predicate on the "co_write" field.
+func CoWriteLT(v string) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldCoWrite, v))
+}
+
+// CoWriteLTE applies the LTE predicate on the "co_write" field.
+func CoWriteLTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldCoWrite, v))
+}
+
+// CoWriteContains applies the Contains predicate on the "co_write" field.
+func CoWriteContains(v string) predicate.Session {
+	return predicate.Session(sql.FieldContains(FieldCoWrite, v))
+}
+
+// CoWriteHasPrefix applies the HasPrefix predicate on the "co_write" field.
+func CoWriteHasPrefix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasPrefix(FieldCoWrite, v))
+}
+
+// CoWriteHasSuffix applies the HasSuffix predicate on the "co_write" field.
+func CoWriteHasSuffix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasSuffix(FieldCoWrite, v))
+}
+
+// CoWriteEqualFold applies the EqualFold predicate on the "co_write" field.
+func CoWriteEqualFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldCoWrite, v))
+}
+
+// CoWriteContainsFold applies the ContainsFold predicate on the "co_write" field.
+func CoWriteContainsFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldCoWrite, v))
 }
 
 // And groups predicates with the AND operator between them.

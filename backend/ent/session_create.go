@@ -25,51 +25,21 @@ func (sc *SessionCreate) SetTitle(s string) *SessionCreate {
 	return sc
 }
 
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableTitle(s *string) *SessionCreate {
-	if s != nil {
-		sc.SetTitle(*s)
-	}
-	return sc
-}
-
-// SetType sets the "type" field.
-func (sc *SessionCreate) SetType(s string) *SessionCreate {
-	sc.mutation.SetType(s)
-	return sc
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableType(s *string) *SessionCreate {
-	if s != nil {
-		sc.SetType(*s)
-	}
-	return sc
-}
-
-// SetSpeakers sets the "speakers" field.
-func (sc *SessionCreate) SetSpeakers(s []string) *SessionCreate {
-	sc.mutation.SetSpeakers(s)
-	return sc
-}
-
 // SetRoom sets the "room" field.
 func (sc *SessionCreate) SetRoom(s string) *SessionCreate {
 	sc.mutation.SetRoom(s)
 	return sc
 }
 
-// SetNillableRoom sets the "room" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableRoom(s *string) *SessionCreate {
-	if s != nil {
-		sc.SetRoom(*s)
-	}
+// SetBroadcastTo sets the "broadcastTo" field.
+func (sc *SessionCreate) SetBroadcastTo(s []string) *SessionCreate {
+	sc.mutation.SetBroadcastTo(s)
 	return sc
 }
 
-// SetBroadcast sets the "broadcast" field.
-func (sc *SessionCreate) SetBroadcast(s []string) *SessionCreate {
-	sc.mutation.SetBroadcast(s)
+// SetBroadcastFrom sets the "broadcastFrom" field.
+func (sc *SessionCreate) SetBroadcastFrom(s string) *SessionCreate {
+	sc.mutation.SetBroadcastFrom(s)
 	return sc
 }
 
@@ -79,81 +49,45 @@ func (sc *SessionCreate) SetStart(i int64) *SessionCreate {
 	return sc
 }
 
-// SetNillableStart sets the "start" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableStart(i *int64) *SessionCreate {
-	if i != nil {
-		sc.SetStart(*i)
-	}
-	return sc
-}
-
 // SetEnd sets the "end" field.
 func (sc *SessionCreate) SetEnd(i int64) *SessionCreate {
 	sc.mutation.SetEnd(i)
 	return sc
 }
 
-// SetNillableEnd sets the "end" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableEnd(i *int64) *SessionCreate {
-	if i != nil {
-		sc.SetEnd(*i)
-	}
+// SetSpeaker sets the "speaker" field.
+func (sc *SessionCreate) SetSpeaker(s string) *SessionCreate {
+	sc.mutation.SetSpeaker(s)
 	return sc
 }
 
-// SetSlido sets the "slido" field.
-func (sc *SessionCreate) SetSlido(s string) *SessionCreate {
-	sc.mutation.SetSlido(s)
+// SetQa sets the "qa" field.
+func (sc *SessionCreate) SetQa(s string) *SessionCreate {
+	sc.mutation.SetQa(s)
 	return sc
 }
 
-// SetNillableSlido sets the "slido" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableSlido(s *string) *SessionCreate {
-	if s != nil {
-		sc.SetSlido(*s)
-	}
+// SetSlidoID sets the "slidoID" field.
+func (sc *SessionCreate) SetSlidoID(s string) *SessionCreate {
+	sc.mutation.SetSlidoID(s)
 	return sc
 }
 
-// SetSlide sets the "slide" field.
-func (sc *SessionCreate) SetSlide(s string) *SessionCreate {
-	sc.mutation.SetSlide(s)
+// SetSlidoAdminLink sets the "slido_admin_link" field.
+func (sc *SessionCreate) SetSlidoAdminLink(s string) *SessionCreate {
+	sc.mutation.SetSlidoAdminLink(s)
 	return sc
 }
 
-// SetNillableSlide sets the "slide" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableSlide(s *string) *SessionCreate {
-	if s != nil {
-		sc.SetSlide(*s)
-	}
-	return sc
-}
-
-// SetHackmd sets the "hackmd" field.
-func (sc *SessionCreate) SetHackmd(s string) *SessionCreate {
-	sc.mutation.SetHackmd(s)
-	return sc
-}
-
-// SetNillableHackmd sets the "hackmd" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableHackmd(s *string) *SessionCreate {
-	if s != nil {
-		sc.SetHackmd(*s)
-	}
+// SetCoWrite sets the "co_write" field.
+func (sc *SessionCreate) SetCoWrite(s string) *SessionCreate {
+	sc.mutation.SetCoWrite(s)
 	return sc
 }
 
 // SetID sets the "id" field.
 func (sc *SessionCreate) SetID(s string) *SessionCreate {
 	sc.mutation.SetID(s)
-	return sc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (sc *SessionCreate) SetNillableID(s *string) *SessionCreate {
-	if s != nil {
-		sc.SetID(*s)
-	}
 	return sc
 }
 
@@ -164,7 +98,6 @@ func (sc *SessionCreate) Mutation() *SessionMutation {
 
 // Save creates the Session in the database.
 func (sc *SessionCreate) Save(ctx context.Context) (*Session, error) {
-	sc.defaults()
 	return withHooks(ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
@@ -190,70 +123,19 @@ func (sc *SessionCreate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (sc *SessionCreate) defaults() {
-	if _, ok := sc.mutation.Title(); !ok {
-		v := session.DefaultTitle
-		sc.mutation.SetTitle(v)
-	}
-	if _, ok := sc.mutation.GetType(); !ok {
-		v := session.DefaultType
-		sc.mutation.SetType(v)
-	}
-	if _, ok := sc.mutation.Speakers(); !ok {
-		v := session.DefaultSpeakers
-		sc.mutation.SetSpeakers(v)
-	}
-	if _, ok := sc.mutation.Room(); !ok {
-		v := session.DefaultRoom
-		sc.mutation.SetRoom(v)
-	}
-	if _, ok := sc.mutation.Broadcast(); !ok {
-		v := session.DefaultBroadcast
-		sc.mutation.SetBroadcast(v)
-	}
-	if _, ok := sc.mutation.Start(); !ok {
-		v := session.DefaultStart
-		sc.mutation.SetStart(v)
-	}
-	if _, ok := sc.mutation.End(); !ok {
-		v := session.DefaultEnd
-		sc.mutation.SetEnd(v)
-	}
-	if _, ok := sc.mutation.Slido(); !ok {
-		v := session.DefaultSlido
-		sc.mutation.SetSlido(v)
-	}
-	if _, ok := sc.mutation.Slide(); !ok {
-		v := session.DefaultSlide
-		sc.mutation.SetSlide(v)
-	}
-	if _, ok := sc.mutation.Hackmd(); !ok {
-		v := session.DefaultHackmd
-		sc.mutation.SetHackmd(v)
-	}
-	if _, ok := sc.mutation.ID(); !ok {
-		v := session.DefaultID
-		sc.mutation.SetID(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (sc *SessionCreate) check() error {
 	if _, ok := sc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Session.title"`)}
 	}
-	if _, ok := sc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Session.type"`)}
-	}
-	if _, ok := sc.mutation.Speakers(); !ok {
-		return &ValidationError{Name: "speakers", err: errors.New(`ent: missing required field "Session.speakers"`)}
-	}
 	if _, ok := sc.mutation.Room(); !ok {
 		return &ValidationError{Name: "room", err: errors.New(`ent: missing required field "Session.room"`)}
 	}
-	if _, ok := sc.mutation.Broadcast(); !ok {
-		return &ValidationError{Name: "broadcast", err: errors.New(`ent: missing required field "Session.broadcast"`)}
+	if _, ok := sc.mutation.BroadcastTo(); !ok {
+		return &ValidationError{Name: "broadcastTo", err: errors.New(`ent: missing required field "Session.broadcastTo"`)}
+	}
+	if _, ok := sc.mutation.BroadcastFrom(); !ok {
+		return &ValidationError{Name: "broadcastFrom", err: errors.New(`ent: missing required field "Session.broadcastFrom"`)}
 	}
 	if _, ok := sc.mutation.Start(); !ok {
 		return &ValidationError{Name: "start", err: errors.New(`ent: missing required field "Session.start"`)}
@@ -261,14 +143,20 @@ func (sc *SessionCreate) check() error {
 	if _, ok := sc.mutation.End(); !ok {
 		return &ValidationError{Name: "end", err: errors.New(`ent: missing required field "Session.end"`)}
 	}
-	if _, ok := sc.mutation.Slido(); !ok {
-		return &ValidationError{Name: "slido", err: errors.New(`ent: missing required field "Session.slido"`)}
+	if _, ok := sc.mutation.Speaker(); !ok {
+		return &ValidationError{Name: "speaker", err: errors.New(`ent: missing required field "Session.speaker"`)}
 	}
-	if _, ok := sc.mutation.Slide(); !ok {
-		return &ValidationError{Name: "slide", err: errors.New(`ent: missing required field "Session.slide"`)}
+	if _, ok := sc.mutation.Qa(); !ok {
+		return &ValidationError{Name: "qa", err: errors.New(`ent: missing required field "Session.qa"`)}
 	}
-	if _, ok := sc.mutation.Hackmd(); !ok {
-		return &ValidationError{Name: "hackmd", err: errors.New(`ent: missing required field "Session.hackmd"`)}
+	if _, ok := sc.mutation.SlidoID(); !ok {
+		return &ValidationError{Name: "slidoID", err: errors.New(`ent: missing required field "Session.slidoID"`)}
+	}
+	if _, ok := sc.mutation.SlidoAdminLink(); !ok {
+		return &ValidationError{Name: "slido_admin_link", err: errors.New(`ent: missing required field "Session.slido_admin_link"`)}
+	}
+	if _, ok := sc.mutation.CoWrite(); !ok {
+		return &ValidationError{Name: "co_write", err: errors.New(`ent: missing required field "Session.co_write"`)}
 	}
 	return nil
 }
@@ -309,21 +197,17 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := sc.mutation.GetType(); ok {
-		_spec.SetField(session.FieldType, field.TypeString, value)
-		_node.Type = value
-	}
-	if value, ok := sc.mutation.Speakers(); ok {
-		_spec.SetField(session.FieldSpeakers, field.TypeJSON, value)
-		_node.Speakers = value
-	}
 	if value, ok := sc.mutation.Room(); ok {
 		_spec.SetField(session.FieldRoom, field.TypeString, value)
 		_node.Room = value
 	}
-	if value, ok := sc.mutation.Broadcast(); ok {
-		_spec.SetField(session.FieldBroadcast, field.TypeJSON, value)
-		_node.Broadcast = value
+	if value, ok := sc.mutation.BroadcastTo(); ok {
+		_spec.SetField(session.FieldBroadcastTo, field.TypeJSON, value)
+		_node.BroadcastTo = value
+	}
+	if value, ok := sc.mutation.BroadcastFrom(); ok {
+		_spec.SetField(session.FieldBroadcastFrom, field.TypeString, value)
+		_node.BroadcastFrom = value
 	}
 	if value, ok := sc.mutation.Start(); ok {
 		_spec.SetField(session.FieldStart, field.TypeInt64, value)
@@ -333,17 +217,25 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_spec.SetField(session.FieldEnd, field.TypeInt64, value)
 		_node.End = value
 	}
-	if value, ok := sc.mutation.Slido(); ok {
-		_spec.SetField(session.FieldSlido, field.TypeString, value)
-		_node.Slido = value
+	if value, ok := sc.mutation.Speaker(); ok {
+		_spec.SetField(session.FieldSpeaker, field.TypeString, value)
+		_node.Speaker = value
 	}
-	if value, ok := sc.mutation.Slide(); ok {
-		_spec.SetField(session.FieldSlide, field.TypeString, value)
-		_node.Slide = value
+	if value, ok := sc.mutation.Qa(); ok {
+		_spec.SetField(session.FieldQa, field.TypeString, value)
+		_node.Qa = value
 	}
-	if value, ok := sc.mutation.Hackmd(); ok {
-		_spec.SetField(session.FieldHackmd, field.TypeString, value)
-		_node.Hackmd = value
+	if value, ok := sc.mutation.SlidoID(); ok {
+		_spec.SetField(session.FieldSlidoID, field.TypeString, value)
+		_node.SlidoID = value
+	}
+	if value, ok := sc.mutation.SlidoAdminLink(); ok {
+		_spec.SetField(session.FieldSlidoAdminLink, field.TypeString, value)
+		_node.SlidoAdminLink = value
+	}
+	if value, ok := sc.mutation.CoWrite(); ok {
+		_spec.SetField(session.FieldCoWrite, field.TypeString, value)
+		_node.CoWrite = value
 	}
 	return _node, _spec
 }
@@ -366,7 +258,6 @@ func (scb *SessionCreateBulk) Save(ctx context.Context) ([]*Session, error) {
 	for i := range scb.builders {
 		func(i int, root context.Context) {
 			builder := scb.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SessionMutation)
 				if !ok {

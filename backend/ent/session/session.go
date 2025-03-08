@@ -13,24 +13,26 @@ const (
 	FieldID = "id"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
-	// FieldSpeakers holds the string denoting the speakers field in the database.
-	FieldSpeakers = "speakers"
 	// FieldRoom holds the string denoting the room field in the database.
 	FieldRoom = "room"
-	// FieldBroadcast holds the string denoting the broadcast field in the database.
-	FieldBroadcast = "broadcast"
+	// FieldBroadcastTo holds the string denoting the broadcastto field in the database.
+	FieldBroadcastTo = "broadcast_to"
+	// FieldBroadcastFrom holds the string denoting the broadcastfrom field in the database.
+	FieldBroadcastFrom = "broadcast_from"
 	// FieldStart holds the string denoting the start field in the database.
 	FieldStart = "start"
 	// FieldEnd holds the string denoting the end field in the database.
 	FieldEnd = "end"
-	// FieldSlido holds the string denoting the slido field in the database.
-	FieldSlido = "slido"
-	// FieldSlide holds the string denoting the slide field in the database.
-	FieldSlide = "slide"
-	// FieldHackmd holds the string denoting the hackmd field in the database.
-	FieldHackmd = "hackmd"
+	// FieldSpeaker holds the string denoting the speaker field in the database.
+	FieldSpeaker = "speaker"
+	// FieldQa holds the string denoting the qa field in the database.
+	FieldQa = "qa"
+	// FieldSlidoID holds the string denoting the slidoid field in the database.
+	FieldSlidoID = "slido_id"
+	// FieldSlidoAdminLink holds the string denoting the slido_admin_link field in the database.
+	FieldSlidoAdminLink = "slido_admin_link"
+	// FieldCoWrite holds the string denoting the co_write field in the database.
+	FieldCoWrite = "co_write"
 	// Table holds the table name of the session in the database.
 	Table = "sessions"
 )
@@ -39,15 +41,16 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldTitle,
-	FieldType,
-	FieldSpeakers,
 	FieldRoom,
-	FieldBroadcast,
+	FieldBroadcastTo,
+	FieldBroadcastFrom,
 	FieldStart,
 	FieldEnd,
-	FieldSlido,
-	FieldSlide,
-	FieldHackmd,
+	FieldSpeaker,
+	FieldQa,
+	FieldSlidoID,
+	FieldSlidoAdminLink,
+	FieldCoWrite,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -59,31 +62,6 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
-
-var (
-	// DefaultTitle holds the default value on creation for the "title" field.
-	DefaultTitle string
-	// DefaultType holds the default value on creation for the "type" field.
-	DefaultType string
-	// DefaultSpeakers holds the default value on creation for the "speakers" field.
-	DefaultSpeakers []string
-	// DefaultRoom holds the default value on creation for the "room" field.
-	DefaultRoom string
-	// DefaultBroadcast holds the default value on creation for the "broadcast" field.
-	DefaultBroadcast []string
-	// DefaultStart holds the default value on creation for the "start" field.
-	DefaultStart int64
-	// DefaultEnd holds the default value on creation for the "end" field.
-	DefaultEnd int64
-	// DefaultSlido holds the default value on creation for the "slido" field.
-	DefaultSlido string
-	// DefaultSlide holds the default value on creation for the "slide" field.
-	DefaultSlide string
-	// DefaultHackmd holds the default value on creation for the "hackmd" field.
-	DefaultHackmd string
-	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID string
-)
 
 // OrderOption defines the ordering options for the Session queries.
 type OrderOption func(*sql.Selector)
@@ -98,14 +76,14 @@ func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitle, opts...).ToFunc()
 }
 
-// ByType orders the results by the type field.
-func ByType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldType, opts...).ToFunc()
-}
-
 // ByRoom orders the results by the room field.
 func ByRoom(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRoom, opts...).ToFunc()
+}
+
+// ByBroadcastFrom orders the results by the broadcastFrom field.
+func ByBroadcastFrom(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBroadcastFrom, opts...).ToFunc()
 }
 
 // ByStart orders the results by the start field.
@@ -118,17 +96,27 @@ func ByEnd(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnd, opts...).ToFunc()
 }
 
-// BySlido orders the results by the slido field.
-func BySlido(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSlido, opts...).ToFunc()
+// BySpeaker orders the results by the speaker field.
+func BySpeaker(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSpeaker, opts...).ToFunc()
 }
 
-// BySlide orders the results by the slide field.
-func BySlide(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSlide, opts...).ToFunc()
+// ByQa orders the results by the qa field.
+func ByQa(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldQa, opts...).ToFunc()
 }
 
-// ByHackmd orders the results by the hackmd field.
-func ByHackmd(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldHackmd, opts...).ToFunc()
+// BySlidoID orders the results by the slidoID field.
+func BySlidoID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSlidoID, opts...).ToFunc()
+}
+
+// BySlidoAdminLink orders the results by the slido_admin_link field.
+func BySlidoAdminLink(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSlidoAdminLink, opts...).ToFunc()
+}
+
+// ByCoWrite orders the results by the co_write field.
+func ByCoWrite(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCoWrite, opts...).ToFunc()
 }

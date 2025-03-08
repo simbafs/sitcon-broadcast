@@ -31,27 +31,27 @@ const (
 // SessionMutation represents an operation that mutates the Session nodes in the graph.
 type SessionMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *string
-	title           *string
-	_type           *string
-	speakers        *[]string
-	appendspeakers  []string
-	room            *string
-	broadcast       *[]string
-	appendbroadcast []string
-	start           *int64
-	addstart        *int64
-	end             *int64
-	addend          *int64
-	slido           *string
-	slide           *string
-	hackmd          *string
-	clearedFields   map[string]struct{}
-	done            bool
-	oldValue        func(context.Context) (*Session, error)
-	predicates      []predicate.Session
+	op                Op
+	typ               string
+	id                *string
+	title             *string
+	room              *string
+	broadcastTo       *[]string
+	appendbroadcastTo []string
+	broadcastFrom     *string
+	start             *int64
+	addstart          *int64
+	end               *int64
+	addend            *int64
+	speaker           *string
+	qa                *string
+	slidoID           *string
+	slido_admin_link  *string
+	co_write          *string
+	clearedFields     map[string]struct{}
+	done              bool
+	oldValue          func(context.Context) (*Session, error)
+	predicates        []predicate.Session
 }
 
 var _ ent.Mutation = (*SessionMutation)(nil)
@@ -194,93 +194,6 @@ func (m *SessionMutation) ResetTitle() {
 	m.title = nil
 }
 
-// SetType sets the "type" field.
-func (m *SessionMutation) SetType(s string) {
-	m._type = &s
-}
-
-// GetType returns the value of the "type" field in the mutation.
-func (m *SessionMutation) GetType() (r string, exists bool) {
-	v := m._type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldType returns the old "type" field's value of the Session entity.
-// If the Session object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldType(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
-	}
-	return oldValue.Type, nil
-}
-
-// ResetType resets all changes to the "type" field.
-func (m *SessionMutation) ResetType() {
-	m._type = nil
-}
-
-// SetSpeakers sets the "speakers" field.
-func (m *SessionMutation) SetSpeakers(s []string) {
-	m.speakers = &s
-	m.appendspeakers = nil
-}
-
-// Speakers returns the value of the "speakers" field in the mutation.
-func (m *SessionMutation) Speakers() (r []string, exists bool) {
-	v := m.speakers
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSpeakers returns the old "speakers" field's value of the Session entity.
-// If the Session object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldSpeakers(ctx context.Context) (v []string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSpeakers is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSpeakers requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSpeakers: %w", err)
-	}
-	return oldValue.Speakers, nil
-}
-
-// AppendSpeakers adds s to the "speakers" field.
-func (m *SessionMutation) AppendSpeakers(s []string) {
-	m.appendspeakers = append(m.appendspeakers, s...)
-}
-
-// AppendedSpeakers returns the list of values that were appended to the "speakers" field in this mutation.
-func (m *SessionMutation) AppendedSpeakers() ([]string, bool) {
-	if len(m.appendspeakers) == 0 {
-		return nil, false
-	}
-	return m.appendspeakers, true
-}
-
-// ResetSpeakers resets all changes to the "speakers" field.
-func (m *SessionMutation) ResetSpeakers() {
-	m.speakers = nil
-	m.appendspeakers = nil
-}
-
 // SetRoom sets the "room" field.
 func (m *SessionMutation) SetRoom(s string) {
 	m.room = &s
@@ -317,55 +230,91 @@ func (m *SessionMutation) ResetRoom() {
 	m.room = nil
 }
 
-// SetBroadcast sets the "broadcast" field.
-func (m *SessionMutation) SetBroadcast(s []string) {
-	m.broadcast = &s
-	m.appendbroadcast = nil
+// SetBroadcastTo sets the "broadcastTo" field.
+func (m *SessionMutation) SetBroadcastTo(s []string) {
+	m.broadcastTo = &s
+	m.appendbroadcastTo = nil
 }
 
-// Broadcast returns the value of the "broadcast" field in the mutation.
-func (m *SessionMutation) Broadcast() (r []string, exists bool) {
-	v := m.broadcast
+// BroadcastTo returns the value of the "broadcastTo" field in the mutation.
+func (m *SessionMutation) BroadcastTo() (r []string, exists bool) {
+	v := m.broadcastTo
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBroadcast returns the old "broadcast" field's value of the Session entity.
+// OldBroadcastTo returns the old "broadcastTo" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldBroadcast(ctx context.Context) (v []string, err error) {
+func (m *SessionMutation) OldBroadcastTo(ctx context.Context) (v []string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBroadcast is only allowed on UpdateOne operations")
+		return v, errors.New("OldBroadcastTo is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBroadcast requires an ID field in the mutation")
+		return v, errors.New("OldBroadcastTo requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBroadcast: %w", err)
+		return v, fmt.Errorf("querying old value for OldBroadcastTo: %w", err)
 	}
-	return oldValue.Broadcast, nil
+	return oldValue.BroadcastTo, nil
 }
 
-// AppendBroadcast adds s to the "broadcast" field.
-func (m *SessionMutation) AppendBroadcast(s []string) {
-	m.appendbroadcast = append(m.appendbroadcast, s...)
+// AppendBroadcastTo adds s to the "broadcastTo" field.
+func (m *SessionMutation) AppendBroadcastTo(s []string) {
+	m.appendbroadcastTo = append(m.appendbroadcastTo, s...)
 }
 
-// AppendedBroadcast returns the list of values that were appended to the "broadcast" field in this mutation.
-func (m *SessionMutation) AppendedBroadcast() ([]string, bool) {
-	if len(m.appendbroadcast) == 0 {
+// AppendedBroadcastTo returns the list of values that were appended to the "broadcastTo" field in this mutation.
+func (m *SessionMutation) AppendedBroadcastTo() ([]string, bool) {
+	if len(m.appendbroadcastTo) == 0 {
 		return nil, false
 	}
-	return m.appendbroadcast, true
+	return m.appendbroadcastTo, true
 }
 
-// ResetBroadcast resets all changes to the "broadcast" field.
-func (m *SessionMutation) ResetBroadcast() {
-	m.broadcast = nil
-	m.appendbroadcast = nil
+// ResetBroadcastTo resets all changes to the "broadcastTo" field.
+func (m *SessionMutation) ResetBroadcastTo() {
+	m.broadcastTo = nil
+	m.appendbroadcastTo = nil
+}
+
+// SetBroadcastFrom sets the "broadcastFrom" field.
+func (m *SessionMutation) SetBroadcastFrom(s string) {
+	m.broadcastFrom = &s
+}
+
+// BroadcastFrom returns the value of the "broadcastFrom" field in the mutation.
+func (m *SessionMutation) BroadcastFrom() (r string, exists bool) {
+	v := m.broadcastFrom
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBroadcastFrom returns the old "broadcastFrom" field's value of the Session entity.
+// If the Session object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SessionMutation) OldBroadcastFrom(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBroadcastFrom is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBroadcastFrom requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBroadcastFrom: %w", err)
+	}
+	return oldValue.BroadcastFrom, nil
+}
+
+// ResetBroadcastFrom resets all changes to the "broadcastFrom" field.
+func (m *SessionMutation) ResetBroadcastFrom() {
+	m.broadcastFrom = nil
 }
 
 // SetStart sets the "start" field.
@@ -480,112 +429,184 @@ func (m *SessionMutation) ResetEnd() {
 	m.addend = nil
 }
 
-// SetSlido sets the "slido" field.
-func (m *SessionMutation) SetSlido(s string) {
-	m.slido = &s
+// SetSpeaker sets the "speaker" field.
+func (m *SessionMutation) SetSpeaker(s string) {
+	m.speaker = &s
 }
 
-// Slido returns the value of the "slido" field in the mutation.
-func (m *SessionMutation) Slido() (r string, exists bool) {
-	v := m.slido
+// Speaker returns the value of the "speaker" field in the mutation.
+func (m *SessionMutation) Speaker() (r string, exists bool) {
+	v := m.speaker
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSlido returns the old "slido" field's value of the Session entity.
+// OldSpeaker returns the old "speaker" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldSlido(ctx context.Context) (v string, err error) {
+func (m *SessionMutation) OldSpeaker(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSlido is only allowed on UpdateOne operations")
+		return v, errors.New("OldSpeaker is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSlido requires an ID field in the mutation")
+		return v, errors.New("OldSpeaker requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSlido: %w", err)
+		return v, fmt.Errorf("querying old value for OldSpeaker: %w", err)
 	}
-	return oldValue.Slido, nil
+	return oldValue.Speaker, nil
 }
 
-// ResetSlido resets all changes to the "slido" field.
-func (m *SessionMutation) ResetSlido() {
-	m.slido = nil
+// ResetSpeaker resets all changes to the "speaker" field.
+func (m *SessionMutation) ResetSpeaker() {
+	m.speaker = nil
 }
 
-// SetSlide sets the "slide" field.
-func (m *SessionMutation) SetSlide(s string) {
-	m.slide = &s
+// SetQa sets the "qa" field.
+func (m *SessionMutation) SetQa(s string) {
+	m.qa = &s
 }
 
-// Slide returns the value of the "slide" field in the mutation.
-func (m *SessionMutation) Slide() (r string, exists bool) {
-	v := m.slide
+// Qa returns the value of the "qa" field in the mutation.
+func (m *SessionMutation) Qa() (r string, exists bool) {
+	v := m.qa
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSlide returns the old "slide" field's value of the Session entity.
+// OldQa returns the old "qa" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldSlide(ctx context.Context) (v string, err error) {
+func (m *SessionMutation) OldQa(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSlide is only allowed on UpdateOne operations")
+		return v, errors.New("OldQa is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSlide requires an ID field in the mutation")
+		return v, errors.New("OldQa requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSlide: %w", err)
+		return v, fmt.Errorf("querying old value for OldQa: %w", err)
 	}
-	return oldValue.Slide, nil
+	return oldValue.Qa, nil
 }
 
-// ResetSlide resets all changes to the "slide" field.
-func (m *SessionMutation) ResetSlide() {
-	m.slide = nil
+// ResetQa resets all changes to the "qa" field.
+func (m *SessionMutation) ResetQa() {
+	m.qa = nil
 }
 
-// SetHackmd sets the "hackmd" field.
-func (m *SessionMutation) SetHackmd(s string) {
-	m.hackmd = &s
+// SetSlidoID sets the "slidoID" field.
+func (m *SessionMutation) SetSlidoID(s string) {
+	m.slidoID = &s
 }
 
-// Hackmd returns the value of the "hackmd" field in the mutation.
-func (m *SessionMutation) Hackmd() (r string, exists bool) {
-	v := m.hackmd
+// SlidoID returns the value of the "slidoID" field in the mutation.
+func (m *SessionMutation) SlidoID() (r string, exists bool) {
+	v := m.slidoID
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldHackmd returns the old "hackmd" field's value of the Session entity.
+// OldSlidoID returns the old "slidoID" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldHackmd(ctx context.Context) (v string, err error) {
+func (m *SessionMutation) OldSlidoID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldHackmd is only allowed on UpdateOne operations")
+		return v, errors.New("OldSlidoID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldHackmd requires an ID field in the mutation")
+		return v, errors.New("OldSlidoID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHackmd: %w", err)
+		return v, fmt.Errorf("querying old value for OldSlidoID: %w", err)
 	}
-	return oldValue.Hackmd, nil
+	return oldValue.SlidoID, nil
 }
 
-// ResetHackmd resets all changes to the "hackmd" field.
-func (m *SessionMutation) ResetHackmd() {
-	m.hackmd = nil
+// ResetSlidoID resets all changes to the "slidoID" field.
+func (m *SessionMutation) ResetSlidoID() {
+	m.slidoID = nil
+}
+
+// SetSlidoAdminLink sets the "slido_admin_link" field.
+func (m *SessionMutation) SetSlidoAdminLink(s string) {
+	m.slido_admin_link = &s
+}
+
+// SlidoAdminLink returns the value of the "slido_admin_link" field in the mutation.
+func (m *SessionMutation) SlidoAdminLink() (r string, exists bool) {
+	v := m.slido_admin_link
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlidoAdminLink returns the old "slido_admin_link" field's value of the Session entity.
+// If the Session object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SessionMutation) OldSlidoAdminLink(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSlidoAdminLink is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSlidoAdminLink requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlidoAdminLink: %w", err)
+	}
+	return oldValue.SlidoAdminLink, nil
+}
+
+// ResetSlidoAdminLink resets all changes to the "slido_admin_link" field.
+func (m *SessionMutation) ResetSlidoAdminLink() {
+	m.slido_admin_link = nil
+}
+
+// SetCoWrite sets the "co_write" field.
+func (m *SessionMutation) SetCoWrite(s string) {
+	m.co_write = &s
+}
+
+// CoWrite returns the value of the "co_write" field in the mutation.
+func (m *SessionMutation) CoWrite() (r string, exists bool) {
+	v := m.co_write
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCoWrite returns the old "co_write" field's value of the Session entity.
+// If the Session object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SessionMutation) OldCoWrite(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCoWrite is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCoWrite requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCoWrite: %w", err)
+	}
+	return oldValue.CoWrite, nil
+}
+
+// ResetCoWrite resets all changes to the "co_write" field.
+func (m *SessionMutation) ResetCoWrite() {
+	m.co_write = nil
 }
 
 // Where appends a list predicates to the SessionMutation builder.
@@ -622,21 +643,18 @@ func (m *SessionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SessionMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.title != nil {
 		fields = append(fields, session.FieldTitle)
-	}
-	if m._type != nil {
-		fields = append(fields, session.FieldType)
-	}
-	if m.speakers != nil {
-		fields = append(fields, session.FieldSpeakers)
 	}
 	if m.room != nil {
 		fields = append(fields, session.FieldRoom)
 	}
-	if m.broadcast != nil {
-		fields = append(fields, session.FieldBroadcast)
+	if m.broadcastTo != nil {
+		fields = append(fields, session.FieldBroadcastTo)
+	}
+	if m.broadcastFrom != nil {
+		fields = append(fields, session.FieldBroadcastFrom)
 	}
 	if m.start != nil {
 		fields = append(fields, session.FieldStart)
@@ -644,14 +662,20 @@ func (m *SessionMutation) Fields() []string {
 	if m.end != nil {
 		fields = append(fields, session.FieldEnd)
 	}
-	if m.slido != nil {
-		fields = append(fields, session.FieldSlido)
+	if m.speaker != nil {
+		fields = append(fields, session.FieldSpeaker)
 	}
-	if m.slide != nil {
-		fields = append(fields, session.FieldSlide)
+	if m.qa != nil {
+		fields = append(fields, session.FieldQa)
 	}
-	if m.hackmd != nil {
-		fields = append(fields, session.FieldHackmd)
+	if m.slidoID != nil {
+		fields = append(fields, session.FieldSlidoID)
+	}
+	if m.slido_admin_link != nil {
+		fields = append(fields, session.FieldSlidoAdminLink)
+	}
+	if m.co_write != nil {
+		fields = append(fields, session.FieldCoWrite)
 	}
 	return fields
 }
@@ -663,24 +687,26 @@ func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case session.FieldTitle:
 		return m.Title()
-	case session.FieldType:
-		return m.GetType()
-	case session.FieldSpeakers:
-		return m.Speakers()
 	case session.FieldRoom:
 		return m.Room()
-	case session.FieldBroadcast:
-		return m.Broadcast()
+	case session.FieldBroadcastTo:
+		return m.BroadcastTo()
+	case session.FieldBroadcastFrom:
+		return m.BroadcastFrom()
 	case session.FieldStart:
 		return m.Start()
 	case session.FieldEnd:
 		return m.End()
-	case session.FieldSlido:
-		return m.Slido()
-	case session.FieldSlide:
-		return m.Slide()
-	case session.FieldHackmd:
-		return m.Hackmd()
+	case session.FieldSpeaker:
+		return m.Speaker()
+	case session.FieldQa:
+		return m.Qa()
+	case session.FieldSlidoID:
+		return m.SlidoID()
+	case session.FieldSlidoAdminLink:
+		return m.SlidoAdminLink()
+	case session.FieldCoWrite:
+		return m.CoWrite()
 	}
 	return nil, false
 }
@@ -692,24 +718,26 @@ func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case session.FieldTitle:
 		return m.OldTitle(ctx)
-	case session.FieldType:
-		return m.OldType(ctx)
-	case session.FieldSpeakers:
-		return m.OldSpeakers(ctx)
 	case session.FieldRoom:
 		return m.OldRoom(ctx)
-	case session.FieldBroadcast:
-		return m.OldBroadcast(ctx)
+	case session.FieldBroadcastTo:
+		return m.OldBroadcastTo(ctx)
+	case session.FieldBroadcastFrom:
+		return m.OldBroadcastFrom(ctx)
 	case session.FieldStart:
 		return m.OldStart(ctx)
 	case session.FieldEnd:
 		return m.OldEnd(ctx)
-	case session.FieldSlido:
-		return m.OldSlido(ctx)
-	case session.FieldSlide:
-		return m.OldSlide(ctx)
-	case session.FieldHackmd:
-		return m.OldHackmd(ctx)
+	case session.FieldSpeaker:
+		return m.OldSpeaker(ctx)
+	case session.FieldQa:
+		return m.OldQa(ctx)
+	case session.FieldSlidoID:
+		return m.OldSlidoID(ctx)
+	case session.FieldSlidoAdminLink:
+		return m.OldSlidoAdminLink(ctx)
+	case session.FieldCoWrite:
+		return m.OldCoWrite(ctx)
 	}
 	return nil, fmt.Errorf("unknown Session field %s", name)
 }
@@ -726,20 +754,6 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTitle(v)
 		return nil
-	case session.FieldType:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetType(v)
-		return nil
-	case session.FieldSpeakers:
-		v, ok := value.([]string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSpeakers(v)
-		return nil
 	case session.FieldRoom:
 		v, ok := value.(string)
 		if !ok {
@@ -747,12 +761,19 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRoom(v)
 		return nil
-	case session.FieldBroadcast:
+	case session.FieldBroadcastTo:
 		v, ok := value.([]string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBroadcast(v)
+		m.SetBroadcastTo(v)
+		return nil
+	case session.FieldBroadcastFrom:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBroadcastFrom(v)
 		return nil
 	case session.FieldStart:
 		v, ok := value.(int64)
@@ -768,26 +789,40 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEnd(v)
 		return nil
-	case session.FieldSlido:
+	case session.FieldSpeaker:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSlido(v)
+		m.SetSpeaker(v)
 		return nil
-	case session.FieldSlide:
+	case session.FieldQa:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSlide(v)
+		m.SetQa(v)
 		return nil
-	case session.FieldHackmd:
+	case session.FieldSlidoID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetHackmd(v)
+		m.SetSlidoID(v)
+		return nil
+	case session.FieldSlidoAdminLink:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlidoAdminLink(v)
+		return nil
+	case session.FieldCoWrite:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCoWrite(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Session field %s", name)
@@ -868,17 +903,14 @@ func (m *SessionMutation) ResetField(name string) error {
 	case session.FieldTitle:
 		m.ResetTitle()
 		return nil
-	case session.FieldType:
-		m.ResetType()
-		return nil
-	case session.FieldSpeakers:
-		m.ResetSpeakers()
-		return nil
 	case session.FieldRoom:
 		m.ResetRoom()
 		return nil
-	case session.FieldBroadcast:
-		m.ResetBroadcast()
+	case session.FieldBroadcastTo:
+		m.ResetBroadcastTo()
+		return nil
+	case session.FieldBroadcastFrom:
+		m.ResetBroadcastFrom()
 		return nil
 	case session.FieldStart:
 		m.ResetStart()
@@ -886,14 +918,20 @@ func (m *SessionMutation) ResetField(name string) error {
 	case session.FieldEnd:
 		m.ResetEnd()
 		return nil
-	case session.FieldSlido:
-		m.ResetSlido()
+	case session.FieldSpeaker:
+		m.ResetSpeaker()
 		return nil
-	case session.FieldSlide:
-		m.ResetSlide()
+	case session.FieldQa:
+		m.ResetQa()
 		return nil
-	case session.FieldHackmd:
-		m.ResetHackmd()
+	case session.FieldSlidoID:
+		m.ResetSlidoID()
+		return nil
+	case session.FieldSlidoAdminLink:
+		m.ResetSlidoAdminLink()
+		return nil
+	case session.FieldCoWrite:
+		m.ResetCoWrite()
 		return nil
 	}
 	return fmt.Errorf("unknown Session field %s", name)

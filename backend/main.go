@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 
-	"backend/api"
 	"backend/config"
 	"backend/internal/fileserver"
 	"backend/internal/staticfs"
@@ -38,7 +37,6 @@ func run(c *config.Config) error {
 	r.Use(t.ProtectRoute([]string{"/card/admin", "/countdown/admin", "/debug"}))
 	r.GET("/verify", t.VerifyToken)
 
-	api.Route(r, t)
 	fileserver.Route(r, static, Mode)
 
 	log.Printf("Server is running at %s\n", c.Addr)

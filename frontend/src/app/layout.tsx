@@ -1,7 +1,5 @@
 import './globals.css'
-import { SSEProvider } from '@/hooks/useSSE'
 import { Noto_Sans_TC } from 'next/font/google'
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const font = Noto_Sans_TC({
 	weight: ['400', '700'],
@@ -15,13 +13,7 @@ type Props = {
 export default function RootLayout({ children }: Props) {
 	return (
 		<html className={font.className}>
-			<body>
-				<NuqsAdapter>
-					<SSEProvider url="/api/sse" maxLength={3}>
-						{children}
-					</SSEProvider>
-				</NuqsAdapter>
-			</body>
+			<body>{children}</body>
 		</html>
 	)
 }

@@ -1,9 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@font-face {
-	font-family: GenRyuMin2;
-	font-weight: 500;
-	src: url(/GenRyuMin2TW-SB.otf) format('opentype');
-}

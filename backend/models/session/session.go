@@ -60,7 +60,7 @@ func ReadCurrentByRoom(ctx context.Context, room string) (*ent.Session, error) {
 	n := now.Read()
 
 	for _, v := range sessions {
-		if v.End > n.Time.Unix() {
+		if v.End > n.Time.Unix()*1000 {
 			return v, nil
 		}
 	}
@@ -105,7 +105,7 @@ var mutex = sync.Mutex{}
 func Update(ctx context.Context, room string, id string, start, end time.Time) error {
 	mutex.Lock()
 	defer mutex.Unlock()
-	
+
 	startT := start.Unix() * 1000
 	endT := end.Unix() * 1000
 

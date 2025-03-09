@@ -1,0 +1,23 @@
+import { api } from './api'
+
+export type Session = {
+	start: number // Unix timestamp in second
+	end: number // Unix timestamp in second
+	sessionID: string
+	room: string
+	next: string // next session ID
+	title: string
+	speaker: string
+}
+
+export function GetAllInRoom(room: string) {
+	return api<Session[]>(`/session/${room}/all`, 'GET')
+}
+
+export function GetSession(room: string, id: string) {
+	return api<Session>(`/session/${room}/${id}`, 'GET')
+}
+
+export function GetCurrentSession(room: string) {
+	return api<Session>(`/session/${room}`, 'GET')
+}

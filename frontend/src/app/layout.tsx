@@ -1,3 +1,4 @@
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import './globals.css'
 import { Noto_Sans_TC } from 'next/font/google'
 
@@ -13,7 +14,9 @@ type Props = {
 export default function RootLayout({ children }: Props) {
 	return (
 		<html className={font.className}>
-			<body>{children}</body>
+			<body>
+				<NuqsAdapter>{children}</NuqsAdapter>
+			</body>
 		</html>
 	)
 }

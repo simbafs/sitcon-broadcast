@@ -1,15 +1,46 @@
 const SESSION_URL = 'https://sitcon.org/2025/sessions.json'
-const DB_FILE = './sessions-new.db'
-const SLIDO_CSV = './slido.csv'
+const DB_FILE = './sitcon.db'
 import * as input from './input.ts'
 import * as output from './output.ts'
 
 import sqlite3 from 'better-sqlite3'
 
+function parseInput(speakers: Record<string, string>) {
+	return function (s: input.Session) {
+		const b =
+			s.broadcast?.map<output.Session>(r => ({
+				start: new Date(s.start).getTime() / 1000,
+				end: new Date(s.end).getTime() / 1000,
+
+				id: s.id,
+				room: r,
+
+				next: '',
+				title: s.zh.title,
+				speaker: s.speakers.map(id => speakers[id]).join(', '),
+			})) || []
+		const r = [
+			{
+				start: new Date(s.start).getTime() / 1000,
+				end: new Date(s.end).getTime() / 1000,
+
+				id: s.id,
+				room: s.room,
+
+				next: '',
+				title: s.zh.title,
+				speaker: s.speakers.map(id => speakers[id]).join(', '),
+			} as output.Session,
+		]
+
+		return b.length == 0 ? r : b
+	}
+}
+
 function mergeSameTitle(sessions: output.Session[], curr: output.Session) {
 	const len = sessions.length
 	if (len == 0) return [curr]
-	if (sessions[len - 1].title == curr.title) {
+	if (sessions[len - 1].room == curr.room && sessions[len - 1].title == curr.title) {
 		sessions[len - 1].end = curr.end
 		return sessions
 	} else {
@@ -17,104 +48,64 @@ function mergeSameTitle(sessions: output.Session[], curr: output.Session) {
 	}
 }
 
+function removeSpeakerFromRest(s: output.Session) {
+	if (['休息', '午餐', '點心'].includes(s.title)) {
+		s.speaker = ''
+	}
+	return s
+}
+
 async function FetchAndParse() {
 	const body: input.Root = await fetch(SESSION_URL).then(res => res.json())
 
 	const rooms = body.rooms.map(item => item.zh.name)
 	const speakers = Object.fromEntries(body.speakers.map(item => [item.id, item.zh.name]))
-	const sessionType = Object.fromEntries(body.session_types.map(item => [item.id, item.zh.name]))
+	// const sessionType = Object.fromEntries(body.session_types.map(item => [item.id, item.zh.name]))
 
-	const Sessions = Object.fromEntries(
-		rooms.map(room => {
-			return [
-				room,
-				body.sessions
-					.map(s => {
-						if (s.room != room || !s.broadcast?.includes(room)) return null
-						return {
-							id: s.id,
-							idx: 0,
-							title: s.zh.title,
-							type: sessionType[s.type],
-							room: room,
-							broadcastTo: s.broadcast.filter(r => r != room) || [],
-							broadcastFrom: s.broadcast.includes(room) && room != s.room ? room : '',
-							start: new Date(s.start).getTime() / 1000,
-							end: new Date(s.end).getTime() / 1000,
+	const sessions = body.sessions
+		.flatMap(parseInput(speakers))
+		.filter(i => !!i)
+		.map(removeSpeakerFromRest)
+		.reduce(mergeSameTitle, [])
 
-							speaker: s.speakers.map(id => speakers[id]).join('、'),
+	// set next by room
+	const roomSessions = rooms.map(room => sessions.filter(s => s.room == room))
+	for (let room of roomSessions) {
+		room.sort((a, b) => a.start - b.start)
+		for (let i = 0; i < room.length - 1; i++) {
+			room[i].next = room[i + 1].id
+		}
+	}
 
-							qa: s.qa || '',
-							slido_id: '', // TODO:
-							slido_link: s.slide || '',
-							slido_admin_link: '', // TODO:
-							co_write: s.co_write || '',
-						} as output.Session
-					})
-					.filter(i => !!i)
-					.map(s => {
-						if (['休息', '午餐', '點心'].includes(s.title)) {
-							s.broadcastTo = []
-							s.broadcastFrom = ''
-							s.speaker = ''
-							// TODO: use a unique id
-						}
-						return s
-					})
-					.reduce(mergeSameTitle, []),
-			]
-		}),
-	)
-
-	return Sessions
+	return roomSessions.flat()
 }
 
-function SaveToDB(rooms: Record<string, output.Session[]>) {
+function SaveToDB(sessions: output.Session[]) {
 	const db = new sqlite3(DB_FILE)
+
+	db.exec('DELETE FROM sessions;')
 
 	const insert = db.prepare(`
         INSERT OR REPLACE INTO sessions (
-			title, 
-			id, 
-			room, 
-			broadcastTo, 
-			broadcastFrom, 
-			start, 
-			end, 
-			speaker,
-			qa,
-			slido_id, 
-			slido_link,
-			slido_admin_link,
-			co_write
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			start,
+			end,
+			session_id,
+			room,
+			next,
+			title,
+			speaker
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
 	`)
 
-	const insertMany = db.transaction((rooms: Record<string, output.Session[]>) => {
-		for (let room in rooms) {
-			for (let s of rooms[room]) {
-				insert.run(
-					s.title,
-					s.id,
-					s.room,
-					JSON.stringify(s.broadcastTo),
-					s.broadcastFrom,
-					s.start,
-					s.end,
-					s.speaker,
-					s.qa,
-					s.slido_id,
-					s.slido_link,
-					s.slido_admin_link,
-					s.co_write,
-				)
-			}
+	const insertMany = db.transaction((ss: output.Session[]) => {
+		for (let s of ss) {
+			insert.run(s.start, s.end, s.id, s.room, s.next, s.title, s.speaker)
 		}
 	})
 
-	insertMany(rooms)
+	insertMany(sessions)
 
 	db.close()
 }
 
-FetchAndParse().then(s => console.log(s['R0']))
+FetchAndParse().then(SaveToDB)

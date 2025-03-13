@@ -1,6 +1,7 @@
 package api
 
 import (
+	"backend/api/now"
 	"backend/api/session"
 	"backend/internal/logger"
 
@@ -11,6 +12,7 @@ var log = logger.New("api")
 
 func Route(api huma.API) {
 	session.Route(api)
+	now.Route(api)
 
 	// TODO: 404
 }

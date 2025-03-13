@@ -25,6 +25,9 @@ func Route(api huma.API) {
 		return &Output[*ent.Session]{
 			Body: s,
 		}, nil
+	}, func(op *huma.Operation) {
+            op.Tags = []string{"session"}
+            op.Summary = "Get Current Session in Room"
 	})
 
 	huma.Get(api, "/api/session/{room}/all", func(ctx context.Context, input *struct {
@@ -38,6 +41,10 @@ func Route(api huma.API) {
 		return &Output[ent.Sessions]{
 			Body: s,
 		}, nil
+	}, func(op *huma.Operation) {
+            op.Tags = []string{"session"}
+            op.Summary = "Get All Sessions in Room"
+            op.Description = "Get all sessions in a room."
 	})
 
 	huma.Get(api, "/api/session/{room}/{id}", func(ctx context.Context, input *struct {
@@ -52,6 +59,10 @@ func Route(api huma.API) {
 		return &Output[*ent.Session]{
 			Body: s,
 		}, nil
+	}, func(op *huma.Operation) {
+            op.Tags = []string{"session"}
+            op.Summary = "Get Session by ID in Room"
+            op.Description = "Get a session by its ID in a room."
 	})
 
 	// trigger `next` on session with ID in Room, return the next session
@@ -70,5 +81,9 @@ func Route(api huma.API) {
 		return &Output[*ent.Session]{
 			Body: s,
 		}, nil
+	}, func(op *huma.Operation) {
+            op.Tags = []string{"session"}
+            op.Summary = "Set End Time of Session"
+            op.Description = "Set the end time of the current session and start time of the next session."
 	})
 }

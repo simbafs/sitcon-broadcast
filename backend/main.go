@@ -35,6 +35,7 @@ func run(c *config.Config) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
 
+	// TODO: replace DefaultConfig with my own config
 	humaapi := humagin.New(r, huma.DefaultConfig("SITCON", "v1.0.0"))
 	// t := middleware.NewTokenVerifyer(c.Token, c.Domain)
 

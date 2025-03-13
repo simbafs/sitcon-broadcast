@@ -1,12 +1,28 @@
-import { useSessions } from '@/hooks/useSessions'
+'use client'
+
+import { useSession } from '@/hooks/useSession'
+import { ActionNext } from '@/sdk'
+import { btn } from '@/style/btn'
 import { parseAsString, useQueryState } from 'nuqs'
+import { useNow } from './useNow'
 
 export default function Page() {
 	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
-	const sessions = useSessions(room)
+	const session = useSession(room)
+	const now = useNow(session?.end)
 
-	return <div>
-	    <button>下一個</button>
-	    <button>撤銷</button>
-	</div>
+	const next = () => {
+		if (!session) return
+		ActionNext(session.room, session.session_id, now)
+	}
+
+	return (
+		<div className="grid h-screen grid-rows-3">
+			<pre>{JSON.stringify({ ...session, end: now }, null, 2)}</pre>
+			<button onClick={next} className={btn()}>
+				下一個
+			</button>
+			<button className={btn()}>撤銷</button>
+		</div>
+	)
 }

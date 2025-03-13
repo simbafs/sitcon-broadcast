@@ -4,14 +4,12 @@ import (
 	"backend/api/session"
 	"backend/internal/logger"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 )
 
 var log = logger.New("api")
 
-func Route(router gin.IRouter) {
-	api := router.Group("/api")
-
+func Route(api huma.API) {
 	session.Route(api)
 
 	// TODO: 404

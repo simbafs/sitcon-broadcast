@@ -32,7 +32,7 @@ type Session struct {
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
 	// Data holds the value of the "data" field.
-	Data         map[string]string `json:"data,omitempty"`
+	Data         map[string]interface{} `json:"data,omitempty"`
 	selectValues sql.SelectValues
 }
 

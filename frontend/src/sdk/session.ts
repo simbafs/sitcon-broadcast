@@ -7,7 +7,7 @@ export type Session = {
 	room: string
 	next: string // next session ID
 	title: string
-	speaker: string
+	data: Record<string, any>
 }
 
 export function GetAllInRoom(room: string) {

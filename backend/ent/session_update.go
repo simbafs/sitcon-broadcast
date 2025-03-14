@@ -98,7 +98,7 @@ func (su *SessionUpdate) SetNillableTitle(s *string) *SessionUpdate {
 }
 
 // SetData sets the "data" field.
-func (su *SessionUpdate) SetData(m map[string]string) *SessionUpdate {
+func (su *SessionUpdate) SetData(m map[string]interface{}) *SessionUpdate {
 	su.mutation.SetData(m)
 	return su
 }
@@ -256,7 +256,7 @@ func (suo *SessionUpdateOne) SetNillableTitle(s *string) *SessionUpdateOne {
 }
 
 // SetData sets the "data" field.
-func (suo *SessionUpdateOne) SetData(m map[string]string) *SessionUpdateOne {
+func (suo *SessionUpdateOne) SetData(m map[string]interface{}) *SessionUpdateOne {
 	suo.mutation.SetData(m)
 	return suo
 }

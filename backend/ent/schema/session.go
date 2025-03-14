@@ -23,7 +23,7 @@ func (Session) Fields() []ent.Field {
 
 		field.String("title"),
 		// extra data, such as title, speakers, etc.
-		field.JSON("data", map[string]string{}),
+		field.JSON("data", map[string]any{}),
 	}
 }
 

@@ -70,7 +70,7 @@ func (sc *SessionCreate) SetTitle(s string) *SessionCreate {
 }
 
 // SetData sets the "data" field.
-func (sc *SessionCreate) SetData(m map[string]string) *SessionCreate {
+func (sc *SessionCreate) SetData(m map[string]interface{}) *SessionCreate {
 	sc.mutation.SetData(m)
 	return sc
 }

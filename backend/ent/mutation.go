@@ -41,7 +41,7 @@ type SessionMutation struct {
 	room          *string
 	next          *string
 	title         *string
-	data          *map[string]string
+	data          *map[string]interface{}
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Session, error)
@@ -439,12 +439,12 @@ func (m *SessionMutation) ResetTitle() {
 }
 
 // SetData sets the "data" field.
-func (m *SessionMutation) SetData(value map[string]string) {
+func (m *SessionMutation) SetData(value map[string]interface{}) {
 	m.data = &value
 }
 
 // Data returns the value of the "data" field in the mutation.
-func (m *SessionMutation) Data() (r map[string]string, exists bool) {
+func (m *SessionMutation) Data() (r map[string]interface{}, exists bool) {
 	v := m.data
 	if v == nil {
 		return
@@ -455,7 +455,7 @@ func (m *SessionMutation) Data() (r map[string]string, exists bool) {
 // OldData returns the old "data" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldData(ctx context.Context) (v map[string]string, err error) {
+func (m *SessionMutation) OldData(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldData is only allowed on UpdateOne operations")
 	}
@@ -641,7 +641,7 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 		m.SetTitle(v)
 		return nil
 	case session.FieldData:
-		v, ok := value.(map[string]string)
+		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

@@ -1,16 +1,19 @@
+import { GetNow } from '@/sdk/now'
 import { useEffect, useState } from 'react'
 
-export function useNow(t = 0) {
+export function useNow() {
 	const [now, setNow] = useState(0)
 
+	// TODO: get update with SSE or websocket
 	useEffect(() => {
 		const id = setInterval(() => {
-			setNow(Math.floor(Date.now() / 1000))
+			GetNow().then(setNow)
 		}, 1000)
+
 		return () => {
 			clearInterval(id)
 		}
 	}, [])
 
-	return Math.max(t, now)
+	return now
 }

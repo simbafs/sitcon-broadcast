@@ -4,12 +4,12 @@ import { useSession } from '@/hooks/useSession'
 import { ActionNext } from '@/sdk'
 import { btn } from '@/style/btn'
 import { parseAsString, useQueryState } from 'nuqs'
-import { useNow } from './useNow'
+import { useNow } from '@/hooks/useNow'
 
 export default function Page() {
 	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
 	const session = useSession(room)
-	const now = useNow(session?.end)
+	const now = useNow()
 
 	const next = () => {
 		if (!session) return
@@ -18,7 +18,7 @@ export default function Page() {
 
 	return (
 		<div className="grid h-screen grid-rows-3">
-			<pre>{JSON.stringify({ ...session, end: now }, null, 2)}</pre>
+			<pre>{JSON.stringify({ ...session, end: Math.max(session?.end || 0, now) }, null, 2)}</pre>
 			<button onClick={next} className={btn()}>
 				下一個
 			</button>

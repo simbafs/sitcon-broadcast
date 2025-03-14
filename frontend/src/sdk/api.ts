@@ -15,9 +15,6 @@ export async function api<T extends any>(path: string, method: Method, body?: an
 		.then(res => res.json())
 		.then(body => {
 			if (body.errors) throw new Error(body.error)
-			return {
-				...body,
-				$schema: undefined,
-			} as T
+			return body as T
 		})
 }

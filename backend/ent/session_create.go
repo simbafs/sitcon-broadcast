@@ -31,6 +31,20 @@ func (sc *SessionCreate) SetEnd(i int64) *SessionCreate {
 	return sc
 }
 
+// SetFinish sets the "finish" field.
+func (sc *SessionCreate) SetFinish(b bool) *SessionCreate {
+	sc.mutation.SetFinish(b)
+	return sc
+}
+
+// SetNillableFinish sets the "finish" field if the given value is not nil.
+func (sc *SessionCreate) SetNillableFinish(b *bool) *SessionCreate {
+	if b != nil {
+		sc.SetFinish(*b)
+	}
+	return sc
+}
+
 // SetSessionID sets the "session_id" field.
 func (sc *SessionCreate) SetSessionID(s string) *SessionCreate {
 	sc.mutation.SetSessionID(s)
@@ -55,9 +69,9 @@ func (sc *SessionCreate) SetTitle(s string) *SessionCreate {
 	return sc
 }
 
-// SetSpeaker sets the "speaker" field.
-func (sc *SessionCreate) SetSpeaker(s string) *SessionCreate {
-	sc.mutation.SetSpeaker(s)
+// SetData sets the "data" field.
+func (sc *SessionCreate) SetData(m map[string]string) *SessionCreate {
+	sc.mutation.SetData(m)
 	return sc
 }
 
@@ -68,6 +82,7 @@ func (sc *SessionCreate) Mutation() *SessionMutation {
 
 // Save creates the Session in the database.
 func (sc *SessionCreate) Save(ctx context.Context) (*Session, error) {
+	sc.defaults()
 	return withHooks(ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
@@ -93,6 +108,14 @@ func (sc *SessionCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (sc *SessionCreate) defaults() {
+	if _, ok := sc.mutation.Finish(); !ok {
+		v := session.DefaultFinish
+		sc.mutation.SetFinish(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (sc *SessionCreate) check() error {
 	if _, ok := sc.mutation.Start(); !ok {
@@ -100,6 +123,9 @@ func (sc *SessionCreate) check() error {
 	}
 	if _, ok := sc.mutation.End(); !ok {
 		return &ValidationError{Name: "end", err: errors.New(`ent: missing required field "Session.end"`)}
+	}
+	if _, ok := sc.mutation.Finish(); !ok {
+		return &ValidationError{Name: "finish", err: errors.New(`ent: missing required field "Session.finish"`)}
 	}
 	if _, ok := sc.mutation.SessionID(); !ok {
 		return &ValidationError{Name: "session_id", err: errors.New(`ent: missing required field "Session.session_id"`)}
@@ -113,8 +139,8 @@ func (sc *SessionCreate) check() error {
 	if _, ok := sc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Session.title"`)}
 	}
-	if _, ok := sc.mutation.Speaker(); !ok {
-		return &ValidationError{Name: "speaker", err: errors.New(`ent: missing required field "Session.speaker"`)}
+	if _, ok := sc.mutation.Data(); !ok {
+		return &ValidationError{Name: "data", err: errors.New(`ent: missing required field "Session.data"`)}
 	}
 	return nil
 }
@@ -150,6 +176,10 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_spec.SetField(session.FieldEnd, field.TypeInt64, value)
 		_node.End = value
 	}
+	if value, ok := sc.mutation.Finish(); ok {
+		_spec.SetField(session.FieldFinish, field.TypeBool, value)
+		_node.Finish = value
+	}
 	if value, ok := sc.mutation.SessionID(); ok {
 		_spec.SetField(session.FieldSessionID, field.TypeString, value)
 		_node.SessionID = value
@@ -166,9 +196,9 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := sc.mutation.Speaker(); ok {
-		_spec.SetField(session.FieldSpeaker, field.TypeString, value)
-		_node.Speaker = value
+	if value, ok := sc.mutation.Data(); ok {
+		_spec.SetField(session.FieldData, field.TypeJSON, value)
+		_node.Data = value
 	}
 	return _node, _spec
 }
@@ -191,6 +221,7 @@ func (scb *SessionCreateBulk) Save(ctx context.Context) ([]*Session, error) {
 	for i := range scb.builders {
 		func(i int, root context.Context) {
 			builder := scb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SessionMutation)
 				if !ok {

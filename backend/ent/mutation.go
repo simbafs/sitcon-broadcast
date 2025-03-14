@@ -36,11 +36,12 @@ type SessionMutation struct {
 	addstart      *int64
 	end           *int64
 	addend        *int64
+	finish        *bool
 	session_id    *string
 	room          *string
 	next          *string
 	title         *string
-	speaker       *string
+	data          *map[string]string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Session, error)
@@ -257,6 +258,42 @@ func (m *SessionMutation) ResetEnd() {
 	m.addend = nil
 }
 
+// SetFinish sets the "finish" field.
+func (m *SessionMutation) SetFinish(b bool) {
+	m.finish = &b
+}
+
+// Finish returns the value of the "finish" field in the mutation.
+func (m *SessionMutation) Finish() (r bool, exists bool) {
+	v := m.finish
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFinish returns the old "finish" field's value of the Session entity.
+// If the Session object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SessionMutation) OldFinish(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFinish is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFinish requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFinish: %w", err)
+	}
+	return oldValue.Finish, nil
+}
+
+// ResetFinish resets all changes to the "finish" field.
+func (m *SessionMutation) ResetFinish() {
+	m.finish = nil
+}
+
 // SetSessionID sets the "session_id" field.
 func (m *SessionMutation) SetSessionID(s string) {
 	m.session_id = &s
@@ -401,40 +438,40 @@ func (m *SessionMutation) ResetTitle() {
 	m.title = nil
 }
 
-// SetSpeaker sets the "speaker" field.
-func (m *SessionMutation) SetSpeaker(s string) {
-	m.speaker = &s
+// SetData sets the "data" field.
+func (m *SessionMutation) SetData(value map[string]string) {
+	m.data = &value
 }
 
-// Speaker returns the value of the "speaker" field in the mutation.
-func (m *SessionMutation) Speaker() (r string, exists bool) {
-	v := m.speaker
+// Data returns the value of the "data" field in the mutation.
+func (m *SessionMutation) Data() (r map[string]string, exists bool) {
+	v := m.data
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSpeaker returns the old "speaker" field's value of the Session entity.
+// OldData returns the old "data" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldSpeaker(ctx context.Context) (v string, err error) {
+func (m *SessionMutation) OldData(ctx context.Context) (v map[string]string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSpeaker is only allowed on UpdateOne operations")
+		return v, errors.New("OldData is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSpeaker requires an ID field in the mutation")
+		return v, errors.New("OldData requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSpeaker: %w", err)
+		return v, fmt.Errorf("querying old value for OldData: %w", err)
 	}
-	return oldValue.Speaker, nil
+	return oldValue.Data, nil
 }
 
-// ResetSpeaker resets all changes to the "speaker" field.
-func (m *SessionMutation) ResetSpeaker() {
-	m.speaker = nil
+// ResetData resets all changes to the "data" field.
+func (m *SessionMutation) ResetData() {
+	m.data = nil
 }
 
 // Where appends a list predicates to the SessionMutation builder.
@@ -471,12 +508,15 @@ func (m *SessionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SessionMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.start != nil {
 		fields = append(fields, session.FieldStart)
 	}
 	if m.end != nil {
 		fields = append(fields, session.FieldEnd)
+	}
+	if m.finish != nil {
+		fields = append(fields, session.FieldFinish)
 	}
 	if m.session_id != nil {
 		fields = append(fields, session.FieldSessionID)
@@ -490,8 +530,8 @@ func (m *SessionMutation) Fields() []string {
 	if m.title != nil {
 		fields = append(fields, session.FieldTitle)
 	}
-	if m.speaker != nil {
-		fields = append(fields, session.FieldSpeaker)
+	if m.data != nil {
+		fields = append(fields, session.FieldData)
 	}
 	return fields
 }
@@ -505,6 +545,8 @@ func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 		return m.Start()
 	case session.FieldEnd:
 		return m.End()
+	case session.FieldFinish:
+		return m.Finish()
 	case session.FieldSessionID:
 		return m.SessionID()
 	case session.FieldRoom:
@@ -513,8 +555,8 @@ func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 		return m.Next()
 	case session.FieldTitle:
 		return m.Title()
-	case session.FieldSpeaker:
-		return m.Speaker()
+	case session.FieldData:
+		return m.Data()
 	}
 	return nil, false
 }
@@ -528,6 +570,8 @@ func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldStart(ctx)
 	case session.FieldEnd:
 		return m.OldEnd(ctx)
+	case session.FieldFinish:
+		return m.OldFinish(ctx)
 	case session.FieldSessionID:
 		return m.OldSessionID(ctx)
 	case session.FieldRoom:
@@ -536,8 +580,8 @@ func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldNext(ctx)
 	case session.FieldTitle:
 		return m.OldTitle(ctx)
-	case session.FieldSpeaker:
-		return m.OldSpeaker(ctx)
+	case session.FieldData:
+		return m.OldData(ctx)
 	}
 	return nil, fmt.Errorf("unknown Session field %s", name)
 }
@@ -560,6 +604,13 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnd(v)
+		return nil
+	case session.FieldFinish:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFinish(v)
 		return nil
 	case session.FieldSessionID:
 		v, ok := value.(string)
@@ -589,12 +640,12 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTitle(v)
 		return nil
-	case session.FieldSpeaker:
-		v, ok := value.(string)
+	case session.FieldData:
+		v, ok := value.(map[string]string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSpeaker(v)
+		m.SetData(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Session field %s", name)
@@ -678,6 +729,9 @@ func (m *SessionMutation) ResetField(name string) error {
 	case session.FieldEnd:
 		m.ResetEnd()
 		return nil
+	case session.FieldFinish:
+		m.ResetFinish()
+		return nil
 	case session.FieldSessionID:
 		m.ResetSessionID()
 		return nil
@@ -690,8 +744,8 @@ func (m *SessionMutation) ResetField(name string) error {
 	case session.FieldTitle:
 		m.ResetTitle()
 		return nil
-	case session.FieldSpeaker:
-		m.ResetSpeaker()
+	case session.FieldData:
+		m.ResetData()
 		return nil
 	}
 	return fmt.Errorf("unknown Session field %s", name)

@@ -7,29 +7,38 @@ import sqlite3 from 'better-sqlite3'
 
 function parseInput(speakers: Record<string, string>) {
 	return function (s: input.Session) {
+		const extraData = {
+			speaker: s.speakers || [],
+			qa: s.qa || '',
+			slide: s.slide || '',
+			co_write: s.co_write || '',
+			record: s.record || '',
+			live: s.live || '',
+			tags: s.tags || [],
+			url: s.uri || '',
+			description: s.zh.description,
+		}
+
 		const b =
 			s.broadcast?.map<output.Session>(r => ({
 				start: new Date(s.start).getTime() / 1000,
 				end: new Date(s.end).getTime() / 1000,
-
 				id: s.id,
 				room: r,
-
 				next: '',
 				title: s.zh.title,
-				speaker: s.speakers.map(id => speakers[id]).join(', '),
+				data: JSON.stringify(extraData),
 			})) || []
+
 		const r = [
 			{
 				start: new Date(s.start).getTime() / 1000,
 				end: new Date(s.end).getTime() / 1000,
-
 				id: s.id,
 				room: s.room,
-
 				next: '',
 				title: s.zh.title,
-				speaker: s.speakers.map(id => speakers[id]).join(', '),
+				data: JSON.stringify(extraData),
 			} as output.Session,
 		]
 
@@ -50,7 +59,7 @@ function mergeSameTitle(sessions: output.Session[], curr: output.Session) {
 
 function removeSpeakerFromRest(s: output.Session) {
 	if (['休息', '午餐', '點心'].includes(s.title)) {
-		s.speaker = ''
+		s.data = JSON.stringify({ ...JSON.parse(s.data), speaker: '' })
 	}
 	return s
 }
@@ -60,7 +69,6 @@ async function FetchAndParse() {
 
 	const rooms = body.rooms.map(item => item.zh.name)
 	const speakers = Object.fromEntries(body.speakers.map(item => [item.id, item.zh.name]))
-	// const sessionType = Object.fromEntries(body.session_types.map(item => [item.id, item.zh.name]))
 
 	const sessions = body.sessions
 		.flatMap(parseInput(speakers))
@@ -68,7 +76,6 @@ async function FetchAndParse() {
 		.map(removeSpeakerFromRest)
 		.reduce(mergeSameTitle, [])
 
-	// set next by room
 	const roomSessions = rooms.map(room => sessions.filter(s => s.room == room))
 	for (let room of roomSessions) {
 		room.sort((a, b) => a.start - b.start)
@@ -87,19 +94,19 @@ function SaveToDB(sessions: output.Session[]) {
 
 	const insert = db.prepare(`
         INSERT OR REPLACE INTO sessions (
-			start,
-			end,
-			session_id,
-			room,
-			next,
-			title,
-			speaker
+            start,
+            end,
+            session_id,
+            room,
+            next,
+            title,
+            data
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
-	`)
+    `)
 
 	const insertMany = db.transaction((ss: output.Session[]) => {
 		for (let s of ss) {
-			insert.run(s.start, s.end, s.id, s.room, s.next, s.title, s.speaker)
+			insert.run(s.start, s.end, s.id, s.room, s.next, s.title, s.data)
 		}
 	})
 

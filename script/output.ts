@@ -6,7 +6,7 @@ export type Session = {
 	//  純粹為了可以支援不同議程廳而設計的
 	id: string // not unique in the while system, (room, id) or idx is unique
 	room: string
-	
+
 	// 方便找下一個議程，也可以根據 start、end 來找
 	next: string
 
@@ -16,8 +16,9 @@ export type Session = {
 
 	// 有點額外的額外資訊，不過蠻必要的
 	title: string
-	speaker: string
 
+	// extra data
+	data: string
 
 	// 額外資訊
 	// qa: string

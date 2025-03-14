@@ -4,6 +4,7 @@ package ent
 
 import (
 	"backend/ent/session"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -20,6 +21,8 @@ type Session struct {
 	Start int64 `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	End int64 `json:"end,omitempty"`
+	// Finish holds the value of the "finish" field.
+	Finish bool `json:"finish,omitempty"`
 	// SessionID holds the value of the "session_id" field.
 	SessionID string `json:"session_id,omitempty"`
 	// Room holds the value of the "room" field.
@@ -28,8 +31,8 @@ type Session struct {
 	Next string `json:"next,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
-	// Speaker holds the value of the "speaker" field.
-	Speaker      string `json:"speaker,omitempty"`
+	// Data holds the value of the "data" field.
+	Data         map[string]string `json:"data,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -38,9 +41,13 @@ func (*Session) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case session.FieldData:
+			values[i] = new([]byte)
+		case session.FieldFinish:
+			values[i] = new(sql.NullBool)
 		case session.FieldID, session.FieldStart, session.FieldEnd:
 			values[i] = new(sql.NullInt64)
-		case session.FieldSessionID, session.FieldRoom, session.FieldNext, session.FieldTitle, session.FieldSpeaker:
+		case session.FieldSessionID, session.FieldRoom, session.FieldNext, session.FieldTitle:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -75,6 +82,12 @@ func (s *Session) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.End = value.Int64
 			}
+		case session.FieldFinish:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field finish", values[i])
+			} else if value.Valid {
+				s.Finish = value.Bool
+			}
 		case session.FieldSessionID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field session_id", values[i])
@@ -99,11 +112,13 @@ func (s *Session) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Title = value.String
 			}
-		case session.FieldSpeaker:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field speaker", values[i])
-			} else if value.Valid {
-				s.Speaker = value.String
+		case session.FieldData:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field data", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &s.Data); err != nil {
+					return fmt.Errorf("unmarshal field data: %w", err)
+				}
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -147,6 +162,9 @@ func (s *Session) String() string {
 	builder.WriteString("end=")
 	builder.WriteString(fmt.Sprintf("%v", s.End))
 	builder.WriteString(", ")
+	builder.WriteString("finish=")
+	builder.WriteString(fmt.Sprintf("%v", s.Finish))
+	builder.WriteString(", ")
 	builder.WriteString("session_id=")
 	builder.WriteString(s.SessionID)
 	builder.WriteString(", ")
@@ -159,8 +177,8 @@ func (s *Session) String() string {
 	builder.WriteString("title=")
 	builder.WriteString(s.Title)
 	builder.WriteString(", ")
-	builder.WriteString("speaker=")
-	builder.WriteString(s.Speaker)
+	builder.WriteString("data=")
+	builder.WriteString(fmt.Sprintf("%v", s.Data))
 	builder.WriteByte(')')
 	return builder.String()
 }

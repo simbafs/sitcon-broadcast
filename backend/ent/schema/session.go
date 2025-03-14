@@ -16,11 +16,14 @@ func (Session) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("start"),
 		field.Int64("end"),
+		field.Bool("finish").Default(false),
 		field.String("session_id").Immutable(),
 		field.String("room").Immutable(),
 		field.String("next").Immutable(),
+
 		field.String("title"),
-		field.String("speaker"),
+		// extra data, such as title, speakers, etc.
+		field.JSON("data", map[string]string{}),
 	}
 }
 

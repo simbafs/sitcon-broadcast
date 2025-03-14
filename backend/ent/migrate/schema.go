@@ -13,11 +13,12 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "start", Type: field.TypeInt64},
 		{Name: "end", Type: field.TypeInt64},
+		{Name: "finish", Type: field.TypeBool, Default: false},
 		{Name: "session_id", Type: field.TypeString},
 		{Name: "room", Type: field.TypeString},
 		{Name: "next", Type: field.TypeString},
 		{Name: "title", Type: field.TypeString},
-		{Name: "speaker", Type: field.TypeString},
+		{Name: "data", Type: field.TypeJSON},
 	}
 	// SessionsTable holds the schema information for the "sessions" table.
 	SessionsTable = &schema.Table{

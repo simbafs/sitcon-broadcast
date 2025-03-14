@@ -15,6 +15,8 @@ const (
 	FieldStart = "start"
 	// FieldEnd holds the string denoting the end field in the database.
 	FieldEnd = "end"
+	// FieldFinish holds the string denoting the finish field in the database.
+	FieldFinish = "finish"
 	// FieldSessionID holds the string denoting the session_id field in the database.
 	FieldSessionID = "session_id"
 	// FieldRoom holds the string denoting the room field in the database.
@@ -23,8 +25,8 @@ const (
 	FieldNext = "next"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
-	// FieldSpeaker holds the string denoting the speaker field in the database.
-	FieldSpeaker = "speaker"
+	// FieldData holds the string denoting the data field in the database.
+	FieldData = "data"
 	// Table holds the table name of the session in the database.
 	Table = "sessions"
 )
@@ -34,11 +36,12 @@ var Columns = []string{
 	FieldID,
 	FieldStart,
 	FieldEnd,
+	FieldFinish,
 	FieldSessionID,
 	FieldRoom,
 	FieldNext,
 	FieldTitle,
-	FieldSpeaker,
+	FieldData,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -50,6 +53,11 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// DefaultFinish holds the default value on creation for the "finish" field.
+	DefaultFinish bool
+)
 
 // OrderOption defines the ordering options for the Session queries.
 type OrderOption func(*sql.Selector)
@@ -67,6 +75,11 @@ func ByStart(opts ...sql.OrderTermOption) OrderOption {
 // ByEnd orders the results by the end field.
 func ByEnd(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnd, opts...).ToFunc()
+}
+
+// ByFinish orders the results by the finish field.
+func ByFinish(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFinish, opts...).ToFunc()
 }
 
 // BySessionID orders the results by the session_id field.
@@ -87,9 +100,4 @@ func ByNext(opts ...sql.OrderTermOption) OrderOption {
 // ByTitle orders the results by the title field.
 func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitle, opts...).ToFunc()
-}
-
-// BySpeaker orders the results by the speaker field.
-func BySpeaker(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSpeaker, opts...).ToFunc()
 }

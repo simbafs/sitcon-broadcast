@@ -69,6 +69,20 @@ func (su *SessionUpdate) AddEnd(i int64) *SessionUpdate {
 	return su
 }
 
+// SetFinish sets the "finish" field.
+func (su *SessionUpdate) SetFinish(b bool) *SessionUpdate {
+	su.mutation.SetFinish(b)
+	return su
+}
+
+// SetNillableFinish sets the "finish" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableFinish(b *bool) *SessionUpdate {
+	if b != nil {
+		su.SetFinish(*b)
+	}
+	return su
+}
+
 // SetTitle sets the "title" field.
 func (su *SessionUpdate) SetTitle(s string) *SessionUpdate {
 	su.mutation.SetTitle(s)
@@ -83,17 +97,9 @@ func (su *SessionUpdate) SetNillableTitle(s *string) *SessionUpdate {
 	return su
 }
 
-// SetSpeaker sets the "speaker" field.
-func (su *SessionUpdate) SetSpeaker(s string) *SessionUpdate {
-	su.mutation.SetSpeaker(s)
-	return su
-}
-
-// SetNillableSpeaker sets the "speaker" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableSpeaker(s *string) *SessionUpdate {
-	if s != nil {
-		su.SetSpeaker(*s)
-	}
+// SetData sets the "data" field.
+func (su *SessionUpdate) SetData(m map[string]string) *SessionUpdate {
+	su.mutation.SetData(m)
 	return su
 }
 
@@ -150,11 +156,14 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.AddedEnd(); ok {
 		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
 	}
+	if value, ok := su.mutation.Finish(); ok {
+		_spec.SetField(session.FieldFinish, field.TypeBool, value)
+	}
 	if value, ok := su.mutation.Title(); ok {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := su.mutation.Speaker(); ok {
-		_spec.SetField(session.FieldSpeaker, field.TypeString, value)
+	if value, ok := su.mutation.Data(); ok {
+		_spec.SetField(session.FieldData, field.TypeJSON, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -218,6 +227,20 @@ func (suo *SessionUpdateOne) AddEnd(i int64) *SessionUpdateOne {
 	return suo
 }
 
+// SetFinish sets the "finish" field.
+func (suo *SessionUpdateOne) SetFinish(b bool) *SessionUpdateOne {
+	suo.mutation.SetFinish(b)
+	return suo
+}
+
+// SetNillableFinish sets the "finish" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableFinish(b *bool) *SessionUpdateOne {
+	if b != nil {
+		suo.SetFinish(*b)
+	}
+	return suo
+}
+
 // SetTitle sets the "title" field.
 func (suo *SessionUpdateOne) SetTitle(s string) *SessionUpdateOne {
 	suo.mutation.SetTitle(s)
@@ -232,17 +255,9 @@ func (suo *SessionUpdateOne) SetNillableTitle(s *string) *SessionUpdateOne {
 	return suo
 }
 
-// SetSpeaker sets the "speaker" field.
-func (suo *SessionUpdateOne) SetSpeaker(s string) *SessionUpdateOne {
-	suo.mutation.SetSpeaker(s)
-	return suo
-}
-
-// SetNillableSpeaker sets the "speaker" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableSpeaker(s *string) *SessionUpdateOne {
-	if s != nil {
-		suo.SetSpeaker(*s)
-	}
+// SetData sets the "data" field.
+func (suo *SessionUpdateOne) SetData(m map[string]string) *SessionUpdateOne {
+	suo.mutation.SetData(m)
 	return suo
 }
 
@@ -329,11 +344,14 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	if value, ok := suo.mutation.AddedEnd(); ok {
 		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
 	}
+	if value, ok := suo.mutation.Finish(); ok {
+		_spec.SetField(session.FieldFinish, field.TypeBool, value)
+	}
 	if value, ok := suo.mutation.Title(); ok {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := suo.mutation.Speaker(); ok {
-		_spec.SetField(session.FieldSpeaker, field.TypeString, value)
+	if value, ok := suo.mutation.Data(); ok {
+		_spec.SetField(session.FieldData, field.TypeJSON, value)
 	}
 	_node = &Session{config: suo.config}
 	_spec.Assign = _node.assignValues

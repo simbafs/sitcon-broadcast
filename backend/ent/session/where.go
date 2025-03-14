@@ -63,6 +63,11 @@ func End(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldEnd, v))
 }
 
+// Finish applies equality check predicate on the "finish" field. It's identical to FinishEQ.
+func Finish(v bool) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldFinish, v))
+}
+
 // SessionID applies equality check predicate on the "session_id" field. It's identical to SessionIDEQ.
 func SessionID(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldSessionID, v))
@@ -81,11 +86,6 @@ func Next(v string) predicate.Session {
 // Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
 func Title(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldTitle, v))
-}
-
-// Speaker applies equality check predicate on the "speaker" field. It's identical to SpeakerEQ.
-func Speaker(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldSpeaker, v))
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
@@ -166,6 +166,16 @@ func EndLT(v int64) predicate.Session {
 // EndLTE applies the LTE predicate on the "end" field.
 func EndLTE(v int64) predicate.Session {
 	return predicate.Session(sql.FieldLTE(FieldEnd, v))
+}
+
+// FinishEQ applies the EQ predicate on the "finish" field.
+func FinishEQ(v bool) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldFinish, v))
+}
+
+// FinishNEQ applies the NEQ predicate on the "finish" field.
+func FinishNEQ(v bool) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldFinish, v))
 }
 
 // SessionIDEQ applies the EQ predicate on the "session_id" field.
@@ -426,71 +436,6 @@ func TitleEqualFold(v string) predicate.Session {
 // TitleContainsFold applies the ContainsFold predicate on the "title" field.
 func TitleContainsFold(v string) predicate.Session {
 	return predicate.Session(sql.FieldContainsFold(FieldTitle, v))
-}
-
-// SpeakerEQ applies the EQ predicate on the "speaker" field.
-func SpeakerEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldSpeaker, v))
-}
-
-// SpeakerNEQ applies the NEQ predicate on the "speaker" field.
-func SpeakerNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldSpeaker, v))
-}
-
-// SpeakerIn applies the In predicate on the "speaker" field.
-func SpeakerIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldSpeaker, vs...))
-}
-
-// SpeakerNotIn applies the NotIn predicate on the "speaker" field.
-func SpeakerNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldSpeaker, vs...))
-}
-
-// SpeakerGT applies the GT predicate on the "speaker" field.
-func SpeakerGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldSpeaker, v))
-}
-
-// SpeakerGTE applies the GTE predicate on the "speaker" field.
-func SpeakerGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldSpeaker, v))
-}
-
-// SpeakerLT applies the LT predicate on the "speaker" field.
-func SpeakerLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldSpeaker, v))
-}
-
-// SpeakerLTE applies the LTE predicate on the "speaker" field.
-func SpeakerLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldSpeaker, v))
-}
-
-// SpeakerContains applies the Contains predicate on the "speaker" field.
-func SpeakerContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldSpeaker, v))
-}
-
-// SpeakerHasPrefix applies the HasPrefix predicate on the "speaker" field.
-func SpeakerHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldSpeaker, v))
-}
-
-// SpeakerHasSuffix applies the HasSuffix predicate on the "speaker" field.
-func SpeakerHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldSpeaker, v))
-}
-
-// SpeakerEqualFold applies the EqualFold predicate on the "speaker" field.
-func SpeakerEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldSpeaker, v))
-}
-
-// SpeakerContainsFold applies the ContainsFold predicate on the "speaker" field.
-func SpeakerContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldSpeaker, v))
 }
 
 // And groups predicates with the AND operator between them.

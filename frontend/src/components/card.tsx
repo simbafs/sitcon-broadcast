@@ -1,20 +1,7 @@
 'use client'
 import { Session } from '@/sdk'
-import { parseTime } from '@/sdk/time'
 import { useState } from 'react'
-
-function pad2(n: number) {
-	return n.toString().padStart(2, '0')
-}
-
-function Time({ time }: { time: number }) {
-	const t = parseTime(time)
-	return (
-		<p>
-			{t.year}-{pad2(t.month)}-{pad2(t.day)} {pad2(t.hours)}:{pad2(t.minutes)}:{pad2(t.seconds)}
-		</p>
-	)
-}
+import { Time } from './time'
 
 export function Card({ session }: { session: Session }) {
 	const [raw, setRaw] = useState(false)

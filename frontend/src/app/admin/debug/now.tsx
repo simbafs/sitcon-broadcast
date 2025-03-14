@@ -1,16 +1,18 @@
 'use client'
-import { constructNow, GetNow, type Now, parseNow, ResetNow, SetNow } from '@/sdk/now'
+import { Time } from '@/components/time'
+import { GetNow, ResetNow, SetNow } from '@/sdk/now'
+import { constructTime, parseTime, type Time as TTime} from '@/sdk/time'
 import { btn } from '@/style/btn'
 import { useReducer } from 'react'
 import { toast } from 'react-toastify'
 
 export function Now() {
 	const [now, setNow] = useReducer(
-		(state: Now, action: number | Partial<Now>) => {
-			if (typeof action === 'number') return parseNow(action)
+		(state: TTime, action: number | Partial<TTime>) => {
+			if (typeof action === 'number') return parseTime(action)
 			return { ...state, ...action }
 		},
-		parseNow(Date.now() / 1000),
+		parseTime(Date.now() / 1000),
 	)
 
 	return (
@@ -59,7 +61,8 @@ export function Now() {
 					className={btn()}
 				/>
 			</div>
-			<pre>{constructNow(now)}</pre>
+			<pre>{constructTime(now)}</pre>
+			<Time time={constructTime(now)} />
 			<button
 				onClick={() =>
 					GetNow()
@@ -73,7 +76,7 @@ export function Now() {
 			</button>
 			<button
 				onClick={() =>
-					SetNow(constructNow(now))
+					SetNow(constructTime(now))
 						.then(() => toast('設定時間成功'))
 						.catch(e => toast(`設定時間失敗: ${e}`))
 				}

@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"backend/ent"
 	"backend/ent/session"
 	"backend/internal/logger"
+	"backend/models/now"
 
 	m "backend/models"
 )
@@ -29,18 +29,18 @@ func Get(ctx context.Context, room string, id string) (*ent.Session, error) {
 }
 
 func GetCurrent(ctx context.Context, room string) (*ent.Session, error) {
-	// TODO: now package
-	tw, err := time.LoadLocation("Asia/Taipei")
-	if err != nil {
-		return nil, err
-	}
-	n := time.Date(2025, 3, 8, 5, 50, 0, 0, tw).Unix()
+	n := int64(now.GetNow())
 
-	return m.Client.Session.Query().
+	s, err := m.Client.Session.Query().
 		Where(session.Room(room), session.EndGT(n)).
 		Order(ent.Asc(session.FieldStart)).
 		First(ctx)
-	// All(ctx)
+	if ent.IsNotFound(err) {
+		return m.Client.Session.Query().
+			Order(ent.Desc(session.FieldStart)).
+			First(ctx)
+	}
+	return s, err
 }
 
 var (

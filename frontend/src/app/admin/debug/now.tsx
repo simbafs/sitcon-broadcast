@@ -59,6 +59,7 @@ export function Now() {
 					className={btn()}
 				/>
 			</div>
+			<pre>{constructNow(now)}</pre>
 			<button
 				onClick={() =>
 					GetNow()

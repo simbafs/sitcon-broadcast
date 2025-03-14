@@ -10,11 +10,18 @@ export async function api<T extends any>(path: string, method: Method, body?: an
 
 	return fetch(`/api${path}`, {
 		method,
+		headers: {
+			'Content-Type': 'application/json',
+		},
 		body: JSON.stringify(body),
 	})
 		.then(res => res.json())
 		.then(body => {
-			if (body.errors) throw new Error(body.error)
+			if (body.errors){
+				console.error(body)
+
+				throw new Error(`${body.title}: ${body.detail}`)
+			}
 			return body as T
 		})
 }

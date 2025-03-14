@@ -14,7 +14,7 @@ type Output[T any] struct {
 }
 
 func Route(api huma.API) {
-	huma.Get(api, "/api/session/{room}", func(ctx context.Context, input *struct {
+	huma.Get(api, "/{room}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 	},
 	) (*Output[*ent.Session], error) {
@@ -30,7 +30,7 @@ func Route(api huma.API) {
             op.Summary = "Get Current Session in Room"
 	})
 
-	huma.Get(api, "/api/session/{room}/all", func(ctx context.Context, input *struct {
+	huma.Get(api, "/{room}/all", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 	},
 	) (*Output[ent.Sessions], error) {
@@ -47,7 +47,7 @@ func Route(api huma.API) {
             op.Description = "Get all sessions in a room."
 	})
 
-	huma.Get(api, "/api/session/{room}/{id}", func(ctx context.Context, input *struct {
+	huma.Get(api, "/{room}/{id}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 		ID   string `path:"id" example:"2d8a5e" doc:"Session ID"`
 	},
@@ -66,7 +66,7 @@ func Route(api huma.API) {
 	})
 
 	// trigger `next` on session with ID in Room, return the next session
-	huma.Post(api, "/api/session/{room}/{id}", func(ctx context.Context, input *struct {
+	huma.Post(api, "/{room}/{id}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 		ID   string `path:"id" example:"2d8a5e" doc:"Current session ID"`
 		Body struct {

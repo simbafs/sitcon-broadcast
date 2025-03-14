@@ -13,7 +13,7 @@ type NowOutput struct {
 }
 
 func Route(api huma.API) {
-	huma.Get(api, "/api/now", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
+	huma.Get(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
 		n := now.GetNow()
 		return &NowOutput{
 			Body: n,
@@ -24,7 +24,7 @@ func Route(api huma.API) {
 		op.Description = "Get the current time in unix timestamp in seconds."
 	})
 
-	huma.Post(api, "/api/now", func(ctx context.Context, input *struct {
+	huma.Post(api, "/", func(ctx context.Context, input *struct {
 		Body struct {
 			Now int64 `json:"now" example:"1741393800" doc:"Current time in seconds since epoch."`
 		}
@@ -40,7 +40,7 @@ func Route(api huma.API) {
 		op.Description = "Set the current time in unix timestamp in seconds."
 	})
 
-	huma.Delete(api, "/api/now", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
+	huma.Delete(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
 		now.ResetNow()
 		return &NowOutput{
 			Body: now.GetNow(),

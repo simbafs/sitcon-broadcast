@@ -11,8 +11,8 @@ import (
 var log = logger.New("api")
 
 func Route(api huma.API) {
-	session.Route(api)
-	now.Route(api)
+	session.Route(huma.NewGroup(api, "/api/session"))
+	now.Route(huma.NewGroup(api, "/api/now"))
 
 	// TODO: 404
 }

@@ -11,16 +11,18 @@ const (
 	Label = "session"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldIdx holds the string denoting the idx field in the database.
+	FieldIdx = "idx"
+	// FieldFinish holds the string denoting the finish field in the database.
+	FieldFinish = "finish"
 	// FieldStart holds the string denoting the start field in the database.
 	FieldStart = "start"
 	// FieldEnd holds the string denoting the end field in the database.
 	FieldEnd = "end"
-	// FieldFinish holds the string denoting the finish field in the database.
-	FieldFinish = "finish"
-	// FieldSessionID holds the string denoting the session_id field in the database.
-	FieldSessionID = "session_id"
 	// FieldRoom holds the string denoting the room field in the database.
 	FieldRoom = "room"
+	// FieldSessionID holds the string denoting the session_id field in the database.
+	FieldSessionID = "session_id"
 	// FieldNext holds the string denoting the next field in the database.
 	FieldNext = "next"
 	// FieldTitle holds the string denoting the title field in the database.
@@ -34,11 +36,12 @@ const (
 // Columns holds all SQL columns for session fields.
 var Columns = []string{
 	FieldID,
+	FieldIdx,
+	FieldFinish,
 	FieldStart,
 	FieldEnd,
-	FieldFinish,
-	FieldSessionID,
 	FieldRoom,
+	FieldSessionID,
 	FieldNext,
 	FieldTitle,
 	FieldData,
@@ -67,6 +70,16 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByIdx orders the results by the idx field.
+func ByIdx(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIdx, opts...).ToFunc()
+}
+
+// ByFinish orders the results by the finish field.
+func ByFinish(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFinish, opts...).ToFunc()
+}
+
 // ByStart orders the results by the start field.
 func ByStart(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStart, opts...).ToFunc()
@@ -77,19 +90,14 @@ func ByEnd(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnd, opts...).ToFunc()
 }
 
-// ByFinish orders the results by the finish field.
-func ByFinish(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFinish, opts...).ToFunc()
+// ByRoom orders the results by the room field.
+func ByRoom(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRoom, opts...).ToFunc()
 }
 
 // BySessionID orders the results by the session_id field.
 func BySessionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSessionID, opts...).ToFunc()
-}
-
-// ByRoom orders the results by the room field.
-func ByRoom(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRoom, opts...).ToFunc()
 }
 
 // ByNext orders the results by the next field.

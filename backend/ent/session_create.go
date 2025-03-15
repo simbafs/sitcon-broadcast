@@ -19,15 +19,9 @@ type SessionCreate struct {
 	hooks    []Hook
 }
 
-// SetStart sets the "start" field.
-func (sc *SessionCreate) SetStart(i int64) *SessionCreate {
-	sc.mutation.SetStart(i)
-	return sc
-}
-
-// SetEnd sets the "end" field.
-func (sc *SessionCreate) SetEnd(i int64) *SessionCreate {
-	sc.mutation.SetEnd(i)
+// SetIdx sets the "idx" field.
+func (sc *SessionCreate) SetIdx(i int8) *SessionCreate {
+	sc.mutation.SetIdx(i)
 	return sc
 }
 
@@ -45,15 +39,27 @@ func (sc *SessionCreate) SetNillableFinish(b *bool) *SessionCreate {
 	return sc
 }
 
-// SetSessionID sets the "session_id" field.
-func (sc *SessionCreate) SetSessionID(s string) *SessionCreate {
-	sc.mutation.SetSessionID(s)
+// SetStart sets the "start" field.
+func (sc *SessionCreate) SetStart(i int64) *SessionCreate {
+	sc.mutation.SetStart(i)
+	return sc
+}
+
+// SetEnd sets the "end" field.
+func (sc *SessionCreate) SetEnd(i int64) *SessionCreate {
+	sc.mutation.SetEnd(i)
 	return sc
 }
 
 // SetRoom sets the "room" field.
 func (sc *SessionCreate) SetRoom(s string) *SessionCreate {
 	sc.mutation.SetRoom(s)
+	return sc
+}
+
+// SetSessionID sets the "session_id" field.
+func (sc *SessionCreate) SetSessionID(s string) *SessionCreate {
+	sc.mutation.SetSessionID(s)
 	return sc
 }
 
@@ -118,20 +124,23 @@ func (sc *SessionCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (sc *SessionCreate) check() error {
+	if _, ok := sc.mutation.Idx(); !ok {
+		return &ValidationError{Name: "idx", err: errors.New(`ent: missing required field "Session.idx"`)}
+	}
+	if _, ok := sc.mutation.Finish(); !ok {
+		return &ValidationError{Name: "finish", err: errors.New(`ent: missing required field "Session.finish"`)}
+	}
 	if _, ok := sc.mutation.Start(); !ok {
 		return &ValidationError{Name: "start", err: errors.New(`ent: missing required field "Session.start"`)}
 	}
 	if _, ok := sc.mutation.End(); !ok {
 		return &ValidationError{Name: "end", err: errors.New(`ent: missing required field "Session.end"`)}
 	}
-	if _, ok := sc.mutation.Finish(); !ok {
-		return &ValidationError{Name: "finish", err: errors.New(`ent: missing required field "Session.finish"`)}
+	if _, ok := sc.mutation.Room(); !ok {
+		return &ValidationError{Name: "room", err: errors.New(`ent: missing required field "Session.room"`)}
 	}
 	if _, ok := sc.mutation.SessionID(); !ok {
 		return &ValidationError{Name: "session_id", err: errors.New(`ent: missing required field "Session.session_id"`)}
-	}
-	if _, ok := sc.mutation.Room(); !ok {
-		return &ValidationError{Name: "room", err: errors.New(`ent: missing required field "Session.room"`)}
 	}
 	if _, ok := sc.mutation.Next(); !ok {
 		return &ValidationError{Name: "next", err: errors.New(`ent: missing required field "Session.next"`)}
@@ -168,6 +177,14 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_node = &Session{config: sc.config}
 		_spec = sqlgraph.NewCreateSpec(session.Table, sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt))
 	)
+	if value, ok := sc.mutation.Idx(); ok {
+		_spec.SetField(session.FieldIdx, field.TypeInt8, value)
+		_node.Idx = value
+	}
+	if value, ok := sc.mutation.Finish(); ok {
+		_spec.SetField(session.FieldFinish, field.TypeBool, value)
+		_node.Finish = value
+	}
 	if value, ok := sc.mutation.Start(); ok {
 		_spec.SetField(session.FieldStart, field.TypeInt64, value)
 		_node.Start = value
@@ -176,17 +193,13 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_spec.SetField(session.FieldEnd, field.TypeInt64, value)
 		_node.End = value
 	}
-	if value, ok := sc.mutation.Finish(); ok {
-		_spec.SetField(session.FieldFinish, field.TypeBool, value)
-		_node.Finish = value
+	if value, ok := sc.mutation.Room(); ok {
+		_spec.SetField(session.FieldRoom, field.TypeString, value)
+		_node.Room = value
 	}
 	if value, ok := sc.mutation.SessionID(); ok {
 		_spec.SetField(session.FieldSessionID, field.TypeString, value)
 		_node.SessionID = value
-	}
-	if value, ok := sc.mutation.Room(); ok {
-		_spec.SetField(session.FieldRoom, field.TypeString, value)
-		_node.Room = value
 	}
 	if value, ok := sc.mutation.Next(); ok {
 		_spec.SetField(session.FieldNext, field.TypeString, value)

@@ -2,13 +2,10 @@ package session
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"backend/ent"
 	"backend/ent/session"
 	"backend/internal/logger"
-	"backend/models/now"
 
 	m "backend/models"
 )
@@ -29,10 +26,8 @@ func Get(ctx context.Context, room string, id string) (*ent.Session, error) {
 }
 
 func GetCurrent(ctx context.Context, room string) (*ent.Session, error) {
-	n := int64(now.GetNow())
-
 	s, err := m.Client.Session.Query().
-		Where(session.Room(room), session.EndGT(n)).
+		Where(session.Room(room), session.Finish(false)).
 		Order(ent.Asc(session.FieldStart)).
 		First(ctx)
 	if ent.IsNotFound(err) {
@@ -43,12 +38,8 @@ func GetCurrent(ctx context.Context, room string) (*ent.Session, error) {
 	return s, err
 }
 
-var (
-	ErrEndBeforeStart = errors.New("end time is before start time")
-	ErrStartAfterEnd  = errors.New("start time is after end time")
-)
-
-func SetEnd(ctx context.Context, room string, id string, end int64) (*ent.Session, error) {
+// Next set the end time of current session and the start time of next session(if there is) to end
+func Next(ctx context.Context, room string, id string, end int64) (*ent.Session, error) {
 	curr, err := Get(ctx, room, id)
 	if err != nil {
 		return nil, err
@@ -59,16 +50,9 @@ func SetEnd(ctx context.Context, room string, id string, end int64) (*ent.Sessio
 		return nil, err
 	}
 
-	// TODO: check if the time is valid
-	if end <= curr.Start {
-		return nil, fmt.Errorf("%s %s, %w", curr.Room, curr.SessionID, ErrEndBeforeStart)
-	}
-	if next != nil && end >= next.End {
-		return nil, fmt.Errorf("%s %s, %w", next.Room, next.SessionID, ErrStartAfterEnd)
-	}
-
 	err = curr.Update().
 		SetEnd(end).
+		SetFinish(true).
 		Exec(ctx)
 	if err != nil {
 		return nil, err

@@ -21,6 +21,7 @@ function parseInput(speakers: Record<string, string>) {
 
 		const b =
 			s.broadcast?.map<output.Session>(r => ({
+				idx: 0,
 				start: new Date(s.start).getTime() / 1000,
 				end: new Date(s.end).getTime() / 1000,
 				id: s.id,
@@ -32,6 +33,7 @@ function parseInput(speakers: Record<string, string>) {
 
 		const r = [
 			{
+				idx: 0,
 				start: new Date(s.start).getTime() / 1000,
 				end: new Date(s.end).getTime() / 1000,
 				id: s.id,
@@ -64,6 +66,18 @@ function removeSpeakerFromRest(s: output.Session) {
 	return s
 }
 
+function setNext(s: output.Session, idx: number, arr: output.Session[]) {
+	if (idx < arr.length - 1) {
+		s.next = arr[idx + 1].id
+	}
+	return s
+}
+
+function setIdx(s: output.Session, idx: number) {
+	s.idx = idx
+	return s
+}
+
 async function FetchAndParse() {
 	const body: input.Root = await fetch(SESSION_URL).then(res => res.json())
 
@@ -76,13 +90,13 @@ async function FetchAndParse() {
 		.map(removeSpeakerFromRest)
 		.reduce(mergeSameTitle, [])
 
-	const roomSessions = rooms.map(room => sessions.filter(s => s.room == room))
-	for (let room of roomSessions) {
-		room.sort((a, b) => a.start - b.start)
-		for (let i = 0; i < room.length - 1; i++) {
-			room[i].next = room[i + 1].id
-		}
-	}
+	const roomSessions = rooms.map(room =>
+		sessions
+			.filter(s => s.room == room)
+			.toSorted((a, b) => a.start - b.start)
+			.map(setNext)
+			.map(setIdx),
+	)
 
 	return roomSessions.flat()
 }
@@ -94,6 +108,7 @@ function SaveToDB(sessions: output.Session[]) {
 
 	const insert = db.prepare(`
         INSERT OR REPLACE INTO sessions (
+			idx,
             start,
             end,
             session_id,
@@ -101,12 +116,12 @@ function SaveToDB(sessions: output.Session[]) {
             next,
             title,
             data
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (@idx, @start, @end, @id, @room, @next, @title, @data);
     `)
 
 	const insertMany = db.transaction((ss: output.Session[]) => {
 		for (let s of ss) {
-			insert.run(s.start, s.end, s.id, s.room, s.next, s.title, s.data)
+			insert.run(s)
 		}
 	})
 

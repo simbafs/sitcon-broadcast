@@ -32,13 +32,15 @@ type SessionMutation struct {
 	op            Op
 	typ           string
 	id            *int
+	idx           *int8
+	addidx        *int8
+	finish        *bool
 	start         *int64
 	addstart      *int64
 	end           *int64
 	addend        *int64
-	finish        *bool
-	session_id    *string
 	room          *string
+	session_id    *string
 	next          *string
 	title         *string
 	data          *map[string]interface{}
@@ -144,6 +146,98 @@ func (m *SessionMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetIdx sets the "idx" field.
+func (m *SessionMutation) SetIdx(i int8) {
+	m.idx = &i
+	m.addidx = nil
+}
+
+// Idx returns the value of the "idx" field in the mutation.
+func (m *SessionMutation) Idx() (r int8, exists bool) {
+	v := m.idx
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIdx returns the old "idx" field's value of the Session entity.
+// If the Session object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SessionMutation) OldIdx(ctx context.Context) (v int8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIdx is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIdx requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIdx: %w", err)
+	}
+	return oldValue.Idx, nil
+}
+
+// AddIdx adds i to the "idx" field.
+func (m *SessionMutation) AddIdx(i int8) {
+	if m.addidx != nil {
+		*m.addidx += i
+	} else {
+		m.addidx = &i
+	}
+}
+
+// AddedIdx returns the value that was added to the "idx" field in this mutation.
+func (m *SessionMutation) AddedIdx() (r int8, exists bool) {
+	v := m.addidx
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetIdx resets all changes to the "idx" field.
+func (m *SessionMutation) ResetIdx() {
+	m.idx = nil
+	m.addidx = nil
+}
+
+// SetFinish sets the "finish" field.
+func (m *SessionMutation) SetFinish(b bool) {
+	m.finish = &b
+}
+
+// Finish returns the value of the "finish" field in the mutation.
+func (m *SessionMutation) Finish() (r bool, exists bool) {
+	v := m.finish
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFinish returns the old "finish" field's value of the Session entity.
+// If the Session object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SessionMutation) OldFinish(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFinish is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFinish requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFinish: %w", err)
+	}
+	return oldValue.Finish, nil
+}
+
+// ResetFinish resets all changes to the "finish" field.
+func (m *SessionMutation) ResetFinish() {
+	m.finish = nil
 }
 
 // SetStart sets the "start" field.
@@ -258,40 +352,40 @@ func (m *SessionMutation) ResetEnd() {
 	m.addend = nil
 }
 
-// SetFinish sets the "finish" field.
-func (m *SessionMutation) SetFinish(b bool) {
-	m.finish = &b
+// SetRoom sets the "room" field.
+func (m *SessionMutation) SetRoom(s string) {
+	m.room = &s
 }
 
-// Finish returns the value of the "finish" field in the mutation.
-func (m *SessionMutation) Finish() (r bool, exists bool) {
-	v := m.finish
+// Room returns the value of the "room" field in the mutation.
+func (m *SessionMutation) Room() (r string, exists bool) {
+	v := m.room
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldFinish returns the old "finish" field's value of the Session entity.
+// OldRoom returns the old "room" field's value of the Session entity.
 // If the Session object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldFinish(ctx context.Context) (v bool, err error) {
+func (m *SessionMutation) OldRoom(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFinish is only allowed on UpdateOne operations")
+		return v, errors.New("OldRoom is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFinish requires an ID field in the mutation")
+		return v, errors.New("OldRoom requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFinish: %w", err)
+		return v, fmt.Errorf("querying old value for OldRoom: %w", err)
 	}
-	return oldValue.Finish, nil
+	return oldValue.Room, nil
 }
 
-// ResetFinish resets all changes to the "finish" field.
-func (m *SessionMutation) ResetFinish() {
-	m.finish = nil
+// ResetRoom resets all changes to the "room" field.
+func (m *SessionMutation) ResetRoom() {
+	m.room = nil
 }
 
 // SetSessionID sets the "session_id" field.
@@ -328,42 +422,6 @@ func (m *SessionMutation) OldSessionID(ctx context.Context) (v string, err error
 // ResetSessionID resets all changes to the "session_id" field.
 func (m *SessionMutation) ResetSessionID() {
 	m.session_id = nil
-}
-
-// SetRoom sets the "room" field.
-func (m *SessionMutation) SetRoom(s string) {
-	m.room = &s
-}
-
-// Room returns the value of the "room" field in the mutation.
-func (m *SessionMutation) Room() (r string, exists bool) {
-	v := m.room
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRoom returns the old "room" field's value of the Session entity.
-// If the Session object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldRoom(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRoom is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRoom requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRoom: %w", err)
-	}
-	return oldValue.Room, nil
-}
-
-// ResetRoom resets all changes to the "room" field.
-func (m *SessionMutation) ResetRoom() {
-	m.room = nil
 }
 
 // SetNext sets the "next" field.
@@ -508,21 +566,24 @@ func (m *SessionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SessionMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
+	if m.idx != nil {
+		fields = append(fields, session.FieldIdx)
+	}
+	if m.finish != nil {
+		fields = append(fields, session.FieldFinish)
+	}
 	if m.start != nil {
 		fields = append(fields, session.FieldStart)
 	}
 	if m.end != nil {
 		fields = append(fields, session.FieldEnd)
 	}
-	if m.finish != nil {
-		fields = append(fields, session.FieldFinish)
+	if m.room != nil {
+		fields = append(fields, session.FieldRoom)
 	}
 	if m.session_id != nil {
 		fields = append(fields, session.FieldSessionID)
-	}
-	if m.room != nil {
-		fields = append(fields, session.FieldRoom)
 	}
 	if m.next != nil {
 		fields = append(fields, session.FieldNext)
@@ -541,16 +602,18 @@ func (m *SessionMutation) Fields() []string {
 // schema.
 func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case session.FieldIdx:
+		return m.Idx()
+	case session.FieldFinish:
+		return m.Finish()
 	case session.FieldStart:
 		return m.Start()
 	case session.FieldEnd:
 		return m.End()
-	case session.FieldFinish:
-		return m.Finish()
-	case session.FieldSessionID:
-		return m.SessionID()
 	case session.FieldRoom:
 		return m.Room()
+	case session.FieldSessionID:
+		return m.SessionID()
 	case session.FieldNext:
 		return m.Next()
 	case session.FieldTitle:
@@ -566,16 +629,18 @@ func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case session.FieldIdx:
+		return m.OldIdx(ctx)
+	case session.FieldFinish:
+		return m.OldFinish(ctx)
 	case session.FieldStart:
 		return m.OldStart(ctx)
 	case session.FieldEnd:
 		return m.OldEnd(ctx)
-	case session.FieldFinish:
-		return m.OldFinish(ctx)
-	case session.FieldSessionID:
-		return m.OldSessionID(ctx)
 	case session.FieldRoom:
 		return m.OldRoom(ctx)
+	case session.FieldSessionID:
+		return m.OldSessionID(ctx)
 	case session.FieldNext:
 		return m.OldNext(ctx)
 	case session.FieldTitle:
@@ -591,6 +656,20 @@ func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *SessionMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case session.FieldIdx:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIdx(v)
+		return nil
+	case session.FieldFinish:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFinish(v)
+		return nil
 	case session.FieldStart:
 		v, ok := value.(int64)
 		if !ok {
@@ -605,12 +684,12 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEnd(v)
 		return nil
-	case session.FieldFinish:
-		v, ok := value.(bool)
+	case session.FieldRoom:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetFinish(v)
+		m.SetRoom(v)
 		return nil
 	case session.FieldSessionID:
 		v, ok := value.(string)
@@ -618,13 +697,6 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSessionID(v)
-		return nil
-	case session.FieldRoom:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRoom(v)
 		return nil
 	case session.FieldNext:
 		v, ok := value.(string)
@@ -655,6 +727,9 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *SessionMutation) AddedFields() []string {
 	var fields []string
+	if m.addidx != nil {
+		fields = append(fields, session.FieldIdx)
+	}
 	if m.addstart != nil {
 		fields = append(fields, session.FieldStart)
 	}
@@ -669,6 +744,8 @@ func (m *SessionMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *SessionMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case session.FieldIdx:
+		return m.AddedIdx()
 	case session.FieldStart:
 		return m.AddedStart()
 	case session.FieldEnd:
@@ -682,6 +759,13 @@ func (m *SessionMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *SessionMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case session.FieldIdx:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddIdx(v)
+		return nil
 	case session.FieldStart:
 		v, ok := value.(int64)
 		if !ok {
@@ -723,20 +807,23 @@ func (m *SessionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SessionMutation) ResetField(name string) error {
 	switch name {
+	case session.FieldIdx:
+		m.ResetIdx()
+		return nil
+	case session.FieldFinish:
+		m.ResetFinish()
+		return nil
 	case session.FieldStart:
 		m.ResetStart()
 		return nil
 	case session.FieldEnd:
 		m.ResetEnd()
 		return nil
-	case session.FieldFinish:
-		m.ResetFinish()
+	case session.FieldRoom:
+		m.ResetRoom()
 		return nil
 	case session.FieldSessionID:
 		m.ResetSessionID()
-		return nil
-	case session.FieldRoom:
-		m.ResetRoom()
 		return nil
 	case session.FieldNext:
 		m.ResetNext()

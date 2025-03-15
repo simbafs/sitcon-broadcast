@@ -14,7 +14,7 @@ func init() {
 	sessionFields := schema.Session{}.Fields()
 	_ = sessionFields
 	// sessionDescFinish is the schema descriptor for finish field.
-	sessionDescFinish := sessionFields[2].Descriptor()
+	sessionDescFinish := sessionFields[1].Descriptor()
 	// session.DefaultFinish holds the default value on creation for the finish field.
 	session.DefaultFinish = sessionDescFinish.Default.(bool)
 }

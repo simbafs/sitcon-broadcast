@@ -27,6 +27,41 @@ func (su *SessionUpdate) Where(ps ...predicate.Session) *SessionUpdate {
 	return su
 }
 
+// SetIdx sets the "idx" field.
+func (su *SessionUpdate) SetIdx(i int8) *SessionUpdate {
+	su.mutation.ResetIdx()
+	su.mutation.SetIdx(i)
+	return su
+}
+
+// SetNillableIdx sets the "idx" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableIdx(i *int8) *SessionUpdate {
+	if i != nil {
+		su.SetIdx(*i)
+	}
+	return su
+}
+
+// AddIdx adds i to the "idx" field.
+func (su *SessionUpdate) AddIdx(i int8) *SessionUpdate {
+	su.mutation.AddIdx(i)
+	return su
+}
+
+// SetFinish sets the "finish" field.
+func (su *SessionUpdate) SetFinish(b bool) *SessionUpdate {
+	su.mutation.SetFinish(b)
+	return su
+}
+
+// SetNillableFinish sets the "finish" field if the given value is not nil.
+func (su *SessionUpdate) SetNillableFinish(b *bool) *SessionUpdate {
+	if b != nil {
+		su.SetFinish(*b)
+	}
+	return su
+}
+
 // SetStart sets the "start" field.
 func (su *SessionUpdate) SetStart(i int64) *SessionUpdate {
 	su.mutation.ResetStart()
@@ -66,20 +101,6 @@ func (su *SessionUpdate) SetNillableEnd(i *int64) *SessionUpdate {
 // AddEnd adds i to the "end" field.
 func (su *SessionUpdate) AddEnd(i int64) *SessionUpdate {
 	su.mutation.AddEnd(i)
-	return su
-}
-
-// SetFinish sets the "finish" field.
-func (su *SessionUpdate) SetFinish(b bool) *SessionUpdate {
-	su.mutation.SetFinish(b)
-	return su
-}
-
-// SetNillableFinish sets the "finish" field if the given value is not nil.
-func (su *SessionUpdate) SetNillableFinish(b *bool) *SessionUpdate {
-	if b != nil {
-		su.SetFinish(*b)
-	}
 	return su
 }
 
@@ -144,6 +165,15 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := su.mutation.Idx(); ok {
+		_spec.SetField(session.FieldIdx, field.TypeInt8, value)
+	}
+	if value, ok := su.mutation.AddedIdx(); ok {
+		_spec.AddField(session.FieldIdx, field.TypeInt8, value)
+	}
+	if value, ok := su.mutation.Finish(); ok {
+		_spec.SetField(session.FieldFinish, field.TypeBool, value)
+	}
 	if value, ok := su.mutation.Start(); ok {
 		_spec.SetField(session.FieldStart, field.TypeInt64, value)
 	}
@@ -155,9 +185,6 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.AddedEnd(); ok {
 		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
-	}
-	if value, ok := su.mutation.Finish(); ok {
-		_spec.SetField(session.FieldFinish, field.TypeBool, value)
 	}
 	if value, ok := su.mutation.Title(); ok {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
@@ -183,6 +210,41 @@ type SessionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *SessionMutation
+}
+
+// SetIdx sets the "idx" field.
+func (suo *SessionUpdateOne) SetIdx(i int8) *SessionUpdateOne {
+	suo.mutation.ResetIdx()
+	suo.mutation.SetIdx(i)
+	return suo
+}
+
+// SetNillableIdx sets the "idx" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableIdx(i *int8) *SessionUpdateOne {
+	if i != nil {
+		suo.SetIdx(*i)
+	}
+	return suo
+}
+
+// AddIdx adds i to the "idx" field.
+func (suo *SessionUpdateOne) AddIdx(i int8) *SessionUpdateOne {
+	suo.mutation.AddIdx(i)
+	return suo
+}
+
+// SetFinish sets the "finish" field.
+func (suo *SessionUpdateOne) SetFinish(b bool) *SessionUpdateOne {
+	suo.mutation.SetFinish(b)
+	return suo
+}
+
+// SetNillableFinish sets the "finish" field if the given value is not nil.
+func (suo *SessionUpdateOne) SetNillableFinish(b *bool) *SessionUpdateOne {
+	if b != nil {
+		suo.SetFinish(*b)
+	}
+	return suo
 }
 
 // SetStart sets the "start" field.
@@ -224,20 +286,6 @@ func (suo *SessionUpdateOne) SetNillableEnd(i *int64) *SessionUpdateOne {
 // AddEnd adds i to the "end" field.
 func (suo *SessionUpdateOne) AddEnd(i int64) *SessionUpdateOne {
 	suo.mutation.AddEnd(i)
-	return suo
-}
-
-// SetFinish sets the "finish" field.
-func (suo *SessionUpdateOne) SetFinish(b bool) *SessionUpdateOne {
-	suo.mutation.SetFinish(b)
-	return suo
-}
-
-// SetNillableFinish sets the "finish" field if the given value is not nil.
-func (suo *SessionUpdateOne) SetNillableFinish(b *bool) *SessionUpdateOne {
-	if b != nil {
-		suo.SetFinish(*b)
-	}
 	return suo
 }
 
@@ -332,6 +380,15 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 			}
 		}
 	}
+	if value, ok := suo.mutation.Idx(); ok {
+		_spec.SetField(session.FieldIdx, field.TypeInt8, value)
+	}
+	if value, ok := suo.mutation.AddedIdx(); ok {
+		_spec.AddField(session.FieldIdx, field.TypeInt8, value)
+	}
+	if value, ok := suo.mutation.Finish(); ok {
+		_spec.SetField(session.FieldFinish, field.TypeBool, value)
+	}
 	if value, ok := suo.mutation.Start(); ok {
 		_spec.SetField(session.FieldStart, field.TypeInt64, value)
 	}
@@ -343,9 +400,6 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	}
 	if value, ok := suo.mutation.AddedEnd(); ok {
 		_spec.AddField(session.FieldEnd, field.TypeInt64, value)
-	}
-	if value, ok := suo.mutation.Finish(); ok {
-		_spec.SetField(session.FieldFinish, field.TypeBool, value)
 	}
 	if value, ok := suo.mutation.Title(); ok {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)

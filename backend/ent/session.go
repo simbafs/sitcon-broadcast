@@ -17,16 +17,18 @@ type Session struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// Idx holds the value of the "idx" field.
+	Idx int8 `json:"idx,omitempty"`
+	// Finish holds the value of the "finish" field.
+	Finish bool `json:"finish,omitempty"`
 	// Start holds the value of the "start" field.
 	Start int64 `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	End int64 `json:"end,omitempty"`
-	// Finish holds the value of the "finish" field.
-	Finish bool `json:"finish,omitempty"`
-	// SessionID holds the value of the "session_id" field.
-	SessionID string `json:"session_id,omitempty"`
 	// Room holds the value of the "room" field.
 	Room string `json:"room,omitempty"`
+	// SessionID holds the value of the "session_id" field.
+	SessionID string `json:"session_id,omitempty"`
 	// Next holds the value of the "next" field.
 	Next string `json:"next,omitempty"`
 	// Title holds the value of the "title" field.
@@ -45,9 +47,9 @@ func (*Session) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case session.FieldFinish:
 			values[i] = new(sql.NullBool)
-		case session.FieldID, session.FieldStart, session.FieldEnd:
+		case session.FieldID, session.FieldIdx, session.FieldStart, session.FieldEnd:
 			values[i] = new(sql.NullInt64)
-		case session.FieldSessionID, session.FieldRoom, session.FieldNext, session.FieldTitle:
+		case session.FieldRoom, session.FieldSessionID, session.FieldNext, session.FieldTitle:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -70,6 +72,18 @@ func (s *Session) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			s.ID = int(value.Int64)
+		case session.FieldIdx:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field idx", values[i])
+			} else if value.Valid {
+				s.Idx = int8(value.Int64)
+			}
+		case session.FieldFinish:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field finish", values[i])
+			} else if value.Valid {
+				s.Finish = value.Bool
+			}
 		case session.FieldStart:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field start", values[i])
@@ -82,23 +96,17 @@ func (s *Session) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.End = value.Int64
 			}
-		case session.FieldFinish:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field finish", values[i])
+		case session.FieldRoom:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field room", values[i])
 			} else if value.Valid {
-				s.Finish = value.Bool
+				s.Room = value.String
 			}
 		case session.FieldSessionID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field session_id", values[i])
 			} else if value.Valid {
 				s.SessionID = value.String
-			}
-		case session.FieldRoom:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field room", values[i])
-			} else if value.Valid {
-				s.Room = value.String
 			}
 		case session.FieldNext:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -156,20 +164,23 @@ func (s *Session) String() string {
 	var builder strings.Builder
 	builder.WriteString("Session(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", s.ID))
+	builder.WriteString("idx=")
+	builder.WriteString(fmt.Sprintf("%v", s.Idx))
+	builder.WriteString(", ")
+	builder.WriteString("finish=")
+	builder.WriteString(fmt.Sprintf("%v", s.Finish))
+	builder.WriteString(", ")
 	builder.WriteString("start=")
 	builder.WriteString(fmt.Sprintf("%v", s.Start))
 	builder.WriteString(", ")
 	builder.WriteString("end=")
 	builder.WriteString(fmt.Sprintf("%v", s.End))
 	builder.WriteString(", ")
-	builder.WriteString("finish=")
-	builder.WriteString(fmt.Sprintf("%v", s.Finish))
+	builder.WriteString("room=")
+	builder.WriteString(s.Room)
 	builder.WriteString(", ")
 	builder.WriteString("session_id=")
 	builder.WriteString(s.SessionID)
-	builder.WriteString(", ")
-	builder.WriteString("room=")
-	builder.WriteString(s.Room)
 	builder.WriteString(", ")
 	builder.WriteString("next=")
 	builder.WriteString(s.Next)

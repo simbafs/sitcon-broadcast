@@ -1,4 +1,6 @@
 export type Session = {
+	// 排序唯一依據
+	idx: number 
 	// 他們是個大問題
 	start: number // unix timestamp in seconds
 	end: number // unix timestamp in seconds

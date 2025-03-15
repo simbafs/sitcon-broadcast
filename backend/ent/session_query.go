@@ -262,12 +262,12 @@ func (sq *SessionQuery) Clone() *SessionQuery {
 // Example:
 //
 //	var v []struct {
-//		Start int64 `json:"start,omitempty"`
+//		Idx int8 `json:"idx,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Session.Query().
-//		GroupBy(session.FieldStart).
+//		GroupBy(session.FieldIdx).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *SessionQuery) GroupBy(field string, fields ...string) *SessionGroupBy {
@@ -285,11 +285,11 @@ func (sq *SessionQuery) GroupBy(field string, fields ...string) *SessionGroupBy 
 // Example:
 //
 //	var v []struct {
-//		Start int64 `json:"start,omitempty"`
+//		Idx int8 `json:"idx,omitempty"`
 //	}
 //
 //	client.Session.Query().
-//		Select(session.FieldStart).
+//		Select(session.FieldIdx).
 //		Scan(ctx, &v)
 func (sq *SessionQuery) Select(fields ...string) *SessionSelect {
 	sq.ctx.Fields = append(sq.ctx.Fields, fields...)

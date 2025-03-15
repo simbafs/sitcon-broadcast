@@ -14,11 +14,12 @@ type Session struct {
 func (Session) Fields() []ent.Field {
 	// TODO: broadcastTo and broadcastFrom
 	return []ent.Field{
+		field.Int8("idx"),
+		field.Bool("finish").Default(false),
 		field.Int64("start"),
 		field.Int64("end"),
-		field.Bool("finish").Default(false),
-		field.String("session_id").Immutable(),
 		field.String("room").Immutable(),
+		field.String("session_id").Immutable(),
 		field.String("next").Immutable(),
 
 		field.String("title"),

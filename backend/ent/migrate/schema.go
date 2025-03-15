@@ -11,11 +11,12 @@ var (
 	// SessionsColumns holds the columns for the "sessions" table.
 	SessionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "idx", Type: field.TypeInt8},
+		{Name: "finish", Type: field.TypeBool, Default: false},
 		{Name: "start", Type: field.TypeInt64},
 		{Name: "end", Type: field.TypeInt64},
-		{Name: "finish", Type: field.TypeBool, Default: false},
-		{Name: "session_id", Type: field.TypeString},
 		{Name: "room", Type: field.TypeString},
+		{Name: "session_id", Type: field.TypeString},
 		{Name: "next", Type: field.TypeString},
 		{Name: "title", Type: field.TypeString},
 		{Name: "data", Type: field.TypeJSON},

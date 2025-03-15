@@ -53,6 +53,16 @@ func IDLTE(id int) predicate.Session {
 	return predicate.Session(sql.FieldLTE(FieldID, id))
 }
 
+// Idx applies equality check predicate on the "idx" field. It's identical to IdxEQ.
+func Idx(v int8) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldIdx, v))
+}
+
+// Finish applies equality check predicate on the "finish" field. It's identical to FinishEQ.
+func Finish(v bool) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldFinish, v))
+}
+
 // Start applies equality check predicate on the "start" field. It's identical to StartEQ.
 func Start(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldStart, v))
@@ -63,19 +73,14 @@ func End(v int64) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldEnd, v))
 }
 
-// Finish applies equality check predicate on the "finish" field. It's identical to FinishEQ.
-func Finish(v bool) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldFinish, v))
+// Room applies equality check predicate on the "room" field. It's identical to RoomEQ.
+func Room(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldRoom, v))
 }
 
 // SessionID applies equality check predicate on the "session_id" field. It's identical to SessionIDEQ.
 func SessionID(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldSessionID, v))
-}
-
-// Room applies equality check predicate on the "room" field. It's identical to RoomEQ.
-func Room(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldRoom, v))
 }
 
 // Next applies equality check predicate on the "next" field. It's identical to NextEQ.
@@ -86,6 +91,56 @@ func Next(v string) predicate.Session {
 // Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
 func Title(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldTitle, v))
+}
+
+// IdxEQ applies the EQ predicate on the "idx" field.
+func IdxEQ(v int8) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldIdx, v))
+}
+
+// IdxNEQ applies the NEQ predicate on the "idx" field.
+func IdxNEQ(v int8) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldIdx, v))
+}
+
+// IdxIn applies the In predicate on the "idx" field.
+func IdxIn(vs ...int8) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldIdx, vs...))
+}
+
+// IdxNotIn applies the NotIn predicate on the "idx" field.
+func IdxNotIn(vs ...int8) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldIdx, vs...))
+}
+
+// IdxGT applies the GT predicate on the "idx" field.
+func IdxGT(v int8) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldIdx, v))
+}
+
+// IdxGTE applies the GTE predicate on the "idx" field.
+func IdxGTE(v int8) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldIdx, v))
+}
+
+// IdxLT applies the LT predicate on the "idx" field.
+func IdxLT(v int8) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldIdx, v))
+}
+
+// IdxLTE applies the LTE predicate on the "idx" field.
+func IdxLTE(v int8) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldIdx, v))
+}
+
+// FinishEQ applies the EQ predicate on the "finish" field.
+func FinishEQ(v bool) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldFinish, v))
+}
+
+// FinishNEQ applies the NEQ predicate on the "finish" field.
+func FinishNEQ(v bool) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldFinish, v))
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
@@ -168,14 +223,69 @@ func EndLTE(v int64) predicate.Session {
 	return predicate.Session(sql.FieldLTE(FieldEnd, v))
 }
 
-// FinishEQ applies the EQ predicate on the "finish" field.
-func FinishEQ(v bool) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldFinish, v))
+// RoomEQ applies the EQ predicate on the "room" field.
+func RoomEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldEQ(FieldRoom, v))
 }
 
-// FinishNEQ applies the NEQ predicate on the "finish" field.
-func FinishNEQ(v bool) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldFinish, v))
+// RoomNEQ applies the NEQ predicate on the "room" field.
+func RoomNEQ(v string) predicate.Session {
+	return predicate.Session(sql.FieldNEQ(FieldRoom, v))
+}
+
+// RoomIn applies the In predicate on the "room" field.
+func RoomIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldIn(FieldRoom, vs...))
+}
+
+// RoomNotIn applies the NotIn predicate on the "room" field.
+func RoomNotIn(vs ...string) predicate.Session {
+	return predicate.Session(sql.FieldNotIn(FieldRoom, vs...))
+}
+
+// RoomGT applies the GT predicate on the "room" field.
+func RoomGT(v string) predicate.Session {
+	return predicate.Session(sql.FieldGT(FieldRoom, v))
+}
+
+// RoomGTE applies the GTE predicate on the "room" field.
+func RoomGTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldGTE(FieldRoom, v))
+}
+
+// RoomLT applies the LT predicate on the "room" field.
+func RoomLT(v string) predicate.Session {
+	return predicate.Session(sql.FieldLT(FieldRoom, v))
+}
+
+// RoomLTE applies the LTE predicate on the "room" field.
+func RoomLTE(v string) predicate.Session {
+	return predicate.Session(sql.FieldLTE(FieldRoom, v))
+}
+
+// RoomContains applies the Contains predicate on the "room" field.
+func RoomContains(v string) predicate.Session {
+	return predicate.Session(sql.FieldContains(FieldRoom, v))
+}
+
+// RoomHasPrefix applies the HasPrefix predicate on the "room" field.
+func RoomHasPrefix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasPrefix(FieldRoom, v))
+}
+
+// RoomHasSuffix applies the HasSuffix predicate on the "room" field.
+func RoomHasSuffix(v string) predicate.Session {
+	return predicate.Session(sql.FieldHasSuffix(FieldRoom, v))
+}
+
+// RoomEqualFold applies the EqualFold predicate on the "room" field.
+func RoomEqualFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldEqualFold(FieldRoom, v))
+}
+
+// RoomContainsFold applies the ContainsFold predicate on the "room" field.
+func RoomContainsFold(v string) predicate.Session {
+	return predicate.Session(sql.FieldContainsFold(FieldRoom, v))
 }
 
 // SessionIDEQ applies the EQ predicate on the "session_id" field.
@@ -241,71 +351,6 @@ func SessionIDEqualFold(v string) predicate.Session {
 // SessionIDContainsFold applies the ContainsFold predicate on the "session_id" field.
 func SessionIDContainsFold(v string) predicate.Session {
 	return predicate.Session(sql.FieldContainsFold(FieldSessionID, v))
-}
-
-// RoomEQ applies the EQ predicate on the "room" field.
-func RoomEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldRoom, v))
-}
-
-// RoomNEQ applies the NEQ predicate on the "room" field.
-func RoomNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldRoom, v))
-}
-
-// RoomIn applies the In predicate on the "room" field.
-func RoomIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldRoom, vs...))
-}
-
-// RoomNotIn applies the NotIn predicate on the "room" field.
-func RoomNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldRoom, vs...))
-}
-
-// RoomGT applies the GT predicate on the "room" field.
-func RoomGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldRoom, v))
-}
-
-// RoomGTE applies the GTE predicate on the "room" field.
-func RoomGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldRoom, v))
-}
-
-// RoomLT applies the LT predicate on the "room" field.
-func RoomLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldRoom, v))
-}
-
-// RoomLTE applies the LTE predicate on the "room" field.
-func RoomLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldRoom, v))
-}
-
-// RoomContains applies the Contains predicate on the "room" field.
-func RoomContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldRoom, v))
-}
-
-// RoomHasPrefix applies the HasPrefix predicate on the "room" field.
-func RoomHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldRoom, v))
-}
-
-// RoomHasSuffix applies the HasSuffix predicate on the "room" field.
-func RoomHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldRoom, v))
-}
-
-// RoomEqualFold applies the EqualFold predicate on the "room" field.
-func RoomEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldRoom, v))
-}
-
-// RoomContainsFold applies the ContainsFold predicate on the "room" field.
-func RoomContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldRoom, v))
 }
 
 // NextEQ applies the EQ predicate on the "next" field.

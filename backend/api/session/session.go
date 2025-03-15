@@ -26,8 +26,8 @@ func Route(api huma.API) {
 			Body: s,
 		}, nil
 	}, func(op *huma.Operation) {
-            op.Tags = []string{"session"}
-            op.Summary = "Get Current Session in Room"
+		op.Tags = []string{"session"}
+		op.Summary = "Get Current Session in Room"
 	})
 
 	huma.Get(api, "/{room}/all", func(ctx context.Context, input *struct {
@@ -42,9 +42,9 @@ func Route(api huma.API) {
 			Body: s,
 		}, nil
 	}, func(op *huma.Operation) {
-            op.Tags = []string{"session"}
-            op.Summary = "Get All Sessions in Room"
-            op.Description = "Get all sessions in a room."
+		op.Tags = []string{"session"}
+		op.Summary = "Get All Sessions in Room"
+		op.Description = "Get all sessions in a room."
 	})
 
 	huma.Get(api, "/{room}/{id}", func(ctx context.Context, input *struct {
@@ -60,9 +60,9 @@ func Route(api huma.API) {
 			Body: s,
 		}, nil
 	}, func(op *huma.Operation) {
-            op.Tags = []string{"session"}
-            op.Summary = "Get Session by ID in Room"
-            op.Description = "Get a session by its ID in a room."
+		op.Tags = []string{"session"}
+		op.Summary = "Get Session by ID in Room"
+		op.Description = "Get a session by its ID in a room."
 	})
 
 	// trigger `next` on session with ID in Room, return the next session
@@ -74,7 +74,7 @@ func Route(api huma.API) {
 		}
 	},
 	) (*Output[*ent.Session], error) {
-		s, err := session.SetEnd(ctx, input.Room, input.ID, input.Body.End)
+		s, err := session.Next(ctx, input.Room, input.ID, input.Body.End)
 		if err != nil {
 			return nil, err
 		}
@@ -82,8 +82,8 @@ func Route(api huma.API) {
 			Body: s,
 		}, nil
 	}, func(op *huma.Operation) {
-            op.Tags = []string{"session"}
-            op.Summary = "Set End Time of Session"
-            op.Description = "Set the end time of the current session and start time of the next session."
+		op.Tags = []string{"session"}
+		op.Summary = "Set End Time of Session"
+		op.Description = "Set the end time of the current session and start time of the next session."
 	})
 }

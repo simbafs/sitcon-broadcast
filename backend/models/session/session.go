@@ -15,7 +15,7 @@ var log = logger.New("models/session")
 func GetAllInRoom(ctx context.Context, room string) (ent.Sessions, error) {
 	return m.Client.Session.Query().
 		Where(session.Room(room)).
-		Order(ent.Asc(session.FieldStart)).
+		Order(ent.Asc(session.FieldIdx)).
 		All(ctx)
 }
 
@@ -27,12 +27,19 @@ func Get(ctx context.Context, room string, id string) (*ent.Session, error) {
 
 func GetCurrent(ctx context.Context, room string) (*ent.Session, error) {
 	s, err := m.Client.Session.Query().
-		Where(session.Room(room), session.Finish(false)).
-		Order(ent.Asc(session.FieldStart)).
+		Where(session.And(
+			session.Room(room),
+			session.Or(
+				session.Finish(false),
+				session.Next(""),
+			),
+		)).
+		Order(ent.Asc(session.FieldIdx)).
 		First(ctx)
 	if ent.IsNotFound(err) {
+		// get last
 		return m.Client.Session.Query().
-			Order(ent.Desc(session.FieldStart)).
+			Order(ent.Desc(session.FieldIdx)).
 			First(ctx)
 	}
 	return s, err

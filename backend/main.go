@@ -37,13 +37,8 @@ func run(c *config.Config) error {
 
 	// TODO: replace DefaultConfig with my own config
 	humaapi := humagin.New(r, huma.DefaultConfig("SITCON", "v1.0.0"))
-	// t := middleware.NewTokenVerifyer(c.Token, c.Domain)
-
-	// r.Use(t.ProtectRoute([]string{"/card/admin", "/countdown/admin", "/debug"}))
-	// r.GET("/verify", t.VerifyToken)
 
 	api.Route(humaapi)
-	
 
 	fileserver.Route(r, static, Mode)
 

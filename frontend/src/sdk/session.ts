@@ -10,6 +10,16 @@ export type Session = {
 	data: Record<string, any>
 }
 
+export const ZeroSession: Session = {
+	start: 0,
+	end: 0,
+	session_id: '',
+	room: '',
+	next: '',
+	title: '',
+	data: {},
+}
+
 export function GetAllInRoom(room: string) {
 	return api<Session[]>(`/session/${room}/all`, 'GET')
 }

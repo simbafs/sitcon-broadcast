@@ -41,6 +41,7 @@ export function usePolling<T>(getter: () => Promise<T>, defaultValue: T, opt: Po
 		id = setInterval(fetchValue, currentInterval)
 
 		return () => clearInterval(id)
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [getter, currentInterval])
 
 	useEffect(() => console.log({getter, currentInterval}), [getter, currentInterval])

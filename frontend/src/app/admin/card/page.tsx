@@ -20,7 +20,7 @@ export default function Page() {
 	if (!session) return <div>Loading...</div>
 	return (
 		<div className="grid h-screen grid-rows-2">
-			<Card session={{ ...session, end: Math.max(session.end || 0, now) }} />
+			<Card session={session} />
 			<button onClick={next} className={btn()}>
 				下一個
 			</button>

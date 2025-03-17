@@ -4,6 +4,7 @@ export type Session = {
 	start: number // Unix timestamp in second
 	end: number // Unix timestamp in second
 	session_id: string
+	finish?: boolean
 	room: string
 	next: string // next session ID
 	title: string
@@ -14,6 +15,7 @@ export const ZeroSession: Session = {
 	start: 0,
 	end: 0,
 	session_id: '',
+	finish: false,
 	room: '',
 	next: '',
 	title: '',

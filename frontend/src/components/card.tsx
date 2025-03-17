@@ -2,9 +2,11 @@
 import { Session } from '@/sdk'
 import { useState } from 'react'
 import { Time } from './time'
+import { useNow } from '@/hooks/useNow'
 
 export function Card({ session }: { session: Session }) {
 	const [raw, setRaw] = useState(false)
+	const now = useNow()
 	return (
 		<div onDoubleClick={() => setRaw(!raw)} className="m-2 flex flex-col rounded-lg border-2 border-black p-2">
 			{raw ? (
@@ -12,12 +14,11 @@ export function Card({ session }: { session: Session }) {
 			) : (
 				<>
 					<h1 className="text-2xl">{session.title}</h1>
-					<h2 className="text-xl">{session.speaker}</h2>
 					<p>
 						{session.room}: {session.session_id}
 					</p>
 					<Time time={session.start} />
-					<Time time={session.end} />
+					<Time time={session.finish ? session.end : now} />
 				</>
 			)}
 			<div className="grow" />

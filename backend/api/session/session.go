@@ -4,10 +4,13 @@ import (
 	"context"
 
 	"backend/ent"
+	"backend/internal/logger"
 	"backend/models/session"
 
 	"github.com/danielgtaylor/huma/v2"
 )
+
+var log = logger.New("api/session")
 
 type Output[T any] struct {
 	Body T

@@ -1,5 +1,20 @@
 import { useEffect, useState } from 'react'
 
+// WARN: maybe replace this function with a more robust one, this is untested
+function isEqual<T>(a: T, b: T) {
+	if (typeof a !== typeof b) return false
+
+	if (typeof a === 'object' || Array.isArray(a)) {
+		if (Array.isArray(a) && Array.isArray(b) && a.length !== b.length) return false
+		for (const key in a) {
+			if (!isEqual(a[key], b[key])) return false
+		}
+		return true
+	}
+
+	return a === b
+}
+
 interface PollingOpt {
 	interval?: number // 初始輪詢間隔
 	maxRetries?: number // 允許的最大錯誤次數
@@ -15,7 +30,7 @@ export function usePolling<T>(getter: () => Promise<T>, defaultValue: T, opt: Po
 
 	const [value, setValue] = useState<T>(defaultValue)
 	const [errorCount, setErrorCount] = useState(0)
-	const [currentInterval, setCurrentInterval] = useState(interval)
+	const currentInterval = Math.min(interval * Math.pow(2, Math.floor(errorCount / maxRetries)), maxBackoff)
 
 	useEffect(() => {
 		let id: NodeJS.Timeout
@@ -23,17 +38,16 @@ export function usePolling<T>(getter: () => Promise<T>, defaultValue: T, opt: Po
 		const fetchValue = async () => {
 			try {
 				const newValue = await getter()
-				setValue(newValue)
-				setErrorCount(0) // 成功時重置錯誤計數
-				setCurrentInterval(interval) // 回復原本的輪詢間隔
+				setValue(value => {
+					if (!isEqual(newValue, value)) {
+						setErrorCount(0) // 成功時重置錯誤計數
+						return newValue
+					}
+					return value
+				})
 			} catch (error) {
 				console.error('Error fetching value:', error)
 				setErrorCount(prev => prev + 1)
-
-				// 如果錯誤次數超過 maxRetries，則加倍間隔時間，但不超過 maxBackoff
-				if (errorCount + 1 >= maxRetries) {
-					setCurrentInterval(prev => Math.min(prev * 2, maxBackoff))
-				}
 			}
 		}
 
@@ -41,10 +55,7 @@ export function usePolling<T>(getter: () => Promise<T>, defaultValue: T, opt: Po
 		id = setInterval(fetchValue, currentInterval)
 
 		return () => clearInterval(id)
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [getter, currentInterval])
-
-	useEffect(() => console.log({getter, currentInterval}), [getter, currentInterval])
+	}, [currentInterval, getter])
 
 	return value
 }

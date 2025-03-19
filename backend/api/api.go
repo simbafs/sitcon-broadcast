@@ -1,6 +1,7 @@
 package api
 
 import (
+	"backend/api/admin"
 	"backend/api/now"
 	"backend/api/session"
 	"backend/internal/logger"
@@ -22,6 +23,7 @@ func Route(api huma.API, t *token.Token) {
 	}
 	session.Route(huma.NewGroup(api, "/api/session"), t)
 	now.Route(huma.NewGroup(api, "/api/now"), t)
+	admin.Route(huma.NewGroup(api, "/api/admin"), t)
 
 	// TODO: 404
 }

@@ -9,6 +9,7 @@ require (
 	github.com/danielgtaylor/huma/v2 v2.30.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/mattn/go-sqlite3 v1.14.24
+	github.com/samber/lo v1.49.1
 )
 
 require (

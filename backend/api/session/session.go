@@ -5,6 +5,7 @@ import (
 
 	"backend/ent"
 	"backend/internal/logger"
+	"backend/internal/token"
 	"backend/models/session"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -16,7 +17,7 @@ type Output[T any] struct {
 	Body T
 }
 
-func Route(api huma.API) {
+func Route(api huma.API, t *token.Token) {
 	huma.Get(api, "/{room}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 	},
@@ -88,5 +89,6 @@ func Route(api huma.API) {
 		op.Tags = []string{"session"}
 		op.Summary = "Set End Time of Session"
 		op.Description = "Set the end time of the current session and start time of the next session."
+		t.AuthHuma(api, op)
 	})
 }

@@ -8,6 +8,7 @@ import (
 	"backend/internal/fileserver"
 	"backend/internal/logger"
 	"backend/internal/staticfs"
+	"backend/internal/token"
 	"backend/models"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -35,11 +36,16 @@ func run(c *config.Config) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
 
+	t := token.NewToken("token", "localhost:3000")
+
+	r.POST("/verify", t.Verify())
+
 	// TODO: replace DefaultConfig with my own config
 	humaapi := humagin.New(r, huma.DefaultConfig("SITCON", "v1.0.0"))
 
-	api.Route(humaapi)
+	api.Route(humaapi, t)
 
+	r.Use(t.ProtectRoute([]string{"/admin/card"}))
 	fileserver.Route(r, static, Mode)
 
 	log.Printf("Server is running at %s\n", c.Addr)

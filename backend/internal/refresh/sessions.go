@@ -112,42 +112,52 @@ func FromURL(url string) ([]*ent.Session, error) {
 		return nil, err
 	}
 
-	rooms := lo.FromPairs(lop.Map(data.Rooms, func(r Room, idx int) lo.Entry[string, string] {
-		return lo.Entry[string, string]{
-			Key:   r.ID,
-			Value: r.Zh.Name,
-		}
-	}))
-
-	speakers := lo.FromPairs(lop.Map(data.Speakers, func(s Speaker, idx int) lo.Entry[string, string] {
-		return lo.Entry[string, string]{
-			Key:   s.ID,
-			Value: s.Zh.Name,
-		}
-	}))
-
-	roomSession := lo.GroupBy(
+	rooms := lo.FromPairs(
 		lop.Map(
-			lo.FlatMap[Session, *ent.Session](
-				data.Sessions,
-				parseInput(speakers, rooms),
-			),
-			removeSpeakerFromRest,
+			data.Rooms,
+			func(r Room, idx int) lo.Entry[string, string] {
+				return lo.Entry[string, string]{
+					Key:   r.ID,
+					Value: r.Zh.Name,
+				}
+			},
 		),
-		func(s *ent.Session) string {
-			return s.Room
-		},
 	)
 
-	roomSession = lo.MapValues(roomSession, func(ss []*ent.Session, _ string) []*ent.Session {
-		ss = lo.Reduce(
-			sortByStart(ss),
-			mergeSameTitle,
-			[]*ent.Session{},
-		)
+	speakers := lo.FromPairs(
+		lop.Map(
+			data.Speakers,
+			func(s Speaker, idx int) lo.Entry[string, string] {
+				return lo.Entry[string, string]{
+					Key:   s.ID,
+					Value: s.Zh.Name,
+				}
+			},
+		),
+	)
 
-		return lop.Map(ss, setNextAndIdx(ss))
-	})
+	roomSession := lo.MapValues(
+		lo.GroupBy(
+			lop.Map(
+				lo.FlatMap(
+					data.Sessions,
+					parseInput(speakers, rooms),
+				),
+				removeSpeakerFromRest,
+			),
+			func(s *ent.Session) string {
+				return s.Room
+			},
+		),
+		func(ss []*ent.Session, _ string) []*ent.Session {
+			ss = lo.Reduce(
+				sortByStart(ss),
+				mergeSameTitle,
+				[]*ent.Session{},
+			)
+
+			return lop.Map(ss, setNextAndIdx(ss))
+		})
 
 	return lo.Flatten(lo.Values(roomSession)), nil
 }

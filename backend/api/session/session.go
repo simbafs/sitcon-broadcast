@@ -17,6 +17,10 @@ type Output[T any] struct {
 	Body T
 }
 
+type BodyNext struct {
+	End int64 `json:"end" example:"1741393800" doc:"End time of current session in unix timestamp in seconds"`
+}
+
 func Route(api huma.API, t *token.Token) {
 	huma.Get(api, "/{room}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
@@ -73,9 +77,7 @@ func Route(api huma.API, t *token.Token) {
 	huma.Post(api, "/{room}/{id}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 		ID   string `path:"id" example:"2d8a5e" doc:"Current session ID"`
-		Body struct {
-			End int64 `json:"end" example:"1741393800" doc:"End time of current session in unix timestamp in seconds"`
-		}
+		Body BodyNext
 	},
 	) (*Output[*ent.Session], error) {
 		s, err := session.Next(ctx, input.Room, input.ID, input.Body.End)
@@ -89,6 +91,17 @@ func Route(api huma.API, t *token.Token) {
 		op.Tags = []string{"session"}
 		op.Summary = "Set End Time of Session"
 		op.Description = "Set the end time of the current session and start time of the next session."
+		t.AuthHuma(api, op)
+	})
+
+	huma.Put(api, "/", func(ctx context.Context, input *struct {
+	},
+	) (*Output[*ent.Session], error) {
+			return nil, nil
+	}, func(op *huma.Operation) {
+		op.Tags = []string{"session"}
+		op.Summary = "Set Sessions"
+		op.Description = "Clear all sessions abd set new sessions in database."
 		t.AuthHuma(api, op)
 	})
 }

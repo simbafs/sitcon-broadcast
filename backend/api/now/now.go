@@ -13,6 +13,10 @@ type NowOutput struct {
 	Body now.Now `doc:"current time."`
 }
 
+type BodySetNow struct {
+	Now int64 `json:"now" example:"1741393800" doc:"Current time in seconds since epoch."`
+}
+
 func Route(api huma.API, t *token.Token) {
 	huma.Get(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
 		n := now.GetNow()
@@ -26,10 +30,7 @@ func Route(api huma.API, t *token.Token) {
 	})
 
 	huma.Post(api, "/", func(ctx context.Context, input *struct {
-		Body struct {
-			Now int64 `json:"now" example:"1741393800" doc:"Current time in seconds since epoch."`
-			// Token http.Cookie `cookie:"token"`
-		}
+		Body BodySetNow
 	},
 	) (*NowOutput, error) {
 		now.SetNow(input.Body.Now)

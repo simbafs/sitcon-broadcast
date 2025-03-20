@@ -1,0 +1,39 @@
+import { Event, GetAll, SaveEvent, ZeroEvent } from '@/sdk/event'
+import { useEffect, useReducer, useState } from 'react'
+import { toast } from 'react-toastify'
+
+export function useEvent() {
+	const [events, setEvents] = useState<Event[]>([])
+	const [currentEvent, setCurrentEvent] = useState<Event>(ZeroEvent)
+
+	useEffect(() => {
+		GetAll()
+			.then(e => {
+			    setEvents(e)
+			    setCurrentEvent(e[0])
+			})
+			.catch(() => toast('無法取得活動'))
+	}, [])
+
+	const saveEvent = () => {
+		SaveEvent(currentEvent.name, currentEvent.script)
+			.then(() => toast('已儲存'))
+			.catch(() => toast('無法儲存'))
+	}
+	const setScript = (script: string) => setCurrentEvent(e => ({ ...e, script }))
+
+	return [
+		() => (
+			<select onChange={e => setCurrentEvent(events[+e.target.value])}>
+				{events.map((e, i) => (
+					<option key={i} value={i}>
+						{e.name}
+					</option>
+				))}
+			</select>
+		),
+		currentEvent,
+		setScript,
+		saveEvent,
+	] as const
+}

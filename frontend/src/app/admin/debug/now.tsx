@@ -1,7 +1,7 @@
 'use client'
 import { Time } from '@/components/time'
 import { GetNow, ResetNow, SetNow } from '@/sdk/now'
-import { constructTime, parseTime, type Time as TTime} from '@/sdk/time'
+import { constructTime, parseTime, type Time as TTime } from '@/sdk/time'
 import { btn } from '@/style/btn'
 import { useReducer } from 'react'
 import { toast } from 'react-toastify'
@@ -17,7 +17,7 @@ export function Now() {
 
 	return (
 		<div>
-			<div className="grid grid-cols-6">
+			<div className="grid grid-cols-6 gap-2">
 				<input
 					type="number"
 					value={now.year}
@@ -63,37 +63,39 @@ export function Now() {
 			</div>
 			<pre>{constructTime(now)}</pre>
 			<Time time={constructTime(now)} />
-			<button
-				onClick={() =>
-					GetNow()
-						.then(setNow)
-						.then(() => toast('取得時間成功'))
-						.catch(e => toast(`取得時間失敗: ${e.message}`))
-				}
-				className={btn()}
-			>
-				取得時間
-			</button>
-			<button
-				onClick={() =>
-					SetNow(constructTime(now))
-						.then(() => toast('設定時間成功'))
-						.catch(e => toast(`設定時間失敗: ${e}`))
-				}
-				className={btn()}
-			>
-				設定時間
-			</button>
-			<button
-				onClick={() =>
-					ResetNow()
-						.then(() => toast('重設時間成功'))
-						.catch(e => toast(`重設時間失敗: ${e.message}`))
-				}
-				className={btn()}
-			>
-				重設時間
-			</button>
+			<div className="flex gap-2">
+				<button
+					onClick={() =>
+						GetNow()
+							.then(setNow)
+							.then(() => toast('取得時間成功'))
+							.catch(e => toast(`取得時間失敗: ${e.message}`))
+					}
+					className={btn()}
+				>
+					取得時間
+				</button>
+				<button
+					onClick={() =>
+						SetNow(constructTime(now))
+							.then(() => toast('設定時間成功'))
+							.catch(e => toast(`設定時間失敗: ${e}`))
+					}
+					className={btn()}
+				>
+					設定時間
+				</button>
+				<button
+					onClick={() =>
+						ResetNow()
+							.then(() => toast('重設時間成功'))
+							.catch(e => toast(`重設時間失敗: ${e.message}`))
+					}
+					className={btn()}
+				>
+					重設時間
+				</button>
+			</div>
 		</div>
 	)
 }

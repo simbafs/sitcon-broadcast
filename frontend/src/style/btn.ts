@@ -1,7 +1,7 @@
 import { tv } from 'tailwind-variants'
 
 export const btn = tv({
-	base: 'p-2 rounded m-2',
+	base: 'p-2 rounded ',
 	variants: {
 		color: {
 			blue: 'bg-blue-300 hover:bg-blue-400 active:bg-blue-500',
@@ -14,9 +14,14 @@ export const btn = tv({
 			true: 'opacity-50 cursor-not-allowed',
 			false: '',
 		},
+		grow: {
+			true: 'grow',
+			false: '',
+		},
 	},
 	defaultVariants: {
 		color: 'blue',
 		disabled: false,
+		grow: false,
 	},
 })

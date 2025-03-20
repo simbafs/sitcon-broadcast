@@ -21,6 +21,10 @@ type BodyNext struct {
 	End int64 `json:"end" example:"1741393800" doc:"End time of current session in unix timestamp in seconds"`
 }
 
+type BodySetSession struct {
+	Sessions ent.Sessions `json:"sessions" doc:"List of sessions"`
+}
+
 func Route(api huma.API, t *token.Token) {
 	huma.Get(api, "/{room}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
@@ -95,13 +99,16 @@ func Route(api huma.API, t *token.Token) {
 	})
 
 	huma.Put(api, "/", func(ctx context.Context, input *struct {
+		Body BodySetSession
 	},
-	) (*Output[*ent.Session], error) {
-			return nil, nil
+	) (*struct{}, error) {
+		err := session.UpdateAll(ctx, input.Body.Sessions)
+
+		return nil, err
 	}, func(op *huma.Operation) {
 		op.Tags = []string{"session"}
 		op.Summary = "Set Sessions"
-		op.Description = "Clear all sessions abd set new sessions in database."
+		op.Description = "Clear all sessions abd set new sessions in database. Note that this API will not check if the session is valid."
 		t.AuthHuma(api, op)
 	})
 }

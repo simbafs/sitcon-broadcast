@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"errors"
 
 	"backend/ent"
 	"backend/ent/session"
@@ -76,4 +77,47 @@ func Next(ctx context.Context, room string, id string, end int64) (*ent.Session,
 	}
 
 	return next, nil
+}
+
+func rollback(tx *ent.Tx, err error) error {
+	if e := tx.Rollback(); err != nil {
+		return errors.Join(err, e)
+	}
+	return err
+}
+
+func UpdateAll(ctx context.Context, sessions ent.Sessions) error {
+	_, err := m.Client.Session.Delete().Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	tx, err := m.Client.Tx(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, s := range sessions {
+		_, err := tx.Session.Create().
+			SetIdx(s.Idx).
+			SetSessionID(s.SessionID).
+			SetFinish(s.Finish).
+			SetStart(s.Start).
+			SetEnd(s.End).
+			SetRoom(s.Room).
+			SetNext(s.Next).
+			SetTitle(s.Title).
+			SetData(s.Data).
+			Save(ctx)
+		if err != nil {
+			return rollback(tx, err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

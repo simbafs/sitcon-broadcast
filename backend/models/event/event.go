@@ -10,6 +10,10 @@ import (
 )
 
 func NewEvent(ctx context.Context, name, url, script string) (*ent.Event, error) {
+	if script == "" {
+		script = "function main(data) {\n  return []\n}"
+	}
+
 	return m.Client.Event.Create().
 		SetName(name).
 		SetURL(url).

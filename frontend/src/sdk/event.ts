@@ -16,8 +16,16 @@ export function GetAll() {
 	return api<Event[]>('/event', 'GET')
 }
 
-export function SaveEvent(name: string, script: string) {
+export function SetScript(name: string, script: string) {
 	return api<Event>(`/event/${name}`, 'PUT', {
 		script,
+	})
+}
+
+export function CreateEvent(name: string, url: string) {
+	return api<Event>('/event', 'POST', {
+		name,
+		url,
+		script: '',
 	})
 }

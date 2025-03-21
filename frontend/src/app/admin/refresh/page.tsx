@@ -7,6 +7,7 @@ import { useFetch } from '@/hooks/useFetch'
 import { twMerge } from 'tailwind-merge'
 import { toast } from 'react-toastify'
 import { UpdateAll } from '@/sdk'
+import { CreateEvent } from './createEvent'
 
 export default function Page() {
 	const [SelectEvent, event, setScript, saveEvent] = useEvent()
@@ -18,13 +19,20 @@ export default function Page() {
 	return (
 		<div className="flex h-screen flex-col gap-4 p-4">
 			{/* 橫幅活動選擇區域 */}
-			<div className="rounded-lg bg-gray-200 p-4 shadow-md">
-				<h1 className="text-2xl font-semibold">Refresh Database</h1>
-				<SelectEvent />
+			<div className="grid grid-cols-2 gap-4">
+
+				<div className="rounded-lg bg-gray-200 p-4 shadow-md">
+					<h1 className="text-2xl font-semibold">Choose Event</h1>
+					<SelectEvent />
+				</div>
+				<div className="rounded-lg bg-gray-200 p-4 shadow-md">
+					<h1 className="text-2xl font-semibold">Create Event</h1>
+					<CreateEvent />
+				</div>
 			</div>
 
 			{/* 三欄內容區域 */}
-			<div className="grid h-[calc(100%-6rem)] grow grid-cols-3 gap-4 ">
+			<div className="grid h-[calc(100%-8rem)] grow grid-cols-3 gap-4 ">
 				{/* 左側 data 顯示 */}
 				<div className="flex h-full flex-col overflow-auto rounded-lg bg-gray-100 p-4">
 					<h2 className="text-lg font-semibold">Data</h2>

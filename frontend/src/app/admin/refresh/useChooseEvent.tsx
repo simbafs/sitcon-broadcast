@@ -1,4 +1,4 @@
-import { Event, GetAll, SaveEvent } from '@/sdk/event'
+import { Event, GetAll, SetScript } from '@/sdk/event'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
@@ -17,7 +17,7 @@ export function useEvent() {
 
 	const saveEvent = () => {
 		if (!currentEvent) return
-		SaveEvent(currentEvent.name, currentEvent.script)
+		SetScript(currentEvent.name, currentEvent.script)
 			.then(() => toast('已儲存'))
 			.catch(() => toast('無法儲存'))
 	}

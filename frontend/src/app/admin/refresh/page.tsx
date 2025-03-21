@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge'
 import { toast } from 'react-toastify'
 import { UpdateAll } from '@/sdk'
 import { CreateEvent } from './createEvent'
+import ReactJson from 'react-json-view'
 
 export default function Page() {
 	const [SelectEvent, event, setScript, saveEvent] = useEvent()
@@ -36,9 +37,7 @@ export default function Page() {
 				{/* 左側 data 顯示 */}
 				<div className="flex h-full flex-col overflow-auto rounded-lg bg-gray-100 p-4">
 					<h2 className="text-lg font-semibold">Data</h2>
-					<pre className="h-full overflow-auto whitespace-pre-wrap break-words">
-						{JSON.stringify(data, null, 2)}
-					</pre>
+					<ReactJson src={data} collapsed={1} indentWidth={2}/>
 				</div>
 
 				{/* 中間 event.script 輸入區 */}
@@ -80,9 +79,7 @@ export default function Page() {
 				{/* 右側 result 顯示區 */}
 				<div className="flex h-full flex-col overflow-auto rounded-lg bg-gray-100 p-4">
 					<h2 className="text-lg font-semibold">Result</h2>
-					<pre className="h-full overflow-auto whitespace-pre-wrap break-words">
-						{JSON.stringify(result, null, 2)}
-					</pre>
+					<ReactJson src={result} collapsed={1} indentWidth={2}/>
 				</div>
 			</div>
 		</div>

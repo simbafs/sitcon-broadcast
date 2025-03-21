@@ -1,10 +1,10 @@
-import { Event, GetAll, SaveEvent, ZeroEvent } from '@/sdk/event'
+import { Event, GetAll, SaveEvent } from '@/sdk/event'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 export function useEvent() {
 	const [events, setEvents] = useState<Event[]>([])
-	const [currentEvent, setCurrentEvent] = useState<Event>(ZeroEvent)
+	const [currentEvent, setCurrentEvent] = useState<Event | undefined>()
 
 	useEffect(() => {
 		GetAll()
@@ -16,11 +16,16 @@ export function useEvent() {
 	}, [])
 
 	const saveEvent = () => {
+		if (!currentEvent) return
 		SaveEvent(currentEvent.name, currentEvent.script)
 			.then(() => toast('已儲存'))
 			.catch(() => toast('無法儲存'))
 	}
-	const setScript = (script: string) => setCurrentEvent(e => ({ ...e, script }))
+	const setScript = (script: string) =>
+		setCurrentEvent(e => {
+			if (!e) return e
+			return { ...e, script }
+		})
 
 	return [
 		() => (

@@ -65,7 +65,7 @@ func run(c *config.Config) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
 
-	t := token.NewToken(c.Token, c.Token)
+	t := token.NewToken(c.Token, c.Domain)
 
 	r.POST("/verify", t.Verify())
 
@@ -73,7 +73,7 @@ func run(c *config.Config) error {
 
 	api.Route(humaapi, t)
 
-	r.Use(t.ProtectRoute([]string{"/admin/card"}))
+	r.Use(t.ProtectRoute([]string{"/admin"}))
 	fileserver.Route(r, static, Mode)
 
 	log.Printf("Server is running at %s\n", c.Addr)

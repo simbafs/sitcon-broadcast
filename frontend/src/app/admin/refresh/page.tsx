@@ -2,7 +2,7 @@
 import { useEvent } from '@/app/admin/refresh/useChooseEvent'
 import { btn } from '@/style/btn'
 import { sandbox } from './sandbox'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFetch } from '@/hooks/useFetch'
 import { twMerge } from 'tailwind-merge'
 import { toast } from 'react-toastify'
@@ -10,8 +10,10 @@ import { UpdateAll } from '@/sdk'
 
 export default function Page() {
 	const [SelectEvent, event, setScript, saveEvent] = useEvent()
-	const data = useFetch(event.url)
+	const data = useFetch(event?.url || '')
 	const [result, setResult] = useState<any>()
+
+	useEffect(() => console.log({ event }), [event])
 
 	return (
 		<div className="flex h-screen flex-col gap-4 p-4">
@@ -35,8 +37,8 @@ export default function Page() {
 				<div className="flex flex-col gap-2 rounded-lg bg-gray-100 p-4">
 					<h2 className="text-lg font-semibold">Script</h2>
 					<textarea
-						className="flex-1 text-nowrap rounded-lg border p-2"
-						value={event.script}
+						className="text-nowrap flex-1 rounded-lg border p-2"
+						value={event?.script}
 						onChange={e => setScript(e.target.value)}
 					/>
 					<div className="grid grid-cols-2 gap-2">
@@ -56,7 +58,7 @@ export default function Page() {
 						<button
 							className={twMerge(btn({ color: 'blue' }), 'col-span-2')}
 							onClick={() =>
-								sandbox(event.script, data)
+								sandbox(event?.script || '', data)
 									.then(setResult)
 									.then(() => toast('已執行'))
 									.catch((e: Error) => toast(e.message))

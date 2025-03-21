@@ -41,7 +41,8 @@ func (t *Token) CheckToken(c *gin.Context) bool {
 
 // RenewToken is a helper function to renew cookie
 func (t *Token) RenewToken(c *gin.Context) {
-	c.SetCookie(t.cookieName, t.token, t.maxAge, "/", t.domain, false, true)
+	log.Printf("%#v", t)
+	c.SetCookie(t.cookieName, t.token, t.maxAge, "/", t.domain, true, true)
 }
 
 type TokenBody struct {

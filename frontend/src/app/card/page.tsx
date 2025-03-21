@@ -14,7 +14,9 @@ function CardPage() {
 }
 
 export default function Page() {
-	return <Suspense>
-		<CardPage />
-	</Suspense>
+	return (
+		<Suspense>
+			<CardPage />
+		</Suspense>
+	)
 }

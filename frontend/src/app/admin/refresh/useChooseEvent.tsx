@@ -9,8 +9,8 @@ export function useEvent() {
 	useEffect(() => {
 		GetAll()
 			.then(e => {
-			    setEvents(e)
-			    setCurrentEvent(e[0])
+				setEvents(e)
+				setCurrentEvent(e[0])
 			})
 			.catch(() => toast('無法取得活動'))
 	}, [])

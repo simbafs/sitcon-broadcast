@@ -17,7 +17,7 @@ export async function api<T extends any>(path: string, method: Method, body?: an
 	})
 		.then(res => res.json())
 		.then(body => {
-			if (body.errors){
+			if (body.errors) {
 				console.error(body)
 
 				throw new Error(`${body.title}: ${body.detail}`)

@@ -1,12 +1,12 @@
 type Page =
 	| {
-		name: string
-		link: string
-	}
+			name: string
+			link: string
+	  }
 	| {
-		name: string
-		children: Page[]
-	}
+			name: string
+			children: Page[]
+	  }
 
 const pages: Page[] = []
 

@@ -3,9 +3,14 @@ package config
 import "os"
 
 type Config struct {
-	Addr   string
-	Token  string
+	// for gin
+	Addr string
+	// for cookie
+	Token string
+	// for cookie
 	Domain string
+	// for ent
+	DB string
 }
 
 func (c *Config) SetDefault() {
@@ -20,6 +25,10 @@ func (c *Config) SetDefault() {
 	if c.Domain == "" {
 		c.Domain = "localhost"
 	}
+
+	if c.DB == "" {
+		c.DB = "./data/data.sqlite"
+	}
 }
 
 func (c *Config) FromEnv() {
@@ -33,5 +42,9 @@ func (c *Config) FromEnv() {
 
 	if domain, ok := os.LookupEnv("DOMAIN"); ok {
 		c.Domain = domain
+	}
+
+	if db, ok := os.LookupEnv("DB"); ok {
+		c.DB = db
 	}
 }

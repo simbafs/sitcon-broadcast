@@ -10,9 +10,9 @@ import (
 
 var Client *ent.Client
 
-func InitDB() error {
+func InitDB(db string) error {
 	var err error
-	Client, err = ent.Open("sqlite3", "file:./sitcon.db?cache=shared&_fk=1")
+	Client, err = ent.Open("sqlite3", "file:"+db+"?cache=shared&_fk=1")
 	if err != nil {
 		return err
 	}

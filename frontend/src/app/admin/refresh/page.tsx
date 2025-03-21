@@ -1,10 +1,12 @@
 'use client'
-import { useEvent } from '@/hooks/useChooseEvent'
+import { useEvent } from '@/app/admin/refresh/useChooseEvent'
 import { btn } from '@/style/btn'
 import { sandbox } from './sandbox'
 import { useState } from 'react'
 import { useFetch } from '@/hooks/useFetch'
 import { twMerge } from 'tailwind-merge'
+import { toast } from 'react-toastify'
+import { UpdateAll } from '@/sdk'
 
 export default function Page() {
 	const [SelectEvent, event, setScript, saveEvent] = useEvent()
@@ -33,7 +35,7 @@ export default function Page() {
 				<div className="flex flex-col gap-2 rounded-lg bg-gray-100 p-4">
 					<h2 className="text-lg font-semibold">Script</h2>
 					<textarea
-						className="flex-1 rounded-lg border p-2"
+						className="text-nowrap flex-1 rounded-lg border p-2"
 						value={event.script}
 						onChange={e => setScript(e.target.value)}
 					/>
@@ -41,12 +43,24 @@ export default function Page() {
 						<button onClick={saveEvent} className={btn({ color: 'green' })}>
 							Save Script
 						</button>
-						<button className={btn({ color: 'yellow' })} disabled>
+						<button
+							className={btn({ color: 'yellow' })}
+							onClick={() =>
+								UpdateAll(result)
+									.then(() => toast('已更新資料庫'))
+									.catch((e: Error) => toast(e.message))
+							}
+						>
 							Save Sessions
 						</button>
 						<button
 							className={twMerge(btn({ color: 'blue' }), 'col-span-2')}
-							onClick={() => sandbox(event.script, data).then(setResult)}
+							onClick={() =>
+								sandbox(event.script, data)
+									.then(setResult)
+									.then(() => toast('已執行'))
+									.catch((e: Error) => toast(e.message))
+							}
 						>
 							Exec
 						</button>

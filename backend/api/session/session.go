@@ -22,7 +22,7 @@ type BodyNext struct {
 }
 
 type BodySetSession struct {
-	Sessions ent.Sessions `json:"sessions" doc:"List of sessions"`
+	Sessions []session.SessionWithoutID
 }
 
 func Route(api huma.API, t *token.Token) {
@@ -101,10 +101,12 @@ func Route(api huma.API, t *token.Token) {
 	huma.Put(api, "/", func(ctx context.Context, input *struct {
 		Body BodySetSession
 	},
-	) (*struct{}, error) {
+	) (*Output[string], error) {
 		err := session.UpdateAll(ctx, input.Body.Sessions)
 
-		return nil, err
+		return &Output[string]{
+			Body: "ok",
+		}, err
 	}, func(op *huma.Operation) {
 		op.Tags = []string{"session"}
 		op.Summary = "Set Sessions"

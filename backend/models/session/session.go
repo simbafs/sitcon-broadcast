@@ -86,7 +86,28 @@ func rollback(tx *ent.Tx, err error) error {
 	return err
 }
 
-func UpdateAll(ctx context.Context, sessions ent.Sessions) error {
+type SessionWithoutID struct {
+	// Idx holds the value of the "idx" field.
+	Idx int8 `json:"idx,omitempty"`
+	// Finish holds the value of the "finish" field.
+	Finish bool `json:"finish,omitempty"`
+	// Start holds the value of the "start" field.
+	Start int64 `json:"start,omitempty"`
+	// End holds the value of the "end" field.
+	End int64 `json:"end,omitempty"`
+	// Room holds the value of the "room" field.
+	Room string `json:"room,omitempty"`
+	// SessionID holds the value of the "session_id" field.
+	SessionID string `json:"session_id,omitempty"`
+	// Next holds the value of the "next" field.
+	Next string `json:"next,omitempty"`
+	// Title holds the value of the "title" field.
+	Title string `json:"title,omitempty"`
+	// Data holds the value of the "data" field.
+	Data map[string]interface{} `json:"data,omitempty"`
+}
+
+func UpdateAll(ctx context.Context, sessions []SessionWithoutID) error {
 	_, err := m.Client.Session.Delete().Exec(ctx)
 	if err != nil {
 		return err

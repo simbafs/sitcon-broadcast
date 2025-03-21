@@ -1,5 +1,5 @@
 import { Event, GetAll, SaveEvent, ZeroEvent } from '@/sdk/event'
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 export function useEvent() {

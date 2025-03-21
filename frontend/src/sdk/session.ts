@@ -39,3 +39,7 @@ export function ActionNext(room: string, id: string, end: number) {
 		end,
 	})
 }
+
+export function UpdateAll(sessions: Session[]) {
+	return api('/session', 'PUT', { sessions })
+}

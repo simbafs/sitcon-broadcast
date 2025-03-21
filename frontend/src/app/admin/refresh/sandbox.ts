@@ -1,5 +1,4 @@
 export function sandbox(script: string, data: any): Promise<any> {
-    console.log({script, data})
 	return new Promise((resolve, reject) => {
 		try {
 			// 創建一個獨立的 iframe 作為沙箱環境

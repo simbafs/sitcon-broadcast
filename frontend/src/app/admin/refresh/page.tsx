@@ -12,8 +12,6 @@ export default function Page() {
 	const data = useFetch(event?.url || '')
 	const [result, setResult] = useState<any>()
 
-	useEffect(() => console.log({ event }), [event])
-
 	return (
 		<div className="flex h-screen flex-col gap-4 p-4">
 			{/* 橫幅活動選擇區域 */}

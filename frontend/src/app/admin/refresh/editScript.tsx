@@ -23,10 +23,10 @@ export function EditScript({
 }) {
 	return (
 		<Card>
-			<div className="flex flex-col gap-2 rounded-lg bg-gray-100 h-full">
+			<div className="flex h-full flex-col gap-2 rounded-lg bg-gray-100">
 				<h2 className="text-lg font-semibold">Script</h2>
 				<textarea
-					className="text-nowrap flex-1 rounded-lg border p-2"
+					className="flex-1 text-nowrap rounded-lg border p-2"
 					value={event?.script}
 					onChange={e => setScript(e.target.value)}
 				/>

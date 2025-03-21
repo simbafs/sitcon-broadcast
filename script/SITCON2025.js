@@ -62,7 +62,7 @@ function removeSpeakerFromRest(s) {
 
 function setNext(s, idx, arr) {
 	if (idx < arr.length - 1) {
-		s.next = arr[idx + 1].id
+		s.next = arr[idx + 1].session_id
 	}
 	return s
 }

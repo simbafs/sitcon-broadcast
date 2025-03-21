@@ -8,7 +8,7 @@ export function Card({ session }: { session: Session }) {
 	const [raw, setRaw] = useState(false)
 	const now = useNow()
 	return (
-		<div onDoubleClick={() => setRaw(!raw)} className="m-2 flex flex-col rounded-lg border-2 border-black p-2">
+		<div onDoubleClick={() => setRaw(!raw)} className="m-2 flex flex-col rounded-lg border-2 border-black p-2 overflow-scroll">
 			{raw ? (
 				<pre>{JSON.stringify(session, null, 2)}</pre>
 			) : (

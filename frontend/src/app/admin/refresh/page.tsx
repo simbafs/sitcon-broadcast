@@ -38,7 +38,7 @@ export default function Page() {
 				/>
 
 				{/* 右側 result 顯示區 */}
-				<ShowJSON data={result} title="result" />
+				<ShowJSON data={result} setData={setResult} title="result"/>
 			</div>
 		</div>
 	)

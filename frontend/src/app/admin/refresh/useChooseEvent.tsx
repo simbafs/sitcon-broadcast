@@ -1,6 +1,7 @@
 import { Event, GetAll, SetScript } from '@/sdk/event'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { Card } from './card'
 
 export function useEvent() {
 	const [events, setEvents] = useState<Event[]>([])
@@ -29,13 +30,16 @@ export function useEvent() {
 
 	return [
 		() => (
-			<select onChange={e => setCurrentEvent(events[+e.target.value])}>
-				{events.map((e, i) => (
-					<option key={i} value={i}>
-						{e.name}
-					</option>
-				))}
-			</select>
+			<Card>
+				<h1 className="text-2xl font-semibold">Choose Event</h1>
+				<select onChange={e => setCurrentEvent(events[+e.target.value])}>
+					{events.map((e, i) => (
+						<option key={i} value={i}>
+							{e.name}
+						</option>
+					))}
+				</select>
+			</Card>
 		),
 		currentEvent,
 		setScript,

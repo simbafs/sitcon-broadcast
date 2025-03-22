@@ -51,7 +51,8 @@
 |                | `make ent`           | 重新產生 ent model                                   |
 |                | `make staticcheck`   | 使用 `staticcheck` 和 `errcheck` 分析後端程式碼      |
 
-> [!TIP] 📌 **註**：如需格式化程式碼請先安裝 `prettier` 與 `gofmt`。
+> [!TIP]
+> 📌 **註**：如需格式化程式碼請先安裝 `prettier` 與 `gofmt`。
 
 ---
 
@@ -78,4 +79,5 @@
 1. **資料表定義**：`backend/ent/scheme`
 2. **資料庫操作邏輯**：`backend/models`（透過 ent 存取資料庫）
 3. **API 處理邏輯**：`backend/api`
-    > [!CAUTION] **只能使用 `backend/models`，不可直接操作 ent**
+> [!CAUTION]
+>  **`backend/api` 只能使用 `backend/models`，不可直接操作 ent**

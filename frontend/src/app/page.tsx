@@ -30,6 +30,7 @@ const pages: Page[] = [
 		page('R3', '/card?room=R3'),
 		page('S', '/card?room=S'),
 	]),
+	page('Counter', '/counter'),
 	directory('Admin', [
 		directory('card', [
 			page('R0', '/card/admin?room=R0'),

@@ -1,5 +1,5 @@
 'use client'
-import { Session } from '@/sdk'
+import { Session } from '@/sdk/session'
 import { useState } from 'react'
 import { Time } from './time'
 import { useNow } from '@/hooks/useNow'

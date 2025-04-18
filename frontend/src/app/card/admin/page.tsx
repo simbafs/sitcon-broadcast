@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from '@/hooks/useSession'
-import { ActionNext } from '@/sdk'
+import { ActionNext } from '@/sdk/session'
 import { btn } from '@/style/btn'
 import { parseAsString, useQueryState } from 'nuqs'
 import { useNow } from '@/hooks/useNow'

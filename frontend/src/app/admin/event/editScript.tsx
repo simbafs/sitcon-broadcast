@@ -1,7 +1,7 @@
 import { Event } from '@/sdk/event'
 import { Card } from './card'
 import { btn } from '@/style/btn'
-import { UpdateAll } from '@/sdk'
+import { UpdateAll } from '@/sdk/session'
 import { toast } from 'react-toastify'
 import { twMerge } from 'tailwind-merge'
 import { sandbox } from './sandbox'

@@ -69,26 +69,28 @@ func (t *Token) Verify() gin.HandlerFunc {
 }
 
 // AuthHuma add auth information to [huma.Operation]
-func (t *Token) AuthHuma(api huma.API, op *huma.Operation) {
-	op.Middlewares = append(op.Middlewares, func(ctx huma.Context, next func(huma.Context)) {
-		token, err := huma.ReadCookie(ctx, t.cookieName)
-		if err != nil {
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, "token miss", err)
-			return
-		}
-		if err := token.Valid(); err != nil {
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, "token invalid", err)
-			return
-		}
-		if token.Value != t.token {
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, "invalid token", errors.New("invalid token"))
-			return
-		}
-		next(ctx)
-	})
-	op.Security = append(op.Security, map[string][]string{
-		"token": {},
-	})
+func (t *Token) AuthHuma(api huma.API) func(op *huma.Operation) {
+	return func(op *huma.Operation) {
+		op.Middlewares = append(op.Middlewares, func(ctx huma.Context, next func(huma.Context)) {
+			token, err := huma.ReadCookie(ctx, t.cookieName)
+			if err != nil {
+				huma.WriteErr(api, ctx, http.StatusUnauthorized, "token miss", err)
+				return
+			}
+			if err := token.Valid(); err != nil {
+				huma.WriteErr(api, ctx, http.StatusUnauthorized, "token invalid", err)
+				return
+			}
+			if token.Value != t.token {
+				huma.WriteErr(api, ctx, http.StatusUnauthorized, "invalid token", errors.New("invalid token"))
+				return
+			}
+			next(ctx)
+		})
+		op.Security = append(op.Security, map[string][]string{
+			"token": {},
+		})
+	}
 }
 
 // ProtectRoute is a gin middleware to prevent unaresulthorized access to some static files

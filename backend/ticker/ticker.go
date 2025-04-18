@@ -101,16 +101,16 @@ func UpdateCountdown(broadcast chan middleware.SSEMsg) {
 var rooms = []string{"R0", "R1", "R2", "R3", "S"}
 
 func UpdateAllCurrentCard(broadcast chan middleware.SSEMsg) {
-	for _, room := range rooms {
-		curr, err := session.ReadCurrentByRoom(context.Background(), room)
-		if err != nil {
-			log.Printf("failed to get current session of rooom %s: %s", room, err)
-		}
-		broadcast <- middleware.SSEMsg{
-			Name: "card-current-" + room,
-			Data: curr,
-		}
-	}
+	// for _, room := range rooms {
+	// 	curr, err := session.ReadCurrentByRoom(context.Background(), room)
+	// 	if err != nil {
+	// 		log.Printf("failed to get current session of rooom %s: %s", room, err)
+	// 	}
+	// 	broadcast <- middleware.SSEMsg{
+	// 		Name: "card-current-" + room,
+	// 		Data: curr,
+	// 	}
+	// }
 }
 
 func UpdateOneCard(broadcast chan middleware.SSEMsg, id string) {

@@ -1,6 +1,6 @@
 'use client'
-import { useEvent } from '@/app/admin/refresh/useChooseEvent'
-import { useEffect, useState } from 'react'
+import { useEvent } from '@/app/admin/event/useChooseEvent'
+import { useState } from 'react'
 import { useFetch } from '@/hooks/useFetch'
 import { CreateEvent } from './createEvent'
 import { ShowJSON } from './showJSON'
@@ -36,7 +36,7 @@ export default function Page() {
 				/>
 
 				{/* 右側 result 顯示區 */}
-				<ShowJSON data={result} setData={setResult} title="result"/>
+				<ShowJSON data={result} setData={setResult} title="result" />
 			</div>
 		</div>
 	)

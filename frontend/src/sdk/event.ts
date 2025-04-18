@@ -22,10 +22,22 @@ export function SetScript(name: string, script: string) {
 	})
 }
 
-export function CreateEvent(name: string, url: string) {
+async function getScript(name: string) {
+	return fetch(`https://raw.githubusercontent.com/simbafs/sitcon-broadcast/refs/heads/main/script/${name}.js`).then(
+		res => {
+			if (res.ok) {
+				return res.text()
+			}
+			return ''
+		},
+	)
+}
+
+export async function CreateEvent(name: string, url: string) {
+	const script = await getScript(name)
 	return api<Event>('/event', 'POST', {
 		name,
 		url,
-		script: '',
+		script,
 	})
 }

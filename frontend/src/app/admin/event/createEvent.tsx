@@ -6,8 +6,8 @@ import { twMerge } from 'tailwind-merge'
 import { Card } from './card'
 
 export function CreateEvent() {
-	const [name, setName] = useState('')
-	const [url, setURL] = useState('')
+	const [name, setName] = useState('SITCON2025')
+	const [url, setURL] = useState('https://sitcon.org/2025/sessions.json')
 
 	return (
 		<Card>
@@ -24,7 +24,7 @@ export function CreateEvent() {
 					type="text"
 					value={url}
 					onChange={e => setURL(e.target.value)}
-					placeholder="Event Name"
+					placeholder="Event URL"
 					className="rounded-lg border p-2"
 				/>
 				<button

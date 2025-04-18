@@ -5,23 +5,20 @@ import (
 
 	"backend/api"
 	"backend/config"
-	"backend/internal/fileserver"
 	"backend/internal/logger"
-	"backend/internal/staticfs"
 	"backend/internal/token"
 	"backend/models"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
 	"github.com/gin-gonic/gin"
+	"github.com/simbafs/kama"
 )
 
 // go embed ignore files begin with '_' or '.', 'all:' tells go embed to embed all files
 
 //go:embed all:static/*
 var rawStatic embed.FS
-
-var static = staticfs.NewStatic(rawStatic, "static")
 
 var (
 	Mode       = "debug"
@@ -64,8 +61,8 @@ func humaConfig() huma.Config {
 func run(c *config.Config) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
-
 	t := token.NewToken(c.Token, c.Domain)
+	k := kama.New(rawStatic)
 
 	r.POST("/verify", t.Verify())
 
@@ -74,7 +71,8 @@ func run(c *config.Config) error {
 	api.Route(humaapi, t)
 
 	r.Use(t.ProtectRoute([]string{"/admin"}))
-	fileserver.Route(r, static, Mode)
+	r.Use(k.Gin())
+	// fileserver.Route(r, static, Mode)
 
 	log.Printf("Server is running at %s\n", c.Addr)
 	return r.Run(c.Addr)

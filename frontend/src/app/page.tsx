@@ -8,7 +8,40 @@ type Page =
 			children: Page[]
 	  }
 
-const pages: Page[] = []
+function page(name: string, link: string): Page {
+	return {
+		name,
+		link,
+	}
+}
+
+function directory(name: string, children: Page[]): Page {
+	return {
+		name,
+		children,
+	}
+}
+
+const pages: Page[] = [
+	directory('Card', [
+		page('R0', '/card?room=R0'),
+		page('R1', '/card?room=R1'),
+		page('R2', '/card?room=R2'),
+		page('R3', '/card?room=R3'),
+		page('S', '/card?room=S'),
+	]),
+	directory('Admin', [
+		directory('card', [
+			page('R0', '/admin/card?room=R0'),
+			page('R1', '/admin/card?room=R1'),
+			page('R2', '/admin/card?room=R2'),
+			page('R3', '/admin/card?room=R3'),
+			page('S', '/admin/card?room=S'),
+		]),
+		page('debug', '/admin/debug'),
+		page('refresh', '/admin/refresh'),
+	]),
+]
 
 function LinkTree({ pages }: { pages: Page[] }) {
 	return (
@@ -17,7 +50,9 @@ function LinkTree({ pages }: { pages: Page[] }) {
 				if ('link' in page) {
 					return (
 						<li key={page.link}>
-							<a href={page.link}>{page.name}</a>
+							<a className="underline underline-offset-2 hover:underline-offset-1" href={page.link}>
+								{page.name}
+							</a>
 						</li>
 					)
 				} else {

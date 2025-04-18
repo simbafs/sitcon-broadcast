@@ -4,7 +4,7 @@ import (
 	"embed"
 
 	"backend/api"
-	"backend/config"
+	"backend/internal/config"
 	"backend/internal/logger"
 	"backend/internal/token"
 	"backend/models"

@@ -7,6 +7,7 @@ import (
 	"backend/internal/logger"
 	"backend/internal/token"
 	"backend/models/session"
+	"backend/util"
 
 	"github.com/danielgtaylor/huma/v2"
 )
@@ -37,10 +38,7 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[*ent.Session]{
 			Body: s,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"session"}
-		op.Summary = "Get Current Session in Room"
-	})
+	}, util.APIDesp("Get Current Session in Room", "Get current session in room", "session"))
 
 	huma.Get(api, "/{room}/all", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
@@ -53,11 +51,7 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[ent.Sessions]{
 			Body: s,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"session"}
-		op.Summary = "Get All Sessions in Room"
-		op.Description = "Get all sessions in a room."
-	})
+	}, util.APIDesp("Get All Sessions in Room", "Get all sessions in a room", "session"))
 
 	huma.Get(api, "/{room}/{id}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
@@ -71,11 +65,7 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[*ent.Session]{
 			Body: s,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"session"}
-		op.Summary = "Get Session by ID in Room"
-		op.Description = "Get a session by its ID in a room."
-	})
+	}, util.APIDesp("Get Session by ID in Room", "Get a session by its ID in a room", "session"))
 
 	// trigger `next` on session with ID in Room, return the next session
 	huma.Post(api, "/{room}/{id}", func(ctx context.Context, input *struct {
@@ -91,12 +81,10 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[*ent.Session]{
 			Body: s,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"session"}
-		op.Summary = "Set End Time of Session"
-		op.Description = "Set the end time of the current session and start time of the next session."
-		t.AuthHuma(api, op)
-	})
+	},
+		util.APIDesp("Set End Time of Session", "Set the end time of the current session and start time of the next session.", "session"),
+		t.AuthHuma(api),
+	)
 
 	huma.Put(api, "/", func(ctx context.Context, input *struct {
 		Body BodySetSession
@@ -107,10 +95,8 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[string]{
 			Body: "ok",
 		}, err
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"session"}
-		op.Summary = "Set Sessions"
-		op.Description = "Clear all sessions abd set new sessions in database. Note that this API will not check if the session is valid."
-		t.AuthHuma(api, op)
-	})
+	},
+		util.APIDesp("Set Sessions", "Clear all sessions and set new sessions in database. Note that this API will not check if the session is valid.", "session"),
+		t.AuthHuma(api),
+	)
 }

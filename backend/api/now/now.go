@@ -5,6 +5,7 @@ import (
 
 	"backend/internal/token"
 	"backend/models/now"
+	"backend/util"
 
 	"github.com/danielgtaylor/huma/v2"
 )
@@ -23,11 +24,7 @@ func Route(api huma.API, t *token.Token) {
 		return &NowOutput{
 			Body: n,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"now"}
-		op.Summary = "Get Current Time"
-		op.Description = "Get the current time in unix timestamp in seconds."
-	})
+	}, util.APIDesp("Get Current Time", "Get the current time in unix timestamp in seconds", "now"))
 
 	huma.Post(api, "/", func(ctx context.Context, input *struct {
 		Body BodySetNow
@@ -37,22 +34,18 @@ func Route(api huma.API, t *token.Token) {
 		return &NowOutput{
 			Body: now.GetNow(),
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"now"}
-		op.Summary = "Set Current Time"
-		op.Description = "Set the current time in unix timestamp in seconds."
-		t.AuthHuma(api, op)
-	})
+	},
+		util.APIDesp("Set Current Time", "Set the current time in unix timestamp in seconds", "now"),
+		t.AuthHuma(api),
+	)
 
 	huma.Delete(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
 		now.ResetNow()
 		return &NowOutput{
 			Body: now.GetNow(),
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"now"}
-		op.Summary = "Reset Current Time"
-		op.Description = "Reset the current time to the actual current time."
-		t.AuthHuma(api, op)
-	})
+	},
+		util.APIDesp("Reset Current Time", "Reset the current time to the actual current time.", "now"),
+		t.AuthHuma(api),
+	)
 }

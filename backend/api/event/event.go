@@ -8,6 +8,7 @@ import (
 	"backend/ent"
 	"backend/internal/token"
 	"backend/models/event"
+	"backend/util"
 
 	"github.com/danielgtaylor/huma/v2"
 )
@@ -36,10 +37,7 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[ent.Events]{
 			Body: e,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"event"}
-		op.Summary = "Get All Events"
-	})
+	}, util.APIDesp("Get All Events", "Get all events", "event"))
 
 	huma.Get(api, "/{name}", func(ctx context.Context, input *struct {
 		Name string `path:"name" example:"SITCON2025" doc:"Event Name"`
@@ -53,11 +51,7 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[*ent.Event]{
 			Body: e,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"event"}
-		op.Summary = "Get Event"
-		op.Description = "Get event by name."
-	})
+	}, util.APIDesp("Get Event", "Get event by name.", "event"))
 
 	huma.Get(api, "/{name}/session", func(ctx context.Context, input *struct {
 		Name string `path:"name" example:"SITCON2025" doc:"Event Name"`
@@ -80,11 +74,7 @@ func Route(api huma.API, t *token.Token) {
 				io.Copy(w, res.Body)
 			},
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"event"}
-		op.Summary = "Get Event Sessions"
-		op.Description = "Get sessions of event."
-	})
+	}, util.APIDesp("Get Event Sessions", "Get sessions of event.", "event"))
 
 	huma.Post(api, "/", func(ctx context.Context, input *struct {
 		Body BodyCreateEvent
@@ -98,12 +88,10 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[*ent.Event]{
 			Body: e,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"event"}
-		op.Summary = "Create Event"
-		op.Description = "Create a new event."
-		t.AuthHuma(api, op)
-	})
+	},
+		util.APIDesp("Create Event", "Create a new event.", "event"),
+		t.AuthHuma(api),
+	)
 
 	huma.Put(api, "/{name}", func(ctx context.Context, input *struct {
 		Name string `path:"name" example:"SITCON2025" doc:"Event Name"`
@@ -118,10 +106,8 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[*ent.Event]{
 			Body: e,
 		}, nil
-	}, func(op *huma.Operation) {
-		op.Tags = []string{"event"}
-		op.Summary = "Update Event Script"
-		op.Description = "Update event script by name."
-		t.AuthHuma(api, op)
-	})
+	},
+		util.APIDesp("Update Event Script", "Update event script by name", "event"),
+		t.AuthHuma(api),
+	)
 }

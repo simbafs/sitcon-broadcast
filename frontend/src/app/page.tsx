@@ -1,12 +1,12 @@
 type Page =
 	| {
-		name: string
-		link: string
-	}
+			name: string
+			link: string
+	  }
 	| {
-		name: string
-		children: Page[]
-	}
+			name: string
+			children: Page[]
+	  }
 
 function page(name: string, link: string): Page {
 	return {
@@ -32,11 +32,18 @@ const pages: Page[] = [
 	]),
 	directory('Admin', [
 		directory('card', [
-			page('R0', '/admin/card?room=R0'),
-			page('R1', '/admin/card?room=R1'),
-			page('R2', '/admin/card?room=R2'),
-			page('R3', '/admin/card?room=R3'),
-			page('S', '/admin/card?room=S'),
+			page('R0', '/card/admin?room=R0'),
+			page('R1', '/card/admin?room=R1'),
+			page('R2', '/card/admin?room=R2'),
+			page('R3', '/card/admin?room=R3'),
+			page('S', '/card/admin?room=S'),
+		]),
+		directory('all card', [
+			page('R0', '/card/all?room=R0'),
+			page('R1', '/card/all?room=R1'),
+			page('R2', '/card/all?room=R2'),
+			page('R3', '/card/all?room=R3'),
+			page('S', '/card/all?room=S'),
 		]),
 		page('debug', '/admin/debug'),
 		page('event', '/admin/event'),

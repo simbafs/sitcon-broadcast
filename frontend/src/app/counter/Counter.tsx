@@ -1,12 +1,12 @@
 import { Loading } from '@/components/loading'
 import { usePolling } from '@/hooks/usePolling'
-import { Get } from '@/sdk/counter'
+import { Get, Reset, Start, Stop } from '@/sdk/counter'
 import { btn } from '@/style/btn'
 import { twMerge } from 'tailwind-merge'
 
 export function Counter({ name }: { name: string }) {
 	const counter = usePolling(() => Get(name), undefined, {
-		interval: 500,
+		interval: 200,
 	})
 
 	return (
@@ -15,10 +15,18 @@ export function Counter({ name }: { name: string }) {
 			{counter ? (
 				<>
 					<h1 className="col-span-2 md:col-span-1">{counter.count}</h1>
-					<button className={twMerge(btn(), 'w-full')}>開始</button>
-					<button className={twMerge(btn(), 'w-full')}>暫停</button>
-					<button className={twMerge(btn(), 'w-full')}>停止</button>
-					<button className={twMerge(btn(), 'w-full')}>設定</button>
+					<button onClick={() => Start(name)} className={twMerge(btn(), 'w-full')}>
+						開始
+					</button>
+					<button onClick={() => Stop(name)} className={twMerge(btn(), 'w-full')}>
+						停止
+					</button>
+					<button onClick={() => Reset(name)} className={twMerge(btn(), 'w-full')}>
+						重設
+					</button>
+					<button onClick={() => Start(name)} className={twMerge(btn(), 'w-full')} disabled>
+						設定
+					</button>
 					<button className={twMerge(btn(), 'col-span-4 w-full md:col-span-1')}>開啟頁面</button>
 				</>
 			) : (

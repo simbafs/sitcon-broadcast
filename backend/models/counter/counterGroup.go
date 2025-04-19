@@ -1,36 +1,20 @@
 package counter
 
-import "backend/internal/logger"
+type CounterGroup map[string]*Counter
 
-type CounterGroup []*Counter
+type Callback func(name string, count int)
 
-var log = logger.New("counter")
-
-func NewGroup(names []string) CounterGroup {
+func NewGroup(names []string, callbacks []Callback) CounterGroup {
+	if len(names) != len(callbacks) {
+		panic("length of names and callbacks must be equal")
+	}
 	cg := make(CounterGroup, len(names))
-	for i, name := range names {
-		cg[i] = &Counter{
-			Name:   name,
-			Status: StatusStopped,
-			Init:   0,
-			Count:  0,
-		}
+	for _, name := range names {
+		cg[name] = NewCounter(60)
 	}
 	return cg
 }
 
-func (cg CounterGroup) Update() {
-	for i := range cg {
-		cg[i].Update()
-	}
-}
-
 func (cg CounterGroup) Get(name string) *Counter {
-	for _, c := range cg {
-		log.Println(c.Name, name)
-		if c.Name == name {
-			return c
-		}
-	}
-	return nil
+	return cg[name]
 }

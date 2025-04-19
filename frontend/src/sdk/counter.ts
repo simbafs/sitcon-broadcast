@@ -14,14 +14,14 @@ export type Counter = {
 }
 
 export function GetAll() {
-	return api<Counter[]>('/counter', 'GET')
+	return api<Record<string, Counter>>('/counter', 'GET')
 }
 
 export function Get(name: string) {
 	return api<Counter>(`/counter/${name}`, 'GET')
 }
 
-export function Set(name: string, init: number) {
+export function SetInit(name: string, init: number) {
 	return api<Counter>(`/counter/${name}`, 'PUT', {
 		init,
 	})
@@ -35,6 +35,6 @@ export function Stop(name: string) {
 	return api<Counter>(`/counter/${name}/stop`, 'PUT')
 }
 
-export function Pause(name: string) {
-	return api<Counter>(`/counter/${name}/pause`, 'PUT')
+export function Reset(name: string) {
+	return api<Counter>(`/counter/${name}/reset`, 'PUT')
 }

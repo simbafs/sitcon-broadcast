@@ -1,76 +1,67 @@
 package counter
 
-type Status int
+import (
+	"time"
 
-const (
-	StatusStopped Status = iota // when trigger with start(), it will reset Count = Init
-	StatusPause                 // when trigger with start(), it won't reset Count
-	StaatusCounting
+	"backend/internal/logger"
 )
 
+var log = logger.New("counter")
+
 type Counter struct {
-	Name     string    `json:"name" doc:"counter name"`
-	Init     int       `json:"init" doc:"initial value"`
-	Count    int       `json:"count" doc:"current value"`
-	Status   Status    `json:"status" doc:"counter status, 0: stopped, 1: pause, 2: counting"`
-	Callback func(int) `json:"-"` // Callback will be called when the counter change
+	Init     int  `json:"init"`
+	Count    int  `json:"count"`
+	Counting bool `json:"counting"`
+
+	ticker *time.Ticker
+	stop   chan struct{}
+}
+
+func NewCounter(init int) *Counter {
+	return &Counter{
+		Init:     init,
+		Count:    init,
+		Counting: false,
+
+		ticker: time.NewTicker(time.Second),
+		stop:   make(chan struct{}),
+	}
 }
 
 func (c *Counter) Start() {
-	if c.Status == StatusStopped {
-		c.Count = c.Init
-	}
-	c.Status = StaatusCounting
+	c.Counting = true
+	defer func() { c.Counting = false }()
 
-	if c.Callback != nil {
-		c.Callback(c.Count)
-	}
-}
-
-func (c *Counter) Pause() {
-	if c.Status == StaatusCounting {
-		c.Status = StatusPause
-	}
-
-	if c.Callback != nil {
-		c.Callback(c.Count)
-	}
-}
-
-func (c *Counter) Stop() {
-	if c.Status == StaatusCounting {
-		c.Status = StatusStopped
-	}
-
-	if c.Callback != nil {
-		c.Callback(c.Count)
-	}
-}
-
-// Update will return true if the counter is finished
-func (c *Counter) Update() {
-	p := c.Count
-	if c.Status == StaatusCounting {
-		c.Count--
-	}
-	if c.Count <= 0 {
-		c.Count = 0
-		c.Status = StatusStopped
-	}
-
-	if p != c.Count {
-		if c.Callback != nil {
-			c.Callback(c.Count)
+	for {
+		select {
+		case <-c.stop:
+			log.Println("counter stopped")
+			return
+		case <-c.ticker.C:
+			c.Count--
+			log.Println("counter", "count", c.Count)
+			if c.Count <= 0 {
+				log.Println("counter", "count", c.Count)
+				return
+			}
 		}
 	}
 }
 
-func (c *Counter) Set(n int) {
-	c.Status = StatusStopped
-	c.Count = n
-	c.Init = n
-
-	if c.Callback != nil {
-		c.Callback(c.Count)
+func (c *Counter) Stop() {
+	if !c.Counting {
+		return
 	}
+	c.stop <- struct{}{}
+}
+
+func (c *Counter) Reset() {
+	c.Stop()
+	c.Count = c.Init
+}
+
+func (c *Counter) SetInit(init int) {
+	c.Stop()
+	c.Init = init
+	c.Count = init
 }

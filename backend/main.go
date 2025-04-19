@@ -70,7 +70,7 @@ func run(c *config.Config) error {
 
 	api.Route(humaapi, t)
 
-	r.Use(t.ProtectRoute([]string{"/admin"}))
+	r.Use(t.ProtectRoute([]string{"/admin", "/counter/admin", "/card/admin"}))
 	r.Use(k.Gin())
 	// fileserver.Route(r, static, Mode)
 

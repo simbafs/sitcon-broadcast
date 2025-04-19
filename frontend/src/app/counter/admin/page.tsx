@@ -4,7 +4,7 @@ import { GetAll } from '@/sdk/counter'
 import { Counter } from '../Counter'
 
 export default function Page() {
-	const counters = usePolling(() => GetAll().then(cs => cs.map(c => c.name)), [], {
+	const counters = usePolling(() => GetAll().then(Object.keys), [], {
 		interval: 1 * 60 * 1000, // 1 min
 	})
 

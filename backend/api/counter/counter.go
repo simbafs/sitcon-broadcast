@@ -2,6 +2,7 @@ package counter
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"backend/internal/token"
@@ -11,13 +12,17 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 )
 
+func callback(name string, n int) {
+	log.Println(name, n)
+}
+
 var Counters = counter.NewGroup([]string{
 	"R0",
 	"R1",
 	"R2",
 	"R3",
 	"S",
-})
+}, []counter.Callback{callback, callback, callback, callback, callback})
 
 type Output[T any] struct {
 	Body T `doc:"response body"`
@@ -42,7 +47,7 @@ func Route(api huma.API, t *token.Token) {
 		return &Output[counter.Counter]{
 			Body: *c,
 		}, nil
-	}, util.APIDesp("Get Counter", "Get a counter by name.", "counter"))
+	}, util.APIDesp("Get Counter", "Get the counter by name.", "counter"))
 
 	huma.Put(api, "/{name}", func(ctx context.Context, input *struct {
 		Name string `path:"name" doc:"counter name" example:"R0"`
@@ -56,13 +61,13 @@ func Route(api huma.API, t *token.Token) {
 			return nil, huma.NewError(http.StatusNotFound, "counter not found")
 		}
 
-		c.Set(input.Body.Init)
+		c.SetInit(input.Body.Init)
 
 		return &Output[counter.Counter]{
 			Body: *c,
 		}, nil
 	},
-		util.APIDesp("Set Init Value", "Set the initial value of a counter. It will reset the counter.", "counter"),
+		util.APIDesp("Set Init Value", "Set the initial value and reset the counter.", "counter"),
 		t.AuthHuma(api),
 	)
 
@@ -75,13 +80,13 @@ func Route(api huma.API, t *token.Token) {
 			return nil, huma.NewError(http.StatusNotFound, "counter not found")
 		}
 
-		c.Start()
+		go c.Start()
 
 		return &Output[counter.Counter]{
 			Body: *c,
 		}, nil
 	},
-		util.APIDesp("Start Counter", "Start a counter. It will reset the counter depend on the state.", "counter"),
+		util.APIDesp("Start Counter", "Start the counter. It will reset the counter depend on the state.", "counter"),
 		t.AuthHuma(api),
 	)
 
@@ -100,11 +105,11 @@ func Route(api huma.API, t *token.Token) {
 			Body: *c,
 		}, nil
 	},
-		util.APIDesp("Stop Counter", "Stop a counter. It will reset the counter when start it again.", "counter"),
+		util.APIDesp("Stop Counter", "Stop the counter. It will reset the counter when start it again.", "counter"),
 		t.AuthHuma(api),
 	)
 
-	huma.Put(api, "/{name}/pause", func(ctx context.Context, input *struct {
+	huma.Put(api, "/{name}/reset", func(ctx context.Context, input *struct {
 		Name string `path:"name" doc:"counter name" example:"R0"`
 	},
 	) (*Output[counter.Counter], error) {
@@ -113,13 +118,13 @@ func Route(api huma.API, t *token.Token) {
 			return nil, huma.NewError(http.StatusNotFound, "counter not found")
 		}
 
-		c.Pause()
+		c.Reset()
 
 		return &Output[counter.Counter]{
 			Body: *c,
 		}, nil
 	},
-		util.APIDesp("Pause Counter", "Pause a counter. It will not reset the counter when start it again.", "counter"),
+		util.APIDesp("Reset Counter", "Reset the counter", "counter"),
 		t.AuthHuma(api),
 	)
 }

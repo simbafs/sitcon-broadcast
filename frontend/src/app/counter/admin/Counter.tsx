@@ -1,14 +1,12 @@
 import { Loading } from '@/components/loading'
-import { useSSEFetch } from '@/hooks/useSSE'
-import { Counter as TCounter, Get, Reset, SetInit, Start, Stop } from '@/sdk/counter'
+import { useSSEFetchValue } from '@/hooks/useSSE'
+import { Get, Reset, SetInit, Start, Stop } from '@/sdk/counter'
 import { btn } from '@/style/btn'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 
 export function Counter({ name }: { name: string }) {
-	const [counter, setCounter] = useState<TCounter>()
-	useSSEFetch(
+	const counter = useSSEFetchValue(
 		`counter/${name}`,
-		setCounter,
 		useCallback(() => Get(name), [name]),
 	)
 

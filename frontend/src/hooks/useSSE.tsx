@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, ReactNode, useRef } from 'react'
+import { createContext, useContext, useEffect, ReactNode, useRef, useState, useCallback } from 'react'
 
 type Callback = (data: any) => void
 type Handlers = Map<string, Set<Callback>>
@@ -7,8 +7,8 @@ const SSEContext = createContext<{
 	addHandler: (topic: string, callback: Callback) => void
 	removeHandler: (topic: string, callback: Callback) => void
 }>({
-	addHandler: () => { },
-	removeHandler: () => { },
+	addHandler: () => {},
+	removeHandler: () => {},
 })
 
 export const SSEProvider = ({ children, url }: { children: ReactNode; url: string; maxLength?: number }) => {
@@ -98,6 +98,18 @@ export function useSSEFetch<T>(topic: string, callback: Callback, init: () => Pr
 	useEffect(() => {
 		init().then(data => callback(data))
 	}, [callback, init, topic])
+}
+
+export function useSSEValue<T>(topic: string) {
+	const [value, setValue] = useState<T>()
+	useSSE(topic, setValue)
+	return value
+}
+
+export function useSSEFetchValue<T>(topic: string, init: () => Promise<T>) {
+	const [value, setValue] = useState<T>()
+	useSSEFetch(topic, setValue, init)
+	return value
 }
 
 export function useAll(callback: Callback) {

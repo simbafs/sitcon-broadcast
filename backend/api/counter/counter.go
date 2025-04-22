@@ -7,28 +7,35 @@ import (
 
 	"backend/internal/token"
 	"backend/models/counter"
+	"backend/sse"
 	"backend/util"
 
 	"github.com/danielgtaylor/huma/v2"
 )
 
-func callback(name string, n int) {
-	log.Println(name, n)
-}
-
-var Counters = counter.NewGroup([]string{
-	"R0",
-	"R1",
-	"R2",
-	"R3",
-	"S",
-}, []counter.Callback{callback, callback, callback, callback, callback})
-
 type Output[T any] struct {
 	Body T `doc:"response body"`
 }
 
-func Route(api huma.API, t *token.Token) {
+func Route(api huma.API, t *token.Token, send chan sse.Msg) {
+	callback := func(name string) counter.Callback {
+		return func(c *counter.Counter) {
+			send <- sse.Msg{
+				Topic: []string{"counter-" + name},
+				Data:  *c,
+			}
+			log.Println(name, c)
+		}
+	}
+
+	Counters := counter.NewGroup([]string{
+		"R0",
+		"R1",
+		"R2",
+		"R3",
+		"S",
+	}, []counter.Callback{callback("R0"), callback("R1"), callback("R2"), callback("R3"), callback("S")})
+
 	huma.Get(api, "/", func(ctx context.Context, input *struct{}) (*Output[counter.CounterGroup], error) {
 		return &Output[counter.CounterGroup]{
 			Body: Counters,

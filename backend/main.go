@@ -8,6 +8,7 @@ import (
 	"backend/internal/logger"
 	"backend/internal/token"
 	"backend/models"
+	"backend/sse"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
@@ -63,16 +64,18 @@ func run(c *config.Config) error {
 	r := gin.Default()
 	t := token.NewToken(c.Token, c.Domain)
 	k := kama.New(rawStatic)
+	s := sse.New()
 
 	r.POST("/verify", t.Verify())
 
 	humaapi := humagin.New(r, humaConfig())
 
-	api.Route(humaapi, t)
+	r.Use(s.GinHandler())
+
+	api.Route(humaapi, t, s.Message)
 
 	r.Use(t.ProtectRoute([]string{"/admin", "/counter/admin", "/card/admin"}))
 	r.Use(k.Gin())
-	// fileserver.Route(r, static, Mode)
 
 	log.Printf("Server is running at %s\n", c.Addr)
 	return r.Run(c.Addr)

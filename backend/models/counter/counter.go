@@ -13,15 +13,19 @@ type Counter struct {
 	Count    int  `json:"count"`
 	Counting bool `json:"counting"`
 
+	Cb Callback
+
 	ticker *time.Ticker
 	stop   chan struct{}
 }
 
-func NewCounter(init int) *Counter {
+func NewCounter(init int, callback Callback) *Counter {
 	return &Counter{
 		Init:     init,
 		Count:    init,
 		Counting: false,
+
+		Cb: callback,
 
 		ticker: time.NewTicker(time.Second),
 		stop:   make(chan struct{}),
@@ -39,6 +43,7 @@ func (c *Counter) Start() {
 			return
 		case <-c.ticker.C:
 			c.Count--
+			c.Cb(c)
 			log.Println("counter", "count", c.Count)
 			if c.Count <= 0 {
 				log.Println("counter", "count", c.Count)
@@ -58,10 +63,12 @@ func (c *Counter) Stop() {
 func (c *Counter) Reset() {
 	c.Stop()
 	c.Count = c.Init
+	c.Cb(c)
 }
 
 func (c *Counter) SetInit(init int) {
 	c.Stop()
 	c.Init = init
 	c.Count = init
+	c.Cb(c)
 }

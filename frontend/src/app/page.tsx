@@ -22,33 +22,19 @@ function directory(name: string, children: Page[]): Page {
 	}
 }
 
+function pageWithRoom(link: string): Page[] {
+	return ['R0', 'R1', 'R2', 'R3', 'S'].map(room => ({
+		name: room,
+		link: `${link}?room=${room}`,
+	}))
+}
+
 const pages: Page[] = [
-	directory('Card', [
-		page('R0', '/card?room=R0'),
-		page('R1', '/card?room=R1'),
-		page('R2', '/card?room=R2'),
-		page('R3', '/card?room=R3'),
-		page('S', '/card?room=S'),
-	]),
-	page('Counter', '/counter'),
-	directory('Admin', [
-		directory('card', [
-			page('R0', '/card/admin?room=R0'),
-			page('R1', '/card/admin?room=R1'),
-			page('R2', '/card/admin?room=R2'),
-			page('R3', '/card/admin?room=R3'),
-			page('S', '/card/admin?room=S'),
-		]),
-		directory('all card', [
-			page('R0', '/card/all?room=R0'),
-			page('R1', '/card/all?room=R1'),
-			page('R2', '/card/all?room=R2'),
-			page('R3', '/card/all?room=R3'),
-			page('S', '/card/all?room=S'),
-		]),
-		page('debug', '/admin/debug'),
-		page('event', '/admin/event'),
-	]),
+	page('Home', '/'),
+	directory('card', [page('admin', '/card/admin'), page('all', '/card/all'), ...pageWithRoom('/card')]),
+	directory('counter', [page('admin', '/counter/admin'), ...pageWithRoom('/counter')]),
+	directory('debug', [page('debug', '/debug'), page('sse', '/debug/sse')]),
+	page('event', '/event'),
 ]
 
 function LinkTree({ pages }: { pages: Page[] }) {

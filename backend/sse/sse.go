@@ -7,7 +7,7 @@ import (
 )
 
 type Msg struct {
-	Topic []string `json:"name"`
+	Topic []string `json:"topic"`
 	Data  any      `json:"data"`
 }
 

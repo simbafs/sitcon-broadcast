@@ -21,7 +21,7 @@ func Route(api huma.API, t *token.Token, send chan sse.Msg) {
 	callback := func(name string) counter.Callback {
 		return func(c *counter.Counter) {
 			send <- sse.Msg{
-				Topic: []string{"counter-" + name},
+				Topic: []string{"counter/" + name},
 				Data:  *c,
 			}
 			log.Println(name, c)

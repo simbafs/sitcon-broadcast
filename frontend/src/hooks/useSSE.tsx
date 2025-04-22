@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, ReactNode, useRef } from 'react'
 
-type Callback = (topic: string[], data: any) => void
+type Callback = (data: any) => void
 type Handlers = Map<string, Set<Callback>>
 
 const SSEContext = createContext<{
@@ -40,7 +40,7 @@ export const SSEProvider = ({ children, url }: { children: ReactNode; url: strin
 				const callbacks = handlersRef.current.get(topic[0])
 				if (callbacks) {
 					callbacks.forEach(callback => {
-						callback(topic, data)
+						callback(data)
 					})
 				}
 			} catch (err) {
@@ -77,8 +77,8 @@ export function useSSE(topic: string, callback: Callback) {
 	const { addHandler, removeHandler } = useContext(SSEContext)
 
 	useEffect(() => {
-		addHandler(topic, (topic, data) => {
-			callback(topic, data)
+		addHandler(topic, data => {
+			callback(data)
 		})
 
 		return () => {
@@ -91,6 +91,6 @@ export function useSSEFetch<T>(topic: string, callback: Callback, init: () => Pr
 	useSSE(topic, callback)
 
 	useEffect(() => {
-		init().then(data => callback([topic], data))
+		init().then(data => callback(data))
 	}, [callback, init, topic])
 }

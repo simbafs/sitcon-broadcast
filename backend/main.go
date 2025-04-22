@@ -70,7 +70,7 @@ func run(c *config.Config) error {
 
 	humaapi := humagin.New(r, humaConfig())
 
-	r.Use(s.GinHandler())
+	r.GET("/sse", s.GinHandler())
 
 	api.Route(humaapi, t, s.Message)
 

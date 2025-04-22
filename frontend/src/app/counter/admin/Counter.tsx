@@ -1,12 +1,16 @@
 import { Loading } from '@/components/loading'
-import { usePolling } from '@/hooks/usePolling'
-import { Get, Reset, SetInit, Start, Stop } from '@/sdk/counter'
+import { useSSEFetch } from '@/hooks/useSSE'
+import { Counter as TCounter, Get, Reset, SetInit, Start, Stop } from '@/sdk/counter'
 import { btn } from '@/style/btn'
+import { useCallback, useState } from 'react'
 
 export function Counter({ name }: { name: string }) {
-	const counter = usePolling(() => Get(name), undefined, {
-		interval: 200,
-	})
+	const [counter, setCounter] = useState<TCounter>()
+	useSSEFetch(
+		`counter/${name}`,
+		setCounter,
+		useCallback(() => Get(name), [name]),
+	)
 
 	return (
 		<div className="grid grid-cols-4 place-items-center gap-2 md:grid-cols-7">

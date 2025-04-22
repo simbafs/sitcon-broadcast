@@ -6,7 +6,6 @@ require (
 	entgo.io/ent v0.14.3
 	github.com/danielgtaylor/huma/v2 v2.30.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/ltcsuite/lnd/ticker v1.1.0
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/simbafs/kama v1.0.1
 )

@@ -74,7 +74,7 @@ func run(c *config.Config) error {
 
 	api.Route(humaapi, t, s.Message)
 
-	r.Use(t.ProtectRoute([]string{"/admin", "/counter/admin", "/card/admin"}))
+	r.Use(t.ProtectRoute([]string{"/debug", "/event", "/counter/admin", "/card/admin"}))
 	r.Use(k.Gin())
 
 	log.Printf("Server is running at %s\n", c.Addr)

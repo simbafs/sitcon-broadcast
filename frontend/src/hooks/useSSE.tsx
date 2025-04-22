@@ -7,8 +7,8 @@ const SSEContext = createContext<{
 	addHandler: (topic: string, callback: Callback) => void
 	removeHandler: (topic: string, callback: Callback) => void
 }>({
-	addHandler: () => {},
-	removeHandler: () => {},
+	addHandler: () => { },
+	removeHandler: () => { },
 })
 
 export const SSEProvider = ({ children, url }: { children: ReactNode; url: string; maxLength?: number }) => {
@@ -41,6 +41,13 @@ export const SSEProvider = ({ children, url }: { children: ReactNode; url: strin
 				if (callbacks) {
 					callbacks.forEach(callback => {
 						callback(data)
+					})
+				}
+
+				const allHandlers = handlersRef.current.get('__all__')
+				if (allHandlers) {
+					allHandlers.forEach(callback => {
+						callback({ topic, data })
 					})
 				}
 			} catch (err) {
@@ -77,9 +84,7 @@ export function useSSE(topic: string, callback: Callback) {
 	const { addHandler, removeHandler } = useContext(SSEContext)
 
 	useEffect(() => {
-		addHandler(topic, data => {
-			callback(data)
-		})
+		addHandler(topic, callback)
 
 		return () => {
 			removeHandler(topic, callback)
@@ -93,4 +98,16 @@ export function useSSEFetch<T>(topic: string, callback: Callback, init: () => Pr
 	useEffect(() => {
 		init().then(data => callback(data))
 	}, [callback, init, topic])
+}
+
+export function useAll(callback: Callback) {
+	const { addHandler, removeHandler } = useContext(SSEContext)
+
+	useEffect(() => {
+		addHandler('__all__', callback)
+
+		return () => {
+			removeHandler('__all__', callback)
+		}
+	}, [addHandler, removeHandler, callback])
 }

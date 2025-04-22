@@ -1,7 +1,7 @@
 'use client'
 import { usePolling } from '@/hooks/usePolling'
 import { GetAll } from '@/sdk/counter'
-import { Counter } from '../Counter'
+import { Counter } from './Counter'
 
 export default function Page() {
 	const counters = usePolling(() => GetAll().then(Object.keys), [], {

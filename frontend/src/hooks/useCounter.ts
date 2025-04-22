@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useSSEFetchValue } from './useSSE'
+import { useSSEFetchValue } from './util/useSSE'
 import { Get } from '@/sdk/counter'
 
 export function useCounter(name: string) {

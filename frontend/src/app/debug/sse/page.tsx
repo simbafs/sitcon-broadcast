@@ -1,5 +1,5 @@
 'use client'
-import { useSSE } from '@/hooks/useSSE'
+import { useSSE } from '@/hooks/util/useSSE'
 import { useState } from 'react'
 
 export default function Page() {

@@ -1,6 +1,6 @@
 import { GetCurrentSession, GetSession, ZeroSession } from '@/sdk/session'
 import { useCallback } from 'react'
-import { useSSEFetchValue } from './useSSE'
+import { useSSEFetchValue } from './util/useSSE'
 
 export function useSession(room: string, id?: string) {
 	const fn = useCallback(() => (id ? GetSession(room, id) : GetCurrentSession(room)), [id, room])

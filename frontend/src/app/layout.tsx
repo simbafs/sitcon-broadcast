@@ -4,7 +4,7 @@ import { Noto_Sans_TC } from 'next/font/google'
 import { ToastContainer } from 'react-toastify'
 
 import './globals.css'
-import { SSEProvider } from '@/hooks/useSSE'
+import { SSEProvider } from '@/hooks/util/useSSE'
 
 const font = Noto_Sans_TC({
 	weight: ['400', '700'],

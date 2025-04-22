@@ -1,6 +1,10 @@
 package now
 
-import "time"
+import (
+	"time"
+
+	"backend/sse"
+)
 
 type Now int64
 
@@ -14,10 +18,18 @@ func GetNow() Now {
 	}
 }
 
-func SetNow(t int64) {
+func SetNow(t int64, send chan sse.Msg) {
 	now = Now(t)
+	send <- sse.Msg{
+		Topic: []string{"now"},
+		Data:  now,
+	}
 }
 
-func ResetNow() {
+func ResetNow(send chan sse.Msg) {
 	now = 0
+	send <- sse.Msg{
+		Topic: []string{"now"},
+		Data:  now,
+	}
 }

@@ -32,11 +32,7 @@ func Route(api huma.API, t *token.Token, send chan sse.Msg) {
 		Body BodySetNow
 	},
 	) (*NowOutput, error) {
-		now.SetNow(input.Body.Now)
-		send <- sse.Msg{
-			Topic: []string{"now"},
-			Data:  now.GetNow(),
-		}
+		now.SetNow(input.Body.Now, send)
 		return &NowOutput{
 			Body: now.GetNow(),
 		}, nil
@@ -46,11 +42,7 @@ func Route(api huma.API, t *token.Token, send chan sse.Msg) {
 	)
 
 	huma.Delete(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
-		now.ResetNow()
-		send <- sse.Msg{
-			Topic: []string{"now"},
-			Data:  now.GetNow(),
-		}
+		now.ResetNow(send)
 		return &NowOutput{
 			Body: now.GetNow(),
 		}, nil

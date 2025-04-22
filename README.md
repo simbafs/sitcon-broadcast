@@ -81,3 +81,4 @@
 3. **API 處理邏輯**：`backend/api`
 > [!CAUTION]
 >  **`backend/api` 只能使用 `backend/models`，不可直接操作 ent**
+4. 原則上 SSE 的 send 只能在 `model/` 下使用

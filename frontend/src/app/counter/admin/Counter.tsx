@@ -1,14 +1,10 @@
 import { Loading } from '@/components/loading'
-import { useSSEFetchValue } from '@/hooks/useSSE'
-import { Get, Reset, SetInit, Start, Stop } from '@/sdk/counter'
+import { useCounter } from '@/hooks/useCounter'
+import { Reset, SetInit, Start, Stop } from '@/sdk/counter'
 import { btn } from '@/style/btn'
-import { useCallback } from 'react'
 
 export function Counter({ name }: { name: string }) {
-	const counter = useSSEFetchValue(
-		`counter/${name}`,
-		useCallback(() => Get(name), [name]),
-	)
+	const counter = useCounter(name)
 
 	return (
 		<div className="grid grid-cols-4 place-items-center gap-2 md:grid-cols-7">

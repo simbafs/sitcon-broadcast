@@ -48,7 +48,7 @@ func GetCurrent(ctx context.Context, room string) (*ent.Session, error) {
 }
 
 // Next set the end time of current session and the start time of next session(if there is) to end
-func Next(ctx context.Context, room string, id string, end int64, send chan sse.Msg) (*ent.Session, error) {
+func Next(ctx context.Context, room string, id string, end int64, send sse.Send) (*ent.Session, error) {
 	curr, err := Get(ctx, room, id)
 	if err != nil {
 		return nil, err

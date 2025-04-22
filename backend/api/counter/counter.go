@@ -17,7 +17,7 @@ type Output[T any] struct {
 	Body T `doc:"response body"`
 }
 
-func Route(api huma.API, t *token.Token, send chan sse.Msg) {
+func Route(api huma.API, t *token.Token, send sse.Send) {
 	callback := func(name string) counter.Callback {
 		return func(c *counter.Counter) {
 			send <- sse.Msg{

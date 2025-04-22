@@ -18,7 +18,7 @@ func GetNow() Now {
 	}
 }
 
-func SetNow(t int64, send chan sse.Msg) {
+func SetNow(t int64, send sse.Send) {
 	now = Now(t)
 	send <- sse.Msg{
 		Topic: []string{"now"},
@@ -26,7 +26,7 @@ func SetNow(t int64, send chan sse.Msg) {
 	}
 }
 
-func ResetNow(send chan sse.Msg) {
+func ResetNow(send sse.Send) {
 	now = 0
 	send <- sse.Msg{
 		Topic: []string{"now"},

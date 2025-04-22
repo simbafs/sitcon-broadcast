@@ -20,7 +20,7 @@ type BodySetNow struct {
 	Now int64 `json:"now" example:"1741393800" doc:"Current time in seconds since epoch."`
 }
 
-func Route(api huma.API, t *token.Token, send chan sse.Msg) {
+func Route(api huma.API, t *token.Token, send sse.Send) {
 	huma.Get(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
 		n := now.GetNow()
 		return &NowOutput{

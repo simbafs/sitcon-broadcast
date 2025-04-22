@@ -27,7 +27,7 @@ type BodySetSession struct {
 	Sessions []session.SessionWithoutID
 }
 
-func Route(api huma.API, t *token.Token, send chan sse.Msg) {
+func Route(api huma.API, t *token.Token, send sse.Send) {
 	huma.Get(api, "/{room}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 	},

@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Send chan Msg
+
 type Msg struct {
 	Topic []string `json:"topic"`
 	Data  any      `json:"data"`

@@ -25,7 +25,7 @@ function CardPage() {
 			<button onClick={next} className={btn()}>
 				下一個
 			</button>
-			{/* TODO */}
+			{/* TODO: */}
 			{/* <button className={btn()}>撤銷</button> */}
 		</div>
 	)

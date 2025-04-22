@@ -2,9 +2,11 @@ package now
 
 import (
 	"context"
+	"time"
 
 	"backend/internal/token"
 	"backend/models/now"
+	"backend/sse"
 	"backend/util"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -18,7 +20,7 @@ type BodySetNow struct {
 	Now int64 `json:"now" example:"1741393800" doc:"Current time in seconds since epoch."`
 }
 
-func Route(api huma.API, t *token.Token) {
+func Route(api huma.API, t *token.Token, send chan sse.Msg) {
 	huma.Get(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
 		n := now.GetNow()
 		return &NowOutput{
@@ -31,6 +33,10 @@ func Route(api huma.API, t *token.Token) {
 	},
 	) (*NowOutput, error) {
 		now.SetNow(input.Body.Now)
+		send <- sse.Msg{
+			Topic: []string{"now"},
+			Data:  now.GetNow(),
+		}
 		return &NowOutput{
 			Body: now.GetNow(),
 		}, nil
@@ -41,6 +47,10 @@ func Route(api huma.API, t *token.Token) {
 
 	huma.Delete(api, "/", func(ctx context.Context, input *struct{}) (*NowOutput, error) {
 		now.ResetNow()
+		send <- sse.Msg{
+			Topic: []string{"now"},
+			Data:  now.GetNow(),
+		}
 		return &NowOutput{
 			Body: now.GetNow(),
 		}, nil
@@ -48,4 +58,13 @@ func Route(api huma.API, t *token.Token) {
 		util.APIDesp("Reset Current Time", "Reset the current time to the actual current time.", "now"),
 		t.AuthHuma(api),
 	)
+
+	go func() {
+		for range time.NewTicker(time.Second).C {
+			send <- sse.Msg{
+				Topic: []string{"now"},
+				Data:  now.GetNow(),
+			}
+		}
+	}()
 }

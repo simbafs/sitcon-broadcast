@@ -1,6 +1,6 @@
 import { GetNow } from '@/sdk/now'
-import { usePolling } from './usePolling'
+import { useSSEFetchValue } from './useSSE'
 
 export function useNow() {
-	return usePolling(GetNow, 0, { interval: 1000 })
+	return useSSEFetchValue('now', GetNow) || 0
 }

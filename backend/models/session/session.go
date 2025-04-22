@@ -7,6 +7,7 @@ import (
 	"backend/ent"
 	"backend/ent/session"
 	"backend/internal/logger"
+	"backend/sse"
 
 	m "backend/models"
 )
@@ -47,7 +48,7 @@ func GetCurrent(ctx context.Context, room string) (*ent.Session, error) {
 }
 
 // Next set the end time of current session and the start time of next session(if there is) to end
-func Next(ctx context.Context, room string, id string, end int64) (*ent.Session, error) {
+func Next(ctx context.Context, room string, id string, end int64, send chan sse.Msg) (*ent.Session, error) {
 	curr, err := Get(ctx, room, id)
 	if err != nil {
 		return nil, err
@@ -65,6 +66,10 @@ func Next(ctx context.Context, room string, id string, end int64) (*ent.Session,
 	if err != nil {
 		return nil, err
 	}
+	send <- sse.Msg{
+		Topic: []string{"session/" + curr.SessionID},
+		Data:  curr,
+	}
 
 	if next != nil {
 		err = next.Update().
@@ -72,6 +77,10 @@ func Next(ctx context.Context, room string, id string, end int64) (*ent.Session,
 			Exec(ctx)
 		if err != nil {
 			return nil, err
+		}
+		send <- sse.Msg{
+			Topic: []string{"session/" + next.SessionID, "room/" + room},
+			Data:  next,
 		}
 
 	}
@@ -104,9 +113,10 @@ type SessionWithoutID struct {
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
 	// Data holds the value of the "data" field.
-	Data map[string]interface{} `json:"data,omitempty"`
+	Data map[string]any `json:"data,omitempty"`
 }
 
+// TODO: send sse to all clients
 func UpdateAll(ctx context.Context, sessions []SessionWithoutID) error {
 	_, err := m.Client.Session.Delete().Exec(ctx)
 	if err != nil {
@@ -119,7 +129,7 @@ func UpdateAll(ctx context.Context, sessions []SessionWithoutID) error {
 	}
 
 	for _, s := range sessions {
-		_, err := tx.Session.Create().
+		_, err = tx.Session.Create().
 			SetIdx(s.Idx).
 			SetSessionID(s.SessionID).
 			SetFinish(s.Finish).

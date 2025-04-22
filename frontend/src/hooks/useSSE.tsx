@@ -37,11 +37,13 @@ export const SSEProvider = ({ children, url }: { children: ReactNode; url: strin
 			try {
 				const parsedData: { topic: string[]; data: any } = JSON.parse(event.data)
 				const { topic, data } = parsedData
-				const callbacks = handlersRef.current.get(topic[0])
-				if (callbacks) {
-					callbacks.forEach(callback => {
-						callback(data)
-					})
+				for (let t of topic) {
+					const callbacks = handlersRef.current.get(t)
+					if (callbacks) {
+						callbacks.forEach(callback => {
+							callback(data)
+						})
+					}
 				}
 
 				const allHandlers = handlersRef.current.get('__all__')

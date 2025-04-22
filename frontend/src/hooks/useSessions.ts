@@ -1,6 +1,11 @@
 import { GetAllInRoom } from '@/sdk/session'
-import { usePolling } from './usePolling'
+import { useSSEFetchValue } from './useSSE'
+import { useCallback } from 'react'
 
 export function useSessions(room: string) {
-	return usePolling(() => GetAllInRoom(room), [])
+	return useSSEFetchValue(
+		`room/${room}`,
+		useCallback(() => GetAllInRoom(room), [room]),
+	)
+	// return usePolling(() => GetAllInRoom(room), [])
 }

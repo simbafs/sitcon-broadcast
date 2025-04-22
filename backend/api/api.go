@@ -15,7 +15,7 @@ import (
 var log = logger.New("api")
 
 func Route(api huma.API, t *token.Token, send chan sse.Msg) {
-	session.Route(huma.NewGroup(api, "/api/session"), t)
+	session.Route(huma.NewGroup(api, "/api/session"), t, send)
 	now.Route(huma.NewGroup(api, "/api/now"), t, send)
 	event.Route(huma.NewGroup(api, "/api/event"), t)
 	counter.Route(huma.NewGroup(api, "/api/counter"), t, send)

@@ -7,6 +7,7 @@ import (
 	"backend/internal/logger"
 	"backend/internal/token"
 	"backend/models/session"
+	"backend/sse"
 	"backend/util"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -26,7 +27,7 @@ type BodySetSession struct {
 	Sessions []session.SessionWithoutID
 }
 
-func Route(api huma.API, t *token.Token) {
+func Route(api huma.API, t *token.Token, send chan sse.Msg) {
 	huma.Get(api, "/{room}", func(ctx context.Context, input *struct {
 		Room string `path:"room" example:"R0" doc:"Room ID"`
 	},
@@ -74,7 +75,7 @@ func Route(api huma.API, t *token.Token) {
 		Body BodyNext
 	},
 	) (*Output[*ent.Session], error) {
-		s, err := session.Next(ctx, input.Room, input.ID, input.Body.End)
+		s, err := session.Next(ctx, input.Room, input.ID, input.Body.End, send) // TODO: too many arguments
 		if err != nil {
 			return nil, err
 		}

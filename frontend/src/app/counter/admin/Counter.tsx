@@ -32,7 +32,12 @@ export function Counter({ name }: { name: string }) {
 					>
 						設定
 					</button>
-					<button className={btn({ class: 'col-span-4 w-full md:col-span-1' })}>開啟頁面</button>
+					<a
+						href={`/counter?room=${name}`}
+						className={btn({ class: 'col-span-4 w-full text-center md:col-span-1' })}
+					>
+						開啟頁面
+					</a>
 				</>
 			) : (
 				<Loading />

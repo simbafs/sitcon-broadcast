@@ -1,6 +1,10 @@
-import { Counter } from '@/sdk/counter'
-import { useFetch } from './util/useFetch'
+import { Counter, GetAll } from '@/sdk/counter'
+import { useEffect, useState } from 'react'
 
 export function useCounters() {
-	return useFetch<Record<string, Counter>>('/api/counter')
+	const [counters, setCounters] = useState<Record<string, Counter>>({})
+	useEffect(() => {
+		GetAll().then(setCounters)
+	}, [])
+	return counters
 }

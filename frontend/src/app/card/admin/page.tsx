@@ -6,9 +6,8 @@ import { btn } from '@/style/btn'
 import { parseAsString, useQueryState } from 'nuqs'
 import { useNow } from '@/hooks/useNow'
 import { Card } from '@/components/card'
-import { Suspense } from 'react'
 
-function CardPage() {
+export default function Page() {
 	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
 	const session = useSession(room)
 	const now = useNow()
@@ -28,13 +27,5 @@ function CardPage() {
 			{/* TODO: */}
 			{/* <button className={btn()}>撤銷</button> */}
 		</div>
-	)
-}
-
-export default function Page() {
-	return (
-		<Suspense>
-			<CardPage />
-		</Suspense>
 	)
 }

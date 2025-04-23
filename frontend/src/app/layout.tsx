@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify'
 
 import './globals.css'
 import { SSEProvider } from '@/hooks/util/useSSE'
+import { Suspense } from 'react'
 
 const font = Noto_Sans_TC({
 	weight: ['400', '700'],
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: Props) {
 		<html className={font.className}>
 			<body>
 				<SSEProvider url="/sse">
-					<NuqsAdapter>{children}</NuqsAdapter>
+					<NuqsAdapter>
+						<Suspense>{children}</Suspense>
+					</NuqsAdapter>
 				</SSEProvider>
 				<ToastContainer position="bottom-right" />
 			</body>

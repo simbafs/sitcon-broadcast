@@ -5,9 +5,8 @@ import { Card } from '@/components/card'
 import { Loading } from '@/components/loading'
 import { useSessions } from '@/hooks/useSessions'
 import { parseAsString, useQueryState } from 'nuqs'
-import { Suspense } from 'react'
 
-function All() {
+export default function Page() {
 	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
 	const sessions = useSessions(room)
 
@@ -18,13 +17,5 @@ function All() {
 				{sessions ? sessions.map(session => <Card key={session.session_id} session={session} />) : <Loading />}
 			</div>
 		</div>
-	)
-}
-
-export default function Page() {
-	return (
-		<Suspense>
-			<All />
-		</Suspense>
 	)
 }

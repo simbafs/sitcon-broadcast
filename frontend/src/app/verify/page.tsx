@@ -1,13 +1,13 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { useQueryState } from 'nuqs'
-import { FormEvent, Suspense, useState } from 'react'
+import { parseAsString, useQueryState } from 'nuqs'
+import { FormEvent, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-function Verify() {
+export default function Page() {
 	const [token, setToken] = useState('')
 	const [isInvalid, setIsInvalid] = useState(false)
-	const [redirect] = useQueryState('redirect')
+	const [redirect] = useQueryState('redirect', parseAsString.withDefault('/'))
 	const router = useRouter()
 
 	const check = (e: FormEvent) => {
@@ -58,13 +58,5 @@ function Verify() {
 				</button>
 			</form>
 		</div>
-	)
-}
-
-export default function Page() {
-	return (
-		<Suspense>
-			<Verify />
-		</Suspense>
 	)
 }

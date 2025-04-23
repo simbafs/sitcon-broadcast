@@ -1,13 +1,13 @@
 'use client'
+import { useQuery } from '@/hooks/util/useQuery'
 import { useRouter } from 'next/navigation'
-import { parseAsString, useQueryState } from 'nuqs'
 import { FormEvent, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export default function Page() {
 	const [token, setToken] = useState('')
 	const [isInvalid, setIsInvalid] = useState(false)
-	const [redirect] = useQueryState('redirect', parseAsString.withDefault('/'))
+	const [redirect] = useQuery('redirect', '/')
 	const router = useRouter()
 
 	const check = (e: FormEvent) => {

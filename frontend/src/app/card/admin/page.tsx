@@ -3,12 +3,12 @@
 import { useSession } from '@/hooks/useSession'
 import { ActionNext } from '@/sdk/session'
 import { btn } from '@/style/btn'
-import { parseAsString, useQueryState } from 'nuqs'
 import { useNow } from '@/hooks/useNow'
 import { Card } from '@/components/card'
+import { useQuery } from '@/hooks/util/useQuery'
 
 export default function Page() {
-	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
+	const [room] = useQuery('room', 'R0')
 	const session = useSession(room)
 	const now = useNow()
 

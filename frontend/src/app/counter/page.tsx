@@ -1,11 +1,11 @@
 'use client'
 import { useCounter } from '@/hooks/useCounter'
-import { parseAsString, useQueryState } from 'nuqs'
 import { formatCountdown } from './formatTime'
 import { Loading } from '@/components/loading'
+import { useQuery } from '@/hooks/util/useQuery'
 
 export default function Page() {
-	const [name] = useQueryState('name', parseAsString.withDefault('R0'))
+	const [name] = useQuery('room', 'R0')
 	const counter = useCounter(name)
 
 	return (

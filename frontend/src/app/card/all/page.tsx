@@ -4,10 +4,10 @@
 import { Card } from '@/components/card'
 import { Loading } from '@/components/loading'
 import { useSessions } from '@/hooks/useSessions'
-import { parseAsString, useQueryState } from 'nuqs'
+import { useQuery } from '@/hooks/util/useQuery'
 
 export default function Page() {
-	const [room] = useQueryState('room', parseAsString.withDefault('R0'))
+	const [room] = useQuery('room', 'R0')
 	const sessions = useSessions(room)
 
 	return (

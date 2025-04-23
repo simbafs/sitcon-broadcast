@@ -13,7 +13,7 @@ export function formatTime(time: Date) {
 	return `${to2(hour)}:${to2(minute)}`
 }
 
-export function formatCountdown(time: number) {
+export function formatCounter(time: number) {
 	const hour = Math.floor(time / 60)
 	const minute = time % 60
 	return `${to2(hour)}:${to2(minute)}`

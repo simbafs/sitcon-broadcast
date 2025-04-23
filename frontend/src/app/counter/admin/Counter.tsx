@@ -2,6 +2,7 @@ import { Loading } from '@/components/loading'
 import { useCounter } from '@/hooks/useCounter'
 import { Reset, SetInit, Start, Stop } from '@/sdk/counter'
 import { btn } from '@/style/btn'
+import { formatCounter } from '../formatTime'
 
 export function Counter({ name }: { name: string }) {
 	const counter = useCounter(name)
@@ -11,7 +12,7 @@ export function Counter({ name }: { name: string }) {
 			<h1 className="col-span-2 md:col-span-1">{name}</h1>
 			{counter ? (
 				<>
-					<h1 className="col-span-2 md:col-span-1">{counter.count}</h1>
+					<h1 className="col-span-2 md:col-span-1">{formatCounter(counter.count)}</h1>
 					<button onClick={() => Start(name)} className={btn({ class: 'w-full' })}>
 						開始
 					</button>
@@ -34,6 +35,7 @@ export function Counter({ name }: { name: string }) {
 					</button>
 					<a
 						href={`/counter?room=${name}`}
+						target="_blank"
 						className={btn({ class: 'col-span-4 w-full text-center md:col-span-1' })}
 					>
 						開啟頁面

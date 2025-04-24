@@ -2,6 +2,7 @@ package sse
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,7 @@ type Msg struct {
 }
 
 type SSE struct {
-	Message chan Msg
+	Send chan Msg
 
 	conns     map[chan string]bool
 	newConn   chan chan string
@@ -24,7 +25,7 @@ type SSE struct {
 // NewSSE creates a new SSE instance and starts listening for new connections
 func New() *SSE {
 	sse := &SSE{
-		Message:   make(chan Msg),
+		Send:      make(chan Msg),
 		conns:     make(map[chan string]bool),
 		newConn:   make(chan chan string),
 		closeConn: make(chan chan string),
@@ -40,7 +41,7 @@ func (s *SSE) Listen() {
 			s.conns[conn] = true
 		case conn := <-s.closeConn:
 			delete(s.conns, conn)
-		case msg := <-s.Message:
+		case msg := <-s.Send:
 			data, err := encodeSSEMsg(msg)
 			if err != nil {
 				continue
@@ -82,4 +83,14 @@ func (s *SSE) GinHandler() gin.HandlerFunc {
 			c.Writer.Flush()
 		}
 	}
+}
+
+type Job func() Msg
+
+func (s *SSE) AddJob(ticker *time.Ticker, job Job) {
+	go func() {
+		for range ticker.C {
+			s.Send <- job()
+		}
+	}()
 }

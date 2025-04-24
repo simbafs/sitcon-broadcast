@@ -72,7 +72,7 @@ func run(c *config.Config) error {
 
 	r.GET("/sse", s.GinHandler())
 
-	api.Route(humaapi, t, s.Message)
+	api.Route(humaapi, t, s.Send)
 
 	r.Use(t.ProtectRoute([]string{"/debug", "/event", "/counter/admin", "/card/admin"}))
 	r.Use(k.Gin())

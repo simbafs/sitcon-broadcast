@@ -29,11 +29,13 @@ func (h *Handler) GetCounter(ctx context.Context, input *struct {
 	}, nil
 }
 
+type CreateInit struct {
+	Init int `json:"init" doc:"initial value" example:"10"`
+}
+
 func (h *Handler) SetCounterInit(ctx context.Context, input *struct {
-	Name string `path:"name" doc:"counter name" example:"R0"`
-	Body struct {
-		Init int `json:"init" doc:"initial value" example:"10"`
-	}
+	Name string     `path:"name" doc:"counter name" example:"R0"`
+	Body CreateInit `json:"body" doc:"counter init value"`
 },
 ) (*Output[counter.Counter], error) {
 	c := h.counters.Get(input.Name)

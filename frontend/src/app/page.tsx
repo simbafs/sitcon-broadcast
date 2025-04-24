@@ -1,12 +1,12 @@
 type Page =
 	| {
-			name: string
-			link: string
-	  }
+		name: string
+		link: string
+	}
 	| {
-			name: string
-			children: Page[]
-	  }
+		name: string
+		children: Page[]
+	}
 
 function page(name: string, link: string): Page {
 	return {
@@ -31,8 +31,12 @@ function pageWithRoom(link: string): Page[] {
 
 const pages: Page[] = [
 	page('Home', '/'),
-	directory('card', [page('admin', '/card/admin'), page('all', '/card/all'), ...pageWithRoom('/card')]),
-	directory('counter', [page('admin', '/counter/admin'), ...pageWithRoom('/counter')]),
+	directory('card', [
+		directory('admin', pageWithRoom('/card/admin')),
+		page('all', '/card/all'),
+		...pageWithRoom('/card'),
+	]),
+	directory('counter', [directory('admin', pageWithRoom('/counter/admin')), ...pageWithRoom('/counter')]),
 	directory('debug', [page('debug', '/debug'), page('sse', '/debug/sse')]),
 	page('event', '/event'),
 ]

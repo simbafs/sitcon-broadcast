@@ -2,12 +2,14 @@ package main
 
 import (
 	"embed"
+	"time"
 
 	"backend/api"
 	"backend/internal/config"
 	"backend/internal/logger"
 	"backend/internal/token"
 	"backend/models"
+	"backend/models/now"
 	"backend/sse"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -59,26 +61,43 @@ func humaConfig() huma.Config {
 	return config
 }
 
-func run(c *config.Config) error {
+func withSSE(r *gin.Engine) sse.Send {
+	s := sse.New()
+	r.GET("/sse", s.GinHandler())
+	s.AddJob(time.NewTicker(time.Second), func() sse.Msg {
+		return sse.Msg{
+			Topic: []string{"now"},
+			Data:  now.GetNow(),
+		}
+	})
+
+	return s.Send
+}
+
+func withToken(r *gin.Engine, cfg *config.Config) *token.Token {
+	t := token.NewToken(cfg.Token, cfg.Domain)
+	r.POST("/verify", t.Verify())
+	r.Use(t.ProtectRoute([]string{"/debug", "/event", "/counter/admin", "/card/admin"}))
+	return t
+}
+
+func withKama(r *gin.Engine) {
+	k := kama.New(rawStatic)
+	r.Use(k.Gin())
+}
+
+func run(cfg *config.Config) error {
 	gin.SetMode(Mode)
 	r := gin.Default()
-	t := token.NewToken(c.Token, c.Domain)
-	k := kama.New(rawStatic)
-	s := sse.New()
 
-	r.POST("/verify", t.Verify())
+	send := withSSE(r)
+	token := withToken(r, cfg)
+	withKama(r)
 
-	humaapi := humagin.New(r, humaConfig())
+	api.Route(humagin.New(r, humaConfig()), api.NewHandler(send, token))
 
-	r.GET("/sse", s.GinHandler())
-
-	api.Route(humaapi, t, s.Send)
-
-	r.Use(t.ProtectRoute([]string{"/debug", "/event", "/counter/admin", "/card/admin"}))
-	r.Use(k.Gin())
-
-	log.Printf("Server is running at %s\n", c.Addr)
-	return r.Run(c.Addr)
+	log.Printf("Server is running at %s\n", cfg.Addr)
+	return r.Run(cfg.Addr)
 }
 
 func main() {

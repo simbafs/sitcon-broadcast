@@ -4,6 +4,8 @@ import (
 	"backend/internal/logger"
 	"backend/internal/token"
 	"backend/models/counter"
+	"backend/models/event"
+	"backend/models/session"
 	"backend/sse"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -123,9 +125,11 @@ type Handler struct {
 	send     sse.Send
 	token    *token.Token
 	counters counter.CounterGroup
+	event    *event.Event
+	session  *session.Session
 }
 
-func NewHandler(send sse.Send, token *token.Token) *Handler {
+func NewHandler(send sse.Send, token *token.Token, event *event.Event, session *session.Session) *Handler {
 	callback := func(name string) counter.Callback {
 		return func(c *counter.Counter) {
 			send <- sse.Msg{
@@ -148,5 +152,7 @@ func NewHandler(send sse.Send, token *token.Token) *Handler {
 		send:     send,
 		token:    token,
 		counters: counters,
+		event:    event,
+		session:  session,
 	}
 }

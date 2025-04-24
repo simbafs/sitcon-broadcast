@@ -11,7 +11,7 @@ func (h *Handler) GetAllSession(ctx context.Context, input *struct {
 	Room string `path:"room" example:"R0" doc:"Room ID"`
 },
 ) (*Output[*ent.Session], error) {
-	s, err := session.GetCurrent(ctx, input.Room)
+	s, err := h.session.GetCurrent(ctx, input.Room)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (h *Handler) GetSessionInRoom(ctx context.Context, input *struct {
 	Room string `path:"room" example:"R0" doc:"Room ID"`
 },
 ) (*Output[ent.Sessions], error) {
-	s, err := session.GetAllInRoom(ctx, input.Room)
+	s, err := h.session.GetAllInRoom(ctx, input.Room)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (h *Handler) GetSessionByID(ctx context.Context, input *struct {
 	ID   string `path:"id" example:"2d8a5e" doc:"Session ID"`
 },
 ) (*Output[*ent.Session], error) {
-	s, err := session.Get(ctx, input.Room, input.ID)
+	s, err := h.session.Get(ctx, input.Room, input.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (h *Handler) NextSession(ctx context.Context, input *struct {
 	Body BodyNext
 },
 ) (*Output[*ent.Session], error) {
-	s, err := session.Next(ctx, input.Room, input.ID, input.Body.End, h.send) // TODO: too many arguments
+	s, err := h.session.Next(ctx, input.Room, input.ID, input.Body.End, h.send) // TODO: too many arguments
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (h *Handler) SetAllSession(ctx context.Context, input *struct {
 	Body BodySetSession
 },
 ) (*Output[string], error) {
-	err := session.UpdateAll(ctx, input.Body.Sessions)
+	err := h.session.UpdateAll(ctx, input.Body.Sessions)
 
 	return &Output[string]{
 		Body: "ok",

@@ -92,9 +92,13 @@ func run(cfg *config.Config) error {
 
 	send := withSSE(r)
 	token := withToken(r, cfg)
-	withKama(r)
+	event, session, err := models.InitDB(cfg.DB)
+	if err != nil {
+		return err
+	}
+	api.Route(humagin.New(r, humaConfig()), api.NewHandler(send, token, event, session))
 
-	api.Route(humagin.New(r, humaConfig()), api.NewHandler(send, token))
+	withKama(r) // This must be put at the end of all middlewares
 
 	log.Printf("Server is running at %s\n", cfg.Addr)
 	return r.Run(cfg.Addr)
@@ -104,10 +108,6 @@ func main() {
 	c := &config.Config{}
 	c.SetDefault()
 	c.FromEnv()
-
-	if err := models.InitDB(c.DB); err != nil {
-		log.Fatalf("Failed to init database: %v\n", err)
-	}
 
 	if err := run(c); err != nil {
 		log.Printf("Oops, there's an error: %v\n", err)

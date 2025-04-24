@@ -6,13 +6,12 @@ import (
 	"net/http"
 
 	"backend/ent"
-	"backend/models/event"
 
 	"github.com/danielgtaylor/huma/v2"
 )
 
 func (h *Handler) GetAllEvent(ctx context.Context, input *struct{}) (*Output[ent.Events], error) {
-	e, err := event.GetAll(ctx)
+	e, err := h.event.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +25,7 @@ func (h *Handler) GetEvent(ctx context.Context, input *struct {
 	Name string `path:"name" example:"SITCON2025" doc:"Event Name"`
 },
 ) (*Output[*ent.Event], error) {
-	e, err := event.Get(ctx, input.Name)
+	e, err := h.event.Get(ctx, input.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +39,7 @@ func (h *Handler) GetEventSession(ctx context.Context, input *struct {
 	Name string `path:"name" example:"SITCON2025" doc:"Event Name"`
 },
 ) (*huma.StreamResponse, error) {
-	e, err := event.Get(ctx, input.Name)
+	e, err := h.event.Get(ctx, input.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +68,7 @@ func (h *Handler) CreateEvent(ctx context.Context, input *struct {
 	Body BodyCreateEvent
 },
 ) (*Output[*ent.Event], error) {
-	e, err := event.NewEvent(ctx, input.Body.Name, input.Body.URL, input.Body.Script)
+	e, err := h.event.NewEvent(ctx, input.Body.Name, input.Body.URL, input.Body.Script)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +87,7 @@ func (h *Handler) UpdateEventScript(ctx context.Context, input *struct {
 	Body BodyUpdateScript
 },
 ) (*Output[*ent.Event], error) {
-	e, err := event.UpdateScript(ctx, input.Name, input.Body.Script)
+	e, err := h.event.UpdateScript(ctx, input.Name, input.Body.Script)
 	if err != nil {
 		return nil, err
 	}

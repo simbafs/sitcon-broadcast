@@ -17,4 +17,7 @@ type EventRepository interface {
 	Delete(ctx context.Context, name string) error
 }
 
-var _ EventRepository = &repository.EventEntRepository{}
+var (
+	_ EventRepository = &repository.EventEntRepository{}
+	_ EventRepository = &repository.EventInMemoryRepository{}
+)

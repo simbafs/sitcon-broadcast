@@ -1,4 +1,4 @@
-package gin
+package ginrest
 
 import (
 	"net/http"
@@ -13,13 +13,13 @@ func (g *Gin) Create(c *gin.Context) {
 	var input usecase.EventCreateInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 
 	output, err := g.event.Create(c, &input)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
@@ -36,7 +36,7 @@ func (g *Gin) Delete(c *gin.Context) {
 
 	output, err := g.event.Delete(c, &input)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (g *Gin) Get(c *gin.Context) {
 
 	output, err := g.event.Get(c, &input)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (g *Gin) List(c *gin.Context) {
 
 	output, err := g.event.List(c, &input)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
@@ -78,7 +78,7 @@ func (g *Gin) UpdateScript(c *gin.Context) {
 	var input usecase.EventSetScriptInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 
@@ -87,7 +87,7 @@ func (g *Gin) UpdateScript(c *gin.Context) {
 
 	output, err := g.event.Execute(c, &input)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 

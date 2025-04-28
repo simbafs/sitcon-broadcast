@@ -17,7 +17,7 @@ type Session struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Idx holds the value of the "idx" field.
+	// just for sorting
 	Idx int8 `json:"idx,omitempty"`
 	// Finish holds the value of the "finish" field.
 	Finish bool `json:"finish,omitempty"`
@@ -29,13 +29,32 @@ type Session struct {
 	Room string `json:"room,omitempty"`
 	// SessionID holds the value of the "session_id" field.
 	SessionID string `json:"session_id,omitempty"`
-	// Next holds the value of the "next" field.
-	Next string `json:"next,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
 	// Data holds the value of the "data" field.
-	Data         map[string]interface{} `json:"data,omitempty"`
+	Data map[string]interface{} `json:"data,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the SessionQuery when eager-loading is set.
+	Edges        SessionEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// SessionEdges holds the relations/edges for other nodes in the graph.
+type SessionEdges struct {
+	// Next holds the value of the next edge.
+	Next []*Session `json:"next,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// NextOrErr returns the Next value or an error if the edge
+// was not loaded in eager-loading.
+func (e SessionEdges) NextOrErr() ([]*Session, error) {
+	if e.loadedTypes[0] {
+		return e.Next, nil
+	}
+	return nil, &NotLoadedError{edge: "next"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -49,7 +68,7 @@ func (*Session) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case session.FieldID, session.FieldIdx, session.FieldStart, session.FieldEnd:
 			values[i] = new(sql.NullInt64)
-		case session.FieldRoom, session.FieldSessionID, session.FieldNext, session.FieldTitle:
+		case session.FieldRoom, session.FieldSessionID, session.FieldTitle:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -108,12 +127,6 @@ func (s *Session) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.SessionID = value.String
 			}
-		case session.FieldNext:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field next", values[i])
-			} else if value.Valid {
-				s.Next = value.String
-			}
 		case session.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
@@ -139,6 +152,11 @@ func (s *Session) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (s *Session) Value(name string) (ent.Value, error) {
 	return s.selectValues.Get(name)
+}
+
+// QueryNext queries the "next" edge of the Session entity.
+func (s *Session) QueryNext() *SessionQuery {
+	return NewSessionClient(s.config).QueryNext(s)
 }
 
 // Update returns a builder for updating this Session.
@@ -181,9 +199,6 @@ func (s *Session) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("session_id=")
 	builder.WriteString(s.SessionID)
-	builder.WriteString(", ")
-	builder.WriteString("next=")
-	builder.WriteString(s.Next)
 	builder.WriteString(", ")
 	builder.WriteString("title=")
 	builder.WriteString(s.Title)

@@ -477,10 +477,12 @@ type SessionMutation struct {
 	addend        *int64
 	room          *string
 	session_id    *string
-	next          *string
 	title         *string
 	data          *map[string]interface{}
 	clearedFields map[string]struct{}
+	next          map[int]struct{}
+	removednext   map[int]struct{}
+	clearednext   bool
 	done          bool
 	oldValue      func(context.Context) (*Session, error)
 	predicates    []predicate.Session
@@ -860,42 +862,6 @@ func (m *SessionMutation) ResetSessionID() {
 	m.session_id = nil
 }
 
-// SetNext sets the "next" field.
-func (m *SessionMutation) SetNext(s string) {
-	m.next = &s
-}
-
-// Next returns the value of the "next" field in the mutation.
-func (m *SessionMutation) Next() (r string, exists bool) {
-	v := m.next
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldNext returns the old "next" field's value of the Session entity.
-// If the Session object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SessionMutation) OldNext(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNext is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNext requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNext: %w", err)
-	}
-	return oldValue.Next, nil
-}
-
-// ResetNext resets all changes to the "next" field.
-func (m *SessionMutation) ResetNext() {
-	m.next = nil
-}
-
 // SetTitle sets the "title" field.
 func (m *SessionMutation) SetTitle(s string) {
 	m.title = &s
@@ -968,6 +934,60 @@ func (m *SessionMutation) ResetData() {
 	m.data = nil
 }
 
+// AddNextIDs adds the "next" edge to the Session entity by ids.
+func (m *SessionMutation) AddNextIDs(ids ...int) {
+	if m.next == nil {
+		m.next = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.next[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNext clears the "next" edge to the Session entity.
+func (m *SessionMutation) ClearNext() {
+	m.clearednext = true
+}
+
+// NextCleared reports if the "next" edge to the Session entity was cleared.
+func (m *SessionMutation) NextCleared() bool {
+	return m.clearednext
+}
+
+// RemoveNextIDs removes the "next" edge to the Session entity by IDs.
+func (m *SessionMutation) RemoveNextIDs(ids ...int) {
+	if m.removednext == nil {
+		m.removednext = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.next, ids[i])
+		m.removednext[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNext returns the removed IDs of the "next" edge to the Session entity.
+func (m *SessionMutation) RemovedNextIDs() (ids []int) {
+	for id := range m.removednext {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NextIDs returns the "next" edge IDs in the mutation.
+func (m *SessionMutation) NextIDs() (ids []int) {
+	for id := range m.next {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNext resets all changes to the "next" edge.
+func (m *SessionMutation) ResetNext() {
+	m.next = nil
+	m.clearednext = false
+	m.removednext = nil
+}
+
 // Where appends a list predicates to the SessionMutation builder.
 func (m *SessionMutation) Where(ps ...predicate.Session) {
 	m.predicates = append(m.predicates, ps...)
@@ -1002,7 +1022,7 @@ func (m *SessionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SessionMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 8)
 	if m.idx != nil {
 		fields = append(fields, session.FieldIdx)
 	}
@@ -1020,9 +1040,6 @@ func (m *SessionMutation) Fields() []string {
 	}
 	if m.session_id != nil {
 		fields = append(fields, session.FieldSessionID)
-	}
-	if m.next != nil {
-		fields = append(fields, session.FieldNext)
 	}
 	if m.title != nil {
 		fields = append(fields, session.FieldTitle)
@@ -1050,8 +1067,6 @@ func (m *SessionMutation) Field(name string) (ent.Value, bool) {
 		return m.Room()
 	case session.FieldSessionID:
 		return m.SessionID()
-	case session.FieldNext:
-		return m.Next()
 	case session.FieldTitle:
 		return m.Title()
 	case session.FieldData:
@@ -1077,8 +1092,6 @@ func (m *SessionMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldRoom(ctx)
 	case session.FieldSessionID:
 		return m.OldSessionID(ctx)
-	case session.FieldNext:
-		return m.OldNext(ctx)
 	case session.FieldTitle:
 		return m.OldTitle(ctx)
 	case session.FieldData:
@@ -1133,13 +1146,6 @@ func (m *SessionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSessionID(v)
-		return nil
-	case session.FieldNext:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetNext(v)
 		return nil
 	case session.FieldTitle:
 		v, ok := value.(string)
@@ -1261,9 +1267,6 @@ func (m *SessionMutation) ResetField(name string) error {
 	case session.FieldSessionID:
 		m.ResetSessionID()
 		return nil
-	case session.FieldNext:
-		m.ResetNext()
-		return nil
 	case session.FieldTitle:
 		m.ResetTitle()
 		return nil
@@ -1276,48 +1279,84 @@ func (m *SessionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SessionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.next != nil {
+		edges = append(edges, session.EdgeNext)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *SessionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case session.EdgeNext:
+		ids := make([]ent.Value, 0, len(m.next))
+		for id := range m.next {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SessionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removednext != nil {
+		edges = append(edges, session.EdgeNext)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *SessionMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case session.EdgeNext:
+		ids := make([]ent.Value, 0, len(m.removednext))
+		for id := range m.removednext {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SessionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearednext {
+		edges = append(edges, session.EdgeNext)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *SessionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case session.EdgeNext:
+		return m.clearednext
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *SessionMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Session unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *SessionMutation) ResetEdge(name string) error {
+	switch name {
+	case session.EdgeNext:
+		m.ResetNext()
+		return nil
+	}
 	return fmt.Errorf("unknown Session edge %s", name)
 }

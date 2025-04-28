@@ -124,9 +124,45 @@ func (su *SessionUpdate) SetData(m map[string]interface{}) *SessionUpdate {
 	return su
 }
 
+// AddNextIDs adds the "next" edge to the Session entity by IDs.
+func (su *SessionUpdate) AddNextIDs(ids ...int) *SessionUpdate {
+	su.mutation.AddNextIDs(ids...)
+	return su
+}
+
+// AddNext adds the "next" edges to the Session entity.
+func (su *SessionUpdate) AddNext(s ...*Session) *SessionUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.AddNextIDs(ids...)
+}
+
 // Mutation returns the SessionMutation object of the builder.
 func (su *SessionUpdate) Mutation() *SessionMutation {
 	return su.mutation
+}
+
+// ClearNext clears all "next" edges to the Session entity.
+func (su *SessionUpdate) ClearNext() *SessionUpdate {
+	su.mutation.ClearNext()
+	return su
+}
+
+// RemoveNextIDs removes the "next" edge to Session entities by IDs.
+func (su *SessionUpdate) RemoveNextIDs(ids ...int) *SessionUpdate {
+	su.mutation.RemoveNextIDs(ids...)
+	return su
+}
+
+// RemoveNext removes "next" edges to Session entities.
+func (su *SessionUpdate) RemoveNext(s ...*Session) *SessionUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.RemoveNextIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -191,6 +227,51 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Data(); ok {
 		_spec.SetField(session.FieldData, field.TypeJSON, value)
+	}
+	if su.mutation.NextCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   session.NextTable,
+			Columns: session.NextPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedNextIDs(); len(nodes) > 0 && !su.mutation.NextCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   session.NextTable,
+			Columns: session.NextPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.NextIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   session.NextTable,
+			Columns: session.NextPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -309,9 +390,45 @@ func (suo *SessionUpdateOne) SetData(m map[string]interface{}) *SessionUpdateOne
 	return suo
 }
 
+// AddNextIDs adds the "next" edge to the Session entity by IDs.
+func (suo *SessionUpdateOne) AddNextIDs(ids ...int) *SessionUpdateOne {
+	suo.mutation.AddNextIDs(ids...)
+	return suo
+}
+
+// AddNext adds the "next" edges to the Session entity.
+func (suo *SessionUpdateOne) AddNext(s ...*Session) *SessionUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.AddNextIDs(ids...)
+}
+
 // Mutation returns the SessionMutation object of the builder.
 func (suo *SessionUpdateOne) Mutation() *SessionMutation {
 	return suo.mutation
+}
+
+// ClearNext clears all "next" edges to the Session entity.
+func (suo *SessionUpdateOne) ClearNext() *SessionUpdateOne {
+	suo.mutation.ClearNext()
+	return suo
+}
+
+// RemoveNextIDs removes the "next" edge to Session entities by IDs.
+func (suo *SessionUpdateOne) RemoveNextIDs(ids ...int) *SessionUpdateOne {
+	suo.mutation.RemoveNextIDs(ids...)
+	return suo
+}
+
+// RemoveNext removes "next" edges to Session entities.
+func (suo *SessionUpdateOne) RemoveNext(s ...*Session) *SessionUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.RemoveNextIDs(ids...)
 }
 
 // Where appends a list predicates to the SessionUpdate builder.
@@ -406,6 +523,51 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	}
 	if value, ok := suo.mutation.Data(); ok {
 		_spec.SetField(session.FieldData, field.TypeJSON, value)
+	}
+	if suo.mutation.NextCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   session.NextTable,
+			Columns: session.NextPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedNextIDs(); len(nodes) > 0 && !suo.mutation.NextCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   session.NextTable,
+			Columns: session.NextPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.NextIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   session.NextTable,
+			Columns: session.NextPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Session{config: suo.config}
 	_spec.Assign = _node.assignValues

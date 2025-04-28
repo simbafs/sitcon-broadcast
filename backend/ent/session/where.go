@@ -6,6 +6,7 @@ import (
 	"backend/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -81,11 +82,6 @@ func Room(v string) predicate.Session {
 // SessionID applies equality check predicate on the "session_id" field. It's identical to SessionIDEQ.
 func SessionID(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldSessionID, v))
-}
-
-// Next applies equality check predicate on the "next" field. It's identical to NextEQ.
-func Next(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldNext, v))
 }
 
 // Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
@@ -353,71 +349,6 @@ func SessionIDContainsFold(v string) predicate.Session {
 	return predicate.Session(sql.FieldContainsFold(FieldSessionID, v))
 }
 
-// NextEQ applies the EQ predicate on the "next" field.
-func NextEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldEQ(FieldNext, v))
-}
-
-// NextNEQ applies the NEQ predicate on the "next" field.
-func NextNEQ(v string) predicate.Session {
-	return predicate.Session(sql.FieldNEQ(FieldNext, v))
-}
-
-// NextIn applies the In predicate on the "next" field.
-func NextIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldIn(FieldNext, vs...))
-}
-
-// NextNotIn applies the NotIn predicate on the "next" field.
-func NextNotIn(vs ...string) predicate.Session {
-	return predicate.Session(sql.FieldNotIn(FieldNext, vs...))
-}
-
-// NextGT applies the GT predicate on the "next" field.
-func NextGT(v string) predicate.Session {
-	return predicate.Session(sql.FieldGT(FieldNext, v))
-}
-
-// NextGTE applies the GTE predicate on the "next" field.
-func NextGTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldGTE(FieldNext, v))
-}
-
-// NextLT applies the LT predicate on the "next" field.
-func NextLT(v string) predicate.Session {
-	return predicate.Session(sql.FieldLT(FieldNext, v))
-}
-
-// NextLTE applies the LTE predicate on the "next" field.
-func NextLTE(v string) predicate.Session {
-	return predicate.Session(sql.FieldLTE(FieldNext, v))
-}
-
-// NextContains applies the Contains predicate on the "next" field.
-func NextContains(v string) predicate.Session {
-	return predicate.Session(sql.FieldContains(FieldNext, v))
-}
-
-// NextHasPrefix applies the HasPrefix predicate on the "next" field.
-func NextHasPrefix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasPrefix(FieldNext, v))
-}
-
-// NextHasSuffix applies the HasSuffix predicate on the "next" field.
-func NextHasSuffix(v string) predicate.Session {
-	return predicate.Session(sql.FieldHasSuffix(FieldNext, v))
-}
-
-// NextEqualFold applies the EqualFold predicate on the "next" field.
-func NextEqualFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldEqualFold(FieldNext, v))
-}
-
-// NextContainsFold applies the ContainsFold predicate on the "next" field.
-func NextContainsFold(v string) predicate.Session {
-	return predicate.Session(sql.FieldContainsFold(FieldNext, v))
-}
-
 // TitleEQ applies the EQ predicate on the "title" field.
 func TitleEQ(v string) predicate.Session {
 	return predicate.Session(sql.FieldEQ(FieldTitle, v))
@@ -481,6 +412,29 @@ func TitleEqualFold(v string) predicate.Session {
 // TitleContainsFold applies the ContainsFold predicate on the "title" field.
 func TitleContainsFold(v string) predicate.Session {
 	return predicate.Session(sql.FieldContainsFold(FieldTitle, v))
+}
+
+// HasNext applies the HasEdge predicate on the "next" edge.
+func HasNext() predicate.Session {
+	return predicate.Session(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, NextTable, NextPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNextWith applies the HasEdge predicate on the "next" edge with a given conditions (other predicates).
+func HasNextWith(preds ...predicate.Session) predicate.Session {
+	return predicate.Session(func(s *sql.Selector) {
+		step := newNextStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

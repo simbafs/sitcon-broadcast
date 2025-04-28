@@ -4,6 +4,7 @@ package session
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -23,14 +24,16 @@ const (
 	FieldRoom = "room"
 	// FieldSessionID holds the string denoting the session_id field in the database.
 	FieldSessionID = "session_id"
-	// FieldNext holds the string denoting the next field in the database.
-	FieldNext = "next"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
 	// FieldData holds the string denoting the data field in the database.
 	FieldData = "data"
+	// EdgeNext holds the string denoting the next edge name in mutations.
+	EdgeNext = "next"
 	// Table holds the table name of the session in the database.
 	Table = "sessions"
+	// NextTable is the table that holds the next relation/edge. The primary key declared below.
+	NextTable = "session_next"
 )
 
 // Columns holds all SQL columns for session fields.
@@ -42,10 +45,15 @@ var Columns = []string{
 	FieldEnd,
 	FieldRoom,
 	FieldSessionID,
-	FieldNext,
 	FieldTitle,
 	FieldData,
 }
+
+var (
+	// NextPrimaryKey and NextColumn2 are the table columns denoting the
+	// primary key for the next relation (M2M).
+	NextPrimaryKey = []string{"session_id", "next_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -100,12 +108,28 @@ func BySessionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSessionID, opts...).ToFunc()
 }
 
-// ByNext orders the results by the next field.
-func ByNext(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNext, opts...).ToFunc()
-}
-
 // ByTitle orders the results by the title field.
 func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitle, opts...).ToFunc()
+}
+
+// ByNextCount orders the results by next count.
+func ByNextCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newNextStep(), opts...)
+	}
+}
+
+// ByNext orders the results by next terms.
+func ByNext(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newNextStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newNextStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, NextTable, NextPrimaryKey...),
+	)
 }

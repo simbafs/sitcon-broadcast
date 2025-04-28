@@ -30,7 +30,6 @@ var (
 		{Name: "end", Type: field.TypeInt64},
 		{Name: "room", Type: field.TypeString},
 		{Name: "session_id", Type: field.TypeString},
-		{Name: "next", Type: field.TypeString},
 		{Name: "title", Type: field.TypeString},
 		{Name: "data", Type: field.TypeJSON},
 	}
@@ -40,12 +39,40 @@ var (
 		Columns:    SessionsColumns,
 		PrimaryKey: []*schema.Column{SessionsColumns[0]},
 	}
+	// SessionNextColumns holds the columns for the "session_next" table.
+	SessionNextColumns = []*schema.Column{
+		{Name: "session_id", Type: field.TypeInt},
+		{Name: "next_id", Type: field.TypeInt},
+	}
+	// SessionNextTable holds the schema information for the "session_next" table.
+	SessionNextTable = &schema.Table{
+		Name:       "session_next",
+		Columns:    SessionNextColumns,
+		PrimaryKey: []*schema.Column{SessionNextColumns[0], SessionNextColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "session_next_session_id",
+				Columns:    []*schema.Column{SessionNextColumns[0]},
+				RefColumns: []*schema.Column{SessionsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "session_next_next_id",
+				Columns:    []*schema.Column{SessionNextColumns[1]},
+				RefColumns: []*schema.Column{SessionsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		EventsTable,
 		SessionsTable,
+		SessionNextTable,
 	}
 )
 
 func init() {
+	SessionNextTable.ForeignKeys[0].RefTable = SessionsTable
+	SessionNextTable.ForeignKeys[1].RefTable = SessionsTable
 }

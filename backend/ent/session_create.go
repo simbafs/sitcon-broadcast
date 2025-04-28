@@ -63,12 +63,6 @@ func (sc *SessionCreate) SetSessionID(s string) *SessionCreate {
 	return sc
 }
 
-// SetNext sets the "next" field.
-func (sc *SessionCreate) SetNext(s string) *SessionCreate {
-	sc.mutation.SetNext(s)
-	return sc
-}
-
 // SetTitle sets the "title" field.
 func (sc *SessionCreate) SetTitle(s string) *SessionCreate {
 	sc.mutation.SetTitle(s)
@@ -79,6 +73,21 @@ func (sc *SessionCreate) SetTitle(s string) *SessionCreate {
 func (sc *SessionCreate) SetData(m map[string]interface{}) *SessionCreate {
 	sc.mutation.SetData(m)
 	return sc
+}
+
+// AddNextIDs adds the "next" edge to the Session entity by IDs.
+func (sc *SessionCreate) AddNextIDs(ids ...int) *SessionCreate {
+	sc.mutation.AddNextIDs(ids...)
+	return sc
+}
+
+// AddNext adds the "next" edges to the Session entity.
+func (sc *SessionCreate) AddNext(s ...*Session) *SessionCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddNextIDs(ids...)
 }
 
 // Mutation returns the SessionMutation object of the builder.
@@ -142,9 +151,6 @@ func (sc *SessionCreate) check() error {
 	if _, ok := sc.mutation.SessionID(); !ok {
 		return &ValidationError{Name: "session_id", err: errors.New(`ent: missing required field "Session.session_id"`)}
 	}
-	if _, ok := sc.mutation.Next(); !ok {
-		return &ValidationError{Name: "next", err: errors.New(`ent: missing required field "Session.next"`)}
-	}
 	if _, ok := sc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Session.title"`)}
 	}
@@ -201,10 +207,6 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 		_spec.SetField(session.FieldSessionID, field.TypeString, value)
 		_node.SessionID = value
 	}
-	if value, ok := sc.mutation.Next(); ok {
-		_spec.SetField(session.FieldNext, field.TypeString, value)
-		_node.Next = value
-	}
 	if value, ok := sc.mutation.Title(); ok {
 		_spec.SetField(session.FieldTitle, field.TypeString, value)
 		_node.Title = value
@@ -212,6 +214,22 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Data(); ok {
 		_spec.SetField(session.FieldData, field.TypeJSON, value)
 		_node.Data = value
+	}
+	if nodes := sc.mutation.NextIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   session.NextTable,
+			Columns: session.NextPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(session.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

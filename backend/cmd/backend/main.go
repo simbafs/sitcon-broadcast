@@ -11,15 +11,16 @@ import (
 )
 
 func main() {
-	g := gin.Default()
+	r := gin.Default()
 
-	g.Use(ginrest.ErrorHandler())
+	r.Use(ginrest.ErrorHandler())
 
 	eventRepo := repository.NewEventInMemoryRepository()
 	eventUsecase := usecase.NewEvent(eventRepo)
 	handler := ginrest.New(eventUsecase)
 
-	handler.Route(g.Group("/api"))
+	handler.Route(r.Group("/api"))
+	r.NoRoute(ginrest.NoRouteHandler())
 
-	log.Fatal(g.Run(":3000"))
+	log.Fatal(r.Run(":3000"))
 }

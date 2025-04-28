@@ -3,6 +3,7 @@ package ginrest
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"backend/internal/delivery"
 
@@ -45,6 +46,18 @@ func ErrorHandler() gin.HandlerFunc {
 					"errors": errorMessages,
 				})
 			}
+		}
+	}
+}
+
+func NoRouteHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/api") {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "not found",
+			})
+		} else {
+			c.String(http.StatusNotFound, "404 not found")
 		}
 	}
 }

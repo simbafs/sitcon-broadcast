@@ -1,11 +1,5 @@
 package entity
 
-import (
-	"errors"
-	"io"
-	"net/http"
-)
-
 type Event struct {
 	name   string
 	url    string
@@ -38,25 +32,4 @@ func (e *Event) SetURL(url string) {
 
 func (e *Event) SetScript(script string) {
 	e.script = script
-}
-
-var ErrCannotGetSessions = errors.New("cannot get sessions")
-
-func (e *Event) GetSessions() (string, error) {
-	resp, err := http.Get(e.url)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", ErrCannotGetSessions
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	return string(body), nil
 }

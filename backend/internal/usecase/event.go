@@ -1,11 +1,13 @@
 package usecase
 
-type Event struct {
-	event EventRepository
+import "backend/internal/repository"
+
+type EventImpl struct {
+	event repository.Event
 }
 
-func NewEvent(event EventRepository) *Event {
-	return &Event{
+func NewEvent(event repository.Event) *EventImpl {
+	return &EventImpl{
 		event: event,
 	}
 }

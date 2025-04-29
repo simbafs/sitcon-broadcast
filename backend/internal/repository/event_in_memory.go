@@ -7,11 +7,19 @@ import (
 	"backend/internal/entity"
 )
 
-type EventInMemoryRepository struct {
+var ErrCannotGetEvent = errors.New("can not get event")
+
+type EventInMemory struct {
 	events map[string]*entity.Event
 }
 
-func (e *EventInMemoryRepository) List(ctx context.Context) ([]*entity.Event, error) {
+func NewEventInMemory() *EventInMemory {
+	return &EventInMemory{
+		events: make(map[string]*entity.Event),
+	}
+}
+
+func (e *EventInMemory) List(ctx context.Context) ([]*entity.Event, error) {
 	events := make([]*entity.Event, 0, len(e.events))
 	for _, event := range e.events {
 		events = append(events, event)
@@ -19,17 +27,17 @@ func (e *EventInMemoryRepository) List(ctx context.Context) ([]*entity.Event, er
 	return events, nil
 }
 
-func (e *EventInMemoryRepository) Get(ctx context.Context, name string) (*entity.Event, error) {
+func (e *EventInMemory) Get(ctx context.Context, name string) (*entity.Event, error) {
 	event, exists := e.events[name]
 	if !exists {
-		return nil, entity.ErrCannotGetSessions
+		return nil, ErrCannotGetEvent
 	}
 	return event, nil
 }
 
 var ErrEventAlreadyExists = errors.New("event already exists")
 
-func (e *EventInMemoryRepository) Create(ctx context.Context, name string, url string, script string) (*entity.Event, error) {
+func (e *EventInMemory) Create(ctx context.Context, name string, url string, script string) (*entity.Event, error) {
 	if _, ok := e.events[name]; ok {
 		return nil, ErrEventAlreadyExists
 	}
@@ -38,10 +46,10 @@ func (e *EventInMemoryRepository) Create(ctx context.Context, name string, url s
 	return event, nil
 }
 
-func (e *EventInMemoryRepository) Update(ctx context.Context, name string, url string, script string) error {
+func (e *EventInMemory) Update(ctx context.Context, name string, url string, script string) error {
 	event, ok := e.events[name]
 	if !ok {
-		return entity.ErrCannotGetSessions
+		return ErrCannotGetEvent
 	}
 
 	event.SetURL(url)
@@ -52,17 +60,11 @@ func (e *EventInMemoryRepository) Update(ctx context.Context, name string, url s
 	return nil
 }
 
-func (e *EventInMemoryRepository) Delete(ctx context.Context, name string) error {
+func (e *EventInMemory) Delete(ctx context.Context, name string) error {
 	if _, ok := e.events[name]; !ok {
 		return nil
 	}
 
 	delete(e.events, name)
 	return nil
-}
-
-func NewEventInMemoryRepository() *EventInMemoryRepository {
-	return &EventInMemoryRepository{
-		events: make(map[string]*entity.Event),
-	}
 }

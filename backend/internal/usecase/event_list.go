@@ -9,7 +9,7 @@ type EventListOutput struct {
 	Events []EventItem `json:"events"`
 }
 
-func (e *Event) List(ctx context.Context, input *EventListInput) (*EventListOutput, error) {
+func (e *EventImpl) List(ctx context.Context, input *EventListInput) (*EventListOutput, error) {
 	events, err := e.event.List(ctx)
 	if err != nil {
 		return nil, err

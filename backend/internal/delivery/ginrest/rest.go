@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"strings"
 
-	"backend/internal/delivery"
+	"backend/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Gin struct {
-	event delivery.EventUsecase
+	event usecase.Event
 }
 
-func New(event delivery.EventUsecase) *Gin {
+func New(event usecase.Event) *Gin {
 	return &Gin{
 		event: event,
 	}

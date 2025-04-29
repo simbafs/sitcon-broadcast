@@ -15,7 +15,7 @@ func main() {
 
 	r.Use(ginrest.ErrorHandler())
 
-	eventRepo := repository.NewEventInMemoryRepository()
+	eventRepo := repository.NewEventInMemory()
 	eventUsecase := usecase.NewEvent(eventRepo)
 	handler := ginrest.New(eventUsecase)
 

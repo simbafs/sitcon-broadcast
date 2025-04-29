@@ -9,7 +9,7 @@ type EventDeleteInput struct {
 // left empty, for future expansion
 type EventDeleteOutput struct{}
 
-func (e *Event) Delete(ctx context.Context, input *EventDeleteInput) (*EventDeleteOutput, error) {
+func (e *EventImpl) Delete(ctx context.Context, input *EventDeleteInput) (*EventDeleteOutput, error) {
 	err := e.event.Delete(ctx, input.Name)
 	return nil, err
 }

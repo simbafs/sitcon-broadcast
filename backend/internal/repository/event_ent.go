@@ -8,17 +8,17 @@ import (
 	"backend/internal/entity"
 )
 
-type EventEntRepository struct {
+type EventEnt struct {
 	client *ent.Client
 }
 
-func NewEventEntRepository(client *ent.Client) *EventEntRepository {
-	return &EventEntRepository{
+func NewEventEnt(client *ent.Client) *EventEnt {
+	return &EventEnt{
 		client: client,
 	}
 }
 
-func (r *EventEntRepository) List(ctx context.Context) ([]*entity.Event, error) {
+func (r *EventEnt) List(ctx context.Context) ([]*entity.Event, error) {
 	events, err := r.client.Event.Query().All(ctx)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (r *EventEntRepository) List(ctx context.Context) ([]*entity.Event, error) 
 	return results, nil
 }
 
-func (r *EventEntRepository) Get(ctx context.Context, name string) (*entity.Event, error) {
+func (r *EventEnt) Get(ctx context.Context, name string) (*entity.Event, error) {
 	e, err := r.client.Event.Query().Where(event.Name(name)).Only(ctx)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (r *EventEntRepository) Get(ctx context.Context, name string) (*entity.Even
 	return entity.NewEvent(e.Name, e.URL, e.Script), nil
 }
 
-func (r *EventEntRepository) Create(ctx context.Context, name, url, script string) (*entity.Event, error) {
+func (r *EventEnt) Create(ctx context.Context, name, url, script string) (*entity.Event, error) {
 	e, err := r.client.Event.Create().
 		SetName(name).
 		SetURL(url).
@@ -54,7 +54,7 @@ func (r *EventEntRepository) Create(ctx context.Context, name, url, script strin
 	return entity.NewEvent(e.Name, e.URL, e.Script), nil
 }
 
-func (r *EventEntRepository) Update(ctx context.Context, name, url, script string) error {
+func (r *EventEnt) Update(ctx context.Context, name, url, script string) error {
 	update := r.client.Event.Update().
 		Where(event.Name(name))
 
@@ -70,7 +70,7 @@ func (r *EventEntRepository) Update(ctx context.Context, name, url, script strin
 	return err
 }
 
-func (r *EventEntRepository) Delete(ctx context.Context, name string) error {
+func (r *EventEnt) Delete(ctx context.Context, name string) error {
 	_, err := r.client.Event.Delete().
 		Where(event.Name(name)).
 		Exec(ctx)

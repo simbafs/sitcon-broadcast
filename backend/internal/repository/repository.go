@@ -1,13 +1,12 @@
-package usecase
+package repository
 
 import (
 	"context"
 
 	"backend/internal/entity"
-	"backend/internal/repository"
 )
 
-type EventRepository interface {
+type Event interface {
 	List(ctx context.Context) ([]*entity.Event, error)
 	Get(ctx context.Context, name string) (*entity.Event, error)
 
@@ -18,6 +17,6 @@ type EventRepository interface {
 }
 
 var (
-	_ EventRepository = &repository.EventEntRepository{}
-	_ EventRepository = &repository.EventInMemoryRepository{}
+	_ Event = &EventEnt{}
+	_ Event = &EventInMemory{}
 )

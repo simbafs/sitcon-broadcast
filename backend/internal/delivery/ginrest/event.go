@@ -8,8 +8,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Event struct {
+	event usecase.Event
+}
+
+func NewEvent(r gin.IRouter, event usecase.Event) *Event {
+	g := &Event{
+		event: event,
+	}
+
+	r.POST("/event", g.Create)
+	r.DELETE("/event/:name", g.Delete)
+	r.GET("/event", g.List)
+	r.GET("/event/:name", g.Get)
+	r.PUT("/event/:name", g.UpdateScript)
+
+	return g
+}
+
 // POST /event
-func (g *Gin) Create(c *gin.Context) {
+func (g *Event) Create(c *gin.Context) {
 	var input usecase.EventCreateInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -27,7 +45,7 @@ func (g *Gin) Create(c *gin.Context) {
 }
 
 // DELETE /event/{name}
-func (g *Gin) Delete(c *gin.Context) {
+func (g *Event) Delete(c *gin.Context) {
 	name := c.Param("name")
 
 	input := usecase.EventDeleteInput{
@@ -44,7 +62,7 @@ func (g *Gin) Delete(c *gin.Context) {
 }
 
 // GET /event/{name}
-func (g *Gin) Get(c *gin.Context) {
+func (g *Event) Get(c *gin.Context) {
 	name := c.Param("name")
 
 	input := usecase.EventGetInput{
@@ -61,7 +79,7 @@ func (g *Gin) Get(c *gin.Context) {
 }
 
 // GEt /event
-func (g *Gin) List(c *gin.Context) {
+func (g *Event) List(c *gin.Context) {
 	input := usecase.EventListInput{}
 
 	output, err := g.event.List(c, &input)
@@ -74,7 +92,7 @@ func (g *Gin) List(c *gin.Context) {
 }
 
 // PUT /event/{name} body: .script
-func (g *Gin) UpdateScript(c *gin.Context) {
+func (g *Event) UpdateScript(c *gin.Context) {
 	var input usecase.EventSetScriptInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {

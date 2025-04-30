@@ -9,6 +9,8 @@ import (
 
 var ErrCannotGetEvent = errors.New("can not get event")
 
+var _ Event = &EventInMemory{}
+
 type EventInMemory struct {
 	events map[string]*entity.Event
 }

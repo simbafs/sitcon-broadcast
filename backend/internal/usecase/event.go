@@ -2,6 +2,8 @@ package usecase
 
 import "backend/internal/repository"
 
+var _ Event = &EventImpl{}
+
 type EventImpl struct {
 	event repository.Event
 }

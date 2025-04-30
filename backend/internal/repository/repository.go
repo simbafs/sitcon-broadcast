@@ -16,7 +16,8 @@ type Event interface {
 	Delete(ctx context.Context, name string) error
 }
 
-var (
-	_ Event = &EventEnt{}
-	_ Event = &EventInMemory{}
-)
+type Now interface {
+	Get() int64
+	Set(int64)
+	Reset()
+}

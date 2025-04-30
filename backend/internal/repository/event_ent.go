@@ -8,6 +8,8 @@ import (
 	"backend/internal/entity"
 )
 
+var _ Event = &EventEnt{}
+
 type EventEnt struct {
 	client *ent.Client
 }

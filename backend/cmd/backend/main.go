@@ -15,11 +15,16 @@ func main() {
 
 	r.Use(ginrest.ErrorHandler())
 
+	api := r.Group("/api")
+
 	eventRepo := repository.NewEventInMemory()
 	eventUsecase := usecase.NewEvent(eventRepo)
-	handler := ginrest.New(eventUsecase)
+	ginrest.NewEvent(api.Group("/event"), eventUsecase)
 
-	handler.Route(r.Group("/api"))
+	nowRepo := repository.NewNow()
+	nowUsecase := usecase.NewNow(nowRepo)
+	ginrest.NewNow(api.Group("/now"), nowUsecase)
+
 	r.NoRoute(ginrest.NoRouteHandler())
 
 	log.Fatal(r.Run(":3000"))

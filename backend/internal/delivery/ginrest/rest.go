@@ -5,28 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"backend/internal/usecase"
-
 	"github.com/gin-gonic/gin"
 )
-
-type Gin struct {
-	event usecase.Event
-}
-
-func New(event usecase.Event) *Gin {
-	return &Gin{
-		event: event,
-	}
-}
-
-func (g *Gin) Route(r gin.IRouter) {
-	r.POST("/event", g.Create)
-	r.DELETE("/event/:name", g.Delete)
-	r.GET("/event", g.List)
-	r.GET("/event/:name", g.Get)
-	r.PUT("/event/:name", g.UpdateScript)
-}
 
 func ErrorHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {

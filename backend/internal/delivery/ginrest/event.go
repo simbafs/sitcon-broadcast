@@ -17,11 +17,12 @@ func NewEvent(r gin.IRouter, event usecase.Event) *Event {
 		event: event,
 	}
 
-	r.POST("/event", g.Create)
-	r.DELETE("/event/:name", g.Delete)
-	r.GET("/event", g.List)
-	r.GET("/event/:name", g.Get)
-	r.PUT("/event/:name", g.UpdateScript)
+	r.POST("/", g.Create)
+	r.DELETE("/:name", g.Delete)
+	r.GET("/", g.List)
+	r.GET("/:name", g.Get)
+	r.PUT("/:name", g.UpdateScript)
+	r.GET("/:name/session", g.GetSession)
 
 	return g
 }
@@ -110,4 +111,21 @@ func (g *Event) UpdateScript(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, output)
+}
+
+// GET /event/{name}/session
+func (g *Event) GetSession(c *gin.Context) {
+	name := c.Param("name")
+
+	input := usecase.EventGetSessionInput{
+		Name: name,
+	}
+
+	output, err := g.event.GetSession(c, &input)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.DataFromReader(http.StatusOK, output.ContentLength, "application/json", output.Body, nil)
 }

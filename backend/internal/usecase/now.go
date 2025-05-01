@@ -1,16 +1,16 @@
 package usecase
 
 import (
-	"backend/internal/repository"
+	"backend/internal/entity"
 )
 
 var _ Now = &NowImpl{}
 
 type NowImpl struct {
-	now repository.Now
+	now *entity.Now
 }
 
-func NewNow(now repository.Now) *NowImpl {
+func NewNow(now *entity.Now) *NowImpl {
 	return &NowImpl{
 		now: now,
 	}

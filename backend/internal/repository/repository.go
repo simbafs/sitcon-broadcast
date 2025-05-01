@@ -16,12 +16,6 @@ type Event interface {
 	Delete(ctx context.Context, name string) error
 }
 
-type Now interface {
-	Get() int64
-	Set(int64)
-	Reset()
-}
-
 type Counter interface {
 	List() []*entity.Counter
 	Get(name string) (*entity.Counter, error)

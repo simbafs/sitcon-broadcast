@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"backend/internal/delivery/ginrest"
+	"backend/internal/entity"
 	"backend/internal/repository"
 	"backend/internal/usecase"
 	"backend/sse"
@@ -24,7 +25,7 @@ func main() {
 	eventUsecase := usecase.NewEvent(eventRepo)
 	ginrest.NewEvent(api.Group("/event"), eventUsecase)
 
-	nowRepo := repository.NewNow()
+	nowRepo := entity.NewNow(0)
 	nowUsecase := usecase.NewNow(nowRepo)
 	ginrest.NewNow(api.Group("/now"), nowUsecase)
 

@@ -6,6 +6,7 @@ import (
 	"backend/internal/delivery/ginrest"
 	"backend/internal/repository"
 	"backend/internal/usecase"
+	"backend/sse"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,8 @@ func main() {
 
 	api := r.Group("/api")
 
+	sse := sse.New()
+
 	eventRepo := repository.NewEventInMemory()
 	eventUsecase := usecase.NewEvent(eventRepo)
 	ginrest.NewEvent(api.Group("/event"), eventUsecase)
@@ -25,7 +28,13 @@ func main() {
 	nowUsecase := usecase.NewNow(nowRepo)
 	ginrest.NewNow(api.Group("/now"), nowUsecase)
 
+	counterRepo := repository.NewCounterInMemory()
+	counterUsecase := usecase.NewCounter(counterRepo, sse)
+	ginrest.NewCounter(api.Group("/counter"), counterUsecase)
+
 	r.NoRoute(ginrest.NoRouteHandler())
+
+	go sse.Listen()
 
 	log.Fatal(r.Run(":3000"))
 }

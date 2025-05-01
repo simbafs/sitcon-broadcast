@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+
+	"backend/internal/entity"
 )
 
 type Event interface {
@@ -17,4 +19,14 @@ type Now interface {
 	Get() *NowOutput
 	Set(input *NowInput) *NowOutput
 	Reset() *NowOutput
+}
+
+type Counter interface {
+	New(name string, init int) (*entity.Counter, error)
+	List() []*entity.Counter
+	Get(name string) (*entity.Counter, error)
+
+	Start(name string) error
+	Stop(name string) error
+	SetInit(name string, init int) error
 }

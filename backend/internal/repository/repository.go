@@ -21,3 +21,9 @@ type Now interface {
 	Set(int64)
 	Reset()
 }
+
+type Counter interface {
+	List() []*entity.Counter
+	Get(name string) (*entity.Counter, error)
+	New(name string, init int, callback func(*entity.Counter)) (*entity.Counter, error)
+}

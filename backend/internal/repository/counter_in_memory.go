@@ -4,6 +4,7 @@ import (
 	"errors"
 	"maps"
 	"slices"
+	"sync"
 
 	"backend/internal/entity"
 )
@@ -17,15 +18,22 @@ var _ Counter = &CounterInMemory{}
 
 type CounterInMemory struct {
 	counters map[string]*entity.Counter
+	mu       sync.RWMutex
 }
 
-func NewCounterInMemory() *CounterInMemory {
+func NewCounterInMemory(counters map[string]*entity.Counter) *CounterInMemory {
+	if counters == nil {
+		counters = make(map[string]*entity.Counter)
+	}
 	return &CounterInMemory{
-		counters: make(map[string]*entity.Counter),
+		counters: counters,
 	}
 }
 
 func (c *CounterInMemory) List() []*entity.Counter {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
 	keys := slices.Sorted(maps.Keys(c.counters))
 	counters := make([]*entity.Counter, len(keys))
 	for i, k := range keys {
@@ -35,6 +43,9 @@ func (c *CounterInMemory) List() []*entity.Counter {
 }
 
 func (c *CounterInMemory) Get(name string) (*entity.Counter, error) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
 	counter, ok := c.counters[name]
 	if !ok {
 		return nil, ErrCannotGetCounter
@@ -43,10 +54,24 @@ func (c *CounterInMemory) Get(name string) (*entity.Counter, error) {
 }
 
 func (c *CounterInMemory) New(name string, init int, callback func(*entity.Counter)) (*entity.Counter, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if _, ok := c.counters[name]; ok {
 		return nil, ErrCounterExist
 	}
 	counter := entity.NewCounter(init, callback)
 	c.counters[name] = counter
 	return counter, nil
+}
+
+func (c *CounterInMemory) Delete(name string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if _, ok := c.counters[name]; !ok {
+		return nil
+	}
+	delete(c.counters, name)
+	return nil
 }

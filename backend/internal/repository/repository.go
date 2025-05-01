@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"context"
-
 	"backend/internal/entity"
+	"context"
 )
 
 type Event interface {
@@ -20,4 +19,5 @@ type Counter interface {
 	List() []*entity.Counter
 	Get(name string) (*entity.Counter, error)
 	New(name string, init int, callback func(*entity.Counter)) (*entity.Counter, error)
+	Delete(name string) error
 }

@@ -29,7 +29,7 @@ func main() {
 	nowUsecase := usecase.NewNow(nowRepo)
 	ginrest.NewNow(api.Group("/now"), nowUsecase)
 
-	counterRepo := repository.NewCounterInMemory()
+	counterRepo := repository.NewCounterInMemory(nil)
 	counterUsecase := usecase.NewCounter(counterRepo, sse)
 	ginrest.NewCounter(api.Group("/counter"), counterUsecase)
 

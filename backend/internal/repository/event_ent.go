@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"backend/ent"
 	"backend/ent/event"
@@ -21,7 +22,9 @@ func NewEventEnt(client *ent.Client) *EventEnt {
 }
 
 func (r *EventEnt) List(ctx context.Context) ([]*entity.Event, error) {
-	events, err := r.client.Event.Query().All(ctx)
+	events, err := r.client.Event.Query().
+		Order(event.ByName()).
+		All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -56,6 +59,8 @@ func (r *EventEnt) Create(ctx context.Context, name, url, script string) (*entit
 	return entity.NewEvent(e.Name, e.URL, e.Script), nil
 }
 
+var ErrEventNotFound = errors.New("event not found")
+
 func (r *EventEnt) Update(ctx context.Context, name, url, script string) error {
 	update := r.client.Event.Update().
 		Where(event.Name(name))
@@ -68,7 +73,10 @@ func (r *EventEnt) Update(ctx context.Context, name, url, script string) error {
 		update = update.SetScript(script)
 	}
 
-	err := update.Exec(ctx)
+	n, err := update.Save(ctx)
+	if n == 0 {
+		return ErrEventNotFound
+	}
 	return err
 }
 

@@ -1,6 +1,8 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type Counter struct {
 	count    int
@@ -74,6 +76,7 @@ func (c *Counter) Stop() {
 	if !c.counting {
 		return
 	}
+	c.counting = false
 	c.stop <- struct{}{}
 }
 

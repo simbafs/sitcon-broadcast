@@ -13,9 +13,8 @@ type Counter struct {
 	Count    int  `json:"count"`
 	Counting bool `json:"counting"`
 
-	cb     Callback
-	ticker *time.Ticker
-	stop   chan struct{}
+	cb   Callback
+	stop chan struct{}
 }
 
 func NewCounter(init int, callback Callback) *Counter {
@@ -26,26 +25,34 @@ func NewCounter(init int, callback Callback) *Counter {
 
 		cb: callback,
 
-		ticker: time.NewTicker(time.Second),
-		stop:   make(chan struct{}),
+		stop: make(chan struct{}),
 	}
+}
+
+func (c *Counter) Tick() bool {
+	c.Count--
+	if c.Count < 0 {
+		return true
+	}
+	c.cb(c)
+	return false
 }
 
 func (c *Counter) Start() {
 	c.Counting = true
 	defer func() { c.Counting = false }()
 
+	t := time.Tick(1 * time.Second)
+	if c.Tick() {
+		return
+	}
 	for {
 		select {
 		case <-c.stop:
 			log.Println("counter stopped")
 			return
-		case <-c.ticker.C:
-			c.Count--
-			c.cb(c)
-			log.Println("counter", "count", c.Count)
-			if c.Count <= 0 {
-				log.Println("counter", "count", c.Count)
+		case <-t:
+			if c.Tick() {
 				return
 			}
 		}
@@ -56,7 +63,11 @@ func (c *Counter) Stop() {
 	if !c.Counting {
 		return
 	}
-	c.stop <- struct{}{}
+	// use select to avoid blocking if Stop is called multiple times
+	select {
+	case c.stop <- struct{}{}:
+	default:
+	}
 }
 
 func (c *Counter) Reset() {

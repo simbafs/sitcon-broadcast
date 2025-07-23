@@ -3,5 +3,38 @@
 		"name": "next",
 		"label": "Next",
 		"type": "button"
+	},
+	{
+		"name": "clear",
+		"label": "Clear",
+		"type": "button"
+	},
+	{
+		"name": "set_room",
+		"label": "Room",
+		"type": "select",
+		"default": "R0",
+		"options": [
+			{
+				"value": "R0",
+				"label": "R0"
+			},
+			{
+				"value": "R1",
+				"label": "R1"
+			},
+			{
+				"value": "R2",
+				"label": "R2"
+			},
+			{
+				"value": "R3",
+				"label": "R3"
+			},
+			{
+				"value": "S",
+				"label": "S"
+			}
+		]
 	}
 ]

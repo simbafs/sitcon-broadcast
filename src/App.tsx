@@ -1,5 +1,5 @@
-import { Card } from './cpmponents/Card'
-import { QRCode } from './cpmponents/QRcode'
+import { Card } from './components/Card'
+import { QRCode } from './components/QRcode'
 import { useDisplay } from './hooks/useDisplay'
 
 export function App() {

@@ -1,4 +1,42 @@
-import data from '../data/2025.json' with { type: 'json' }
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+const path = process.argv[2]
+if (!path) {
+	console.error('Usage: node script/session.ts <path/to/data.json>')
+	process.exit(1)
+}
+
+interface Speaker {
+	id: string
+	zh: {
+		name: string
+	}
+}
+
+interface SessionData {
+	id: string
+	room: string
+	broadcast?: string[]
+	start: string
+	end: string
+	zh: {
+		title: string
+	}
+	speakers: string[]
+}
+
+interface Room {
+	id: string
+}
+
+interface ScheduleData {
+	speakers: Speaker[]
+	sessions: SessionData[]
+	rooms: Room[]
+}
+
+const data: ScheduleData = JSON.parse(readFileSync(resolve(process.cwd(), path), 'utf-8'))
 
 const speakers = Object.fromEntries(data.speakers.map(s => [s.id, s.zh.name]))
 
@@ -91,4 +129,5 @@ pipe(
 )
 	.do(Object.fromEntries)
 	.do(JSON.stringify)
+	// .do(data => JSON.stringify(data, null, 2))
 	.do(console.log)

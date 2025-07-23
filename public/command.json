@@ -1,1 +1,7 @@
-[]
+[
+	{
+		"name": "next",
+		"label": "Next",
+		"type": "button"
+	}
+]

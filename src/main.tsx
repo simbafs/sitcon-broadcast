@@ -5,6 +5,8 @@ import './main.css'
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<App />
+		<div className="flex flex-col items-center justify-center h-screen w-screen">
+			<App />
+		</div>
 	</StrictMode>,
 )

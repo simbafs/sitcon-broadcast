@@ -86,12 +86,7 @@ function pipe<T>(value: T) {
 pipe(
 	data.rooms.map(r => [
 		r.id,
-		pipe(getSessionInRoom(r.id))
-		    .do(sortByTime)
-		    .do(toSessionInRoom)
-		    .do(fillGap)
-		    .do(mergeSameTitle)
-		    .get(),
+		pipe(getSessionInRoom(r.id)).do(sortByTime).do(toSessionInRoom).do(fillGap).do(mergeSameTitle).get(),
 	]),
 )
 	.do(Object.fromEntries)
